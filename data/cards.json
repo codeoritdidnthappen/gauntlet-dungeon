@@ -31,7 +31,7 @@
       "cost": 1,
       "damage": 8,
       "blockDamage": 2,
-      "text": "Deal 8 dmg, -2 block.",
+      "text": "Deal 8 damage, -2 block.",
       "subtext": "My name is ${playerName}. It's nice meeting you!",
       "oncePerRoom": false,
       "cooldown": 0,
@@ -147,6 +147,25 @@
       "cooldown": 1,
       "image": {
         "filename": "deflect.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "63e41b0e-c4ba-4ba1-aa9f-5e5b92df16ba",
+      "side": "player",
+      "name": "Wallop",
+      "type": "attack",
+      "subtype": "hybrid",
+      "class": "neutral",
+      "rarity": "uncommon",
+      "cost": 2,
+      "damage": 9,
+      "text": "Deal 9 damage. Gain Block equal to unblocked damage dealt.",
+      "subtext": "That one's still in production, by the way.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "wallop.png",
         "path": "assets/cards/"
       }
     },
