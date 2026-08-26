@@ -98,7 +98,7 @@ export default function StartingLoadout() {
       {/* --------------------------------------------------------- actions */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 bg-gradient-to-t from-soot-950 to-transparent p-5 lg:p-8">
         <ActionButton onClick={() => dispatch(goTo('pet'))}>Back</ActionButton>
-        <ActionButton primary onClick={() => dispatch(goTo('cards'))}>
+        <ActionButton primary onClick={() => dispatch(goTo('room'))}>
           Proceed
         </ActionButton>
       </div>

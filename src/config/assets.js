@@ -47,9 +47,12 @@ export const CHARACTER_ART = urlOf(
  * Globbed one level deep so adding a `wizards/`, `rogues/` or `duelists/`
  * folder works with no code change, as long as the filename starts with the
  * class id. Keys keep the pose suffix: `fighter-human-female-rest`.
+ *
+ * Poses are listed rather than wildcarded — `*.png` one level deep would sweep
+ * in cards, pets and backgrounds too.
  */
 export const CLASS_ART = urlOf(
-  import.meta.glob('../../assets/*/*-rest.png', {
+  import.meta.glob('../../assets/*/*-{rest,ready,sword}.png', {
     eager: true,
     query: '?url',
     import: 'default',
@@ -146,4 +149,26 @@ export function resolveCardArt(card) {
   const filename = card.image?.filename
   if (!filename) return null
   return CARD_ART[artKey(filename.replace(/\.png$/, ''))] ?? null
+}
+
+/**
+ * Room backgrounds — `assets/backgrounds/{filename}`, taken from the room's
+ * `background` field in rooms.json. Same filename lookup as card and pet art.
+ *
+ * The four creation-screen backgrounds above are imported by name because the
+ * screens name them directly; rooms name theirs in data, so they resolve here.
+ */
+export const BACKGROUND_ART = urlOf(
+  import.meta.glob('../../assets/backgrounds/*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+)
+
+/** The backdrop for a room, or null when the file named in data is missing. */
+export function resolveRoomBackground(room) {
+  const filename = room?.background?.filename
+  if (!filename) return null
+  return BACKGROUND_ART[artKey(filename.replace(/\.png$/, ''))] ?? null
 }
