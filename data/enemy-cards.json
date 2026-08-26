@@ -20,7 +20,7 @@
   },
   "cards": [
     {
-      "id": "e_background_check",
+      "id": "629dae47-978e-4ba6-b1de-45fb69287357",
       "side": "enemy",
       "name": "Background Check",
       "type": "attack",
@@ -35,7 +35,7 @@
       }
     },
     {
-      "id": "e_role_scoping",
+      "id": "44bb5899-0553-46ca-bc84-c5dbf773d64a",
       "side": "enemy",
       "name": "Role Scoping",
       "type": "attack",
@@ -50,7 +50,7 @@
       }
     },
     {
-      "id": "e_llm_sentiment",
+      "id": "ed2b9c8a-15c2-47e4-b79e-4e8071a4fa83",
       "side": "enemy",
       "name": "Sentiment Probe",
       "type": "attack",
@@ -65,7 +65,7 @@
       }
     },
     {
-      "id": "e_integration_probe",
+      "id": "0b7d334c-bc51-40b0-a903-8aba560b4941",
       "side": "enemy",
       "name": "Integration Probe",
       "type": "attack",
@@ -80,7 +80,7 @@
       }
     },
     {
-      "id": "e_ai_usage",
+      "id": "48ce736b-e70e-45f8-abd0-abd5b767d865",
       "side": "enemy",
       "name": "Usage Probe",
       "type": "attack",
@@ -95,7 +95,7 @@
       }
     },
     {
-      "id": "e_workflow",
+      "id": "ace5bdba-263b-48d7-85a2-2744b06a9b43",
       "side": "enemy",
       "name": "Process Probe",
       "type": "attack",
@@ -110,7 +110,7 @@
       }
     },
     {
-      "id": "e_tool_call",
+      "id": "fbc46f6c-572a-40d5-bb4d-5df0025f9bb6",
       "side": "enemy",
       "name": "Definition Check",
       "type": "attack",
@@ -125,7 +125,7 @@
       }
     },
     {
-      "id": "e_teach_the_team",
+      "id": "ee288e88-34bd-4345-a17c-a8422482c5ae",
       "side": "enemy",
       "name": "The Scenario",
       "type": "attack",
@@ -140,7 +140,7 @@
       }
     },
     {
-      "id": "e_why_us",
+      "id": "8c1cb332-051c-4a9b-86e4-73880962d7d8",
       "side": "enemy",
       "name": "Motive Question",
       "type": "attack",
@@ -155,7 +155,7 @@
       }
     },
     {
-      "id": "e_good_fit",
+      "id": "59d54941-1635-4108-a90a-38a925c87f8d",
       "side": "enemy",
       "name": "Fit Question",
       "type": "attack",
@@ -170,7 +170,7 @@
       }
     },
     {
-      "id": "e_opportunist",
+      "id": "8fa71cc1-aa8c-421e-b9ac-f1263778505f",
       "side": "enemy",
       "name": "Opportunist",
       "type": "attack",
@@ -185,7 +185,7 @@
       }
     },
     {
-      "id": "e_price_check",
+      "id": "36e58ffc-0360-45a4-8161-be12f933c2a4",
       "side": "enemy",
       "name": "Price Check",
       "type": "attack",
@@ -200,7 +200,7 @@
       }
     },
     {
-      "id": "e_roast_my_setup",
+      "id": "f9041886-0d98-45ae-b0fb-af10882c2340",
       "side": "enemy",
       "name": "Roast",
       "type": "attack",
@@ -215,7 +215,7 @@
       }
     },
     {
-      "id": "e_cold_pitch",
+      "id": "3954414f-5639-421e-972a-2afc01547dda",
       "side": "enemy",
       "name": "Cold Pitch",
       "type": "attack",
@@ -230,7 +230,7 @@
       }
     },
     {
-      "id": "e_craziest_thing",
+      "id": "09f66486-dd13-4bbc-828e-b2cdcf50b0a2",
       "side": "enemy",
       "name": "Craziest Thing",
       "type": "attack",
@@ -245,7 +245,7 @@
       }
     },
     {
-      "id": "e_hardest_thing",
+      "id": "6806728e-1089-4f9b-9232-ac29c4090b1a",
       "side": "enemy",
       "name": "Hardest Thing",
       "type": "attack",
@@ -260,7 +260,7 @@
       }
     },
     {
-      "id": "e_five_year_plan",
+      "id": "daf3e986-d846-47f4-adba-0dad7b79c044",
       "side": "enemy",
       "name": "Five Year Plan",
       "type": "attack",
@@ -275,7 +275,7 @@
       }
     },
     {
-      "id": "e_lets_be_honest",
+      "id": "d8387fb5-1c64-42eb-95c2-c97ab2045dd9",
       "side": "enemy",
       "name": "Let's Be Honest",
       "type": "attack",
@@ -290,7 +290,7 @@
       }
     },
     {
-      "id": "e_time_you_failed",
+      "id": "c5e8aa4b-b131-41c8-afd3-4a553d7d766e",
       "side": "enemy",
       "name": "Time You Failed",
       "type": "attack",
@@ -305,7 +305,7 @@
       }
     },
     {
-      "id": "e_biggest_weakness",
+      "id": "55f54558-967d-4a6d-a2fb-c5036905a474",
       "side": "enemy",
       "name": "Biggest Weakness",
       "type": "attack",
@@ -320,7 +320,7 @@
       }
     },
     {
-      "id": "e_job_hopper",
+      "id": "db756346-c677-44be-8e7a-b40ed4dd0db0",
       "side": "enemy",
       "name": "Job Hopper",
       "type": "attack",
@@ -335,7 +335,7 @@
       }
     },
     {
-      "id": "e_wrong_industry",
+      "id": "1da4a4ae-ac21-4504-8a83-2ee910d50b3e",
       "side": "enemy",
       "name": "Wrong Industry",
       "type": "attack",
@@ -350,7 +350,7 @@
       }
     },
     {
-      "id": "e_dog_or_girlfriend",
+      "id": "a0972add-b50d-4fec-be0a-c7ec82821e09",
       "side": "enemy",
       "name": "Dog Or Girlfriend",
       "type": "attack",
@@ -365,7 +365,7 @@
       }
     },
     {
-      "id": "e_hot_take",
+      "id": "23ea3a53-c8ed-4d32-aed7-8e1a3540d9b0",
       "side": "enemy",
       "name": "Hot Take",
       "type": "attack",
@@ -380,7 +380,7 @@
       }
     },
     {
-      "id": "e_salary_expectations",
+      "id": "476c58d7-cfad-4183-903f-303fbc355dd7",
       "side": "enemy",
       "name": "Salary Expectations",
       "type": "attack",
@@ -395,7 +395,7 @@
       }
     },
     {
-      "id": "e_disc_age",
+      "id": "68f93fc0-81a1-44ce-8c6c-4587763fef71",
       "side": "enemy",
       "name": "Ageism",
       "type": "attack",
@@ -410,7 +410,7 @@
       }
     },
     {
-      "id": "e_disc_religion",
+      "id": "cea84f0f-9ed9-4811-a8ef-401efe09122b",
       "side": "enemy",
       "name": "Religion",
       "type": "attack",
@@ -425,7 +425,7 @@
       }
     },
     {
-      "id": "e_disc_gender",
+      "id": "88af646f-fec8-4fd7-89f3-5e1cac350359",
       "side": "enemy",
       "name": "Gender",
       "type": "attack",
@@ -443,7 +443,7 @@
       }
     },
     {
-      "id": "e_disc_race",
+      "id": "ec027632-abe6-458a-bf10-8c12749685e4",
       "side": "enemy",
       "name": "Race",
       "type": "attack",
@@ -461,7 +461,7 @@
       }
     },
     {
-      "id": "e_event_loop",
+      "id": "6e4646e8-dc50-4a16-b722-89a742c8020a",
       "side": "enemy",
       "name": "Event Loop",
       "type": "attack",
@@ -476,7 +476,7 @@
       }
     },
     {
-      "id": "e_assembly_sort",
+      "id": "b66a8121-6f34-4539-9729-8bb779d69b74",
       "side": "enemy",
       "name": "Assembly Sort",
       "type": "attack",
@@ -491,7 +491,7 @@
       }
     },
     {
-      "id": "e_index_limits",
+      "id": "696b3c31-4a48-4985-b027-91eeb1509e01",
       "side": "enemy",
       "name": "Index Limits",
       "type": "attack",
@@ -506,7 +506,7 @@
       }
     },
     {
-      "id": "e_tenant_slowdown",
+      "id": "17444af2-001b-4be6-9d5b-4010d7c010d8",
       "side": "enemy",
       "name": "Tenant Slowdown",
       "type": "attack",
@@ -521,7 +521,7 @@
       }
     },
     {
-      "id": "e_note_taking",
+      "id": "499af4ff-a452-44f0-adc4-1e1f3dfec31b",
       "side": "enemy",
       "name": "Note Taking",
       "type": "defend",
@@ -536,7 +536,7 @@
       }
     },
     {
-      "id": "e_twenty_seconds",
+      "id": "3f4d491c-7c08-4662-8a2a-de828bca9f25",
       "side": "enemy",
       "name": "Twenty Seconds",
       "type": "defend",
@@ -551,7 +551,7 @@
       }
     },
     {
-      "id": "e_any_questions",
+      "id": "b10ca5d3-051f-4683-9847-7cfd8886ddea",
       "side": "enemy",
       "name": "Any Questions",
       "type": "attack",
@@ -566,7 +566,7 @@
       }
     },
     {
-      "id": "e_anything_we_missed",
+      "id": "2b8746f6-ace4-4f90-8c97-38762eaa4e17",
       "side": "enemy",
       "name": "Anything We Missed",
       "type": "attack",

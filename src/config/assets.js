@@ -143,6 +143,7 @@ export const CARD_ART = urlOf(
 
 /** Art for a card, or null when none has been drawn yet. */
 export function resolveCardArt(card) {
-  const filename = card.image?.filename ?? `${card.id}.png`
+  const filename = card.image?.filename
+  if (!filename) return null
   return CARD_ART[artKey(filename.replace(/\.png$/, ''))] ?? null
 }
