@@ -1,7 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import options from '../../data/character-options.json'
 import { CHARACTER_CREATION_BACKGROUND, resolveCharacterArt } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
+import { goTo } from '../store/uiSlice'
+import { selectPlayer, setGender, setName, setRace, setRole } from '../store/playerSlice'
 import {
   ActionButton,
   ButtonRow,
@@ -16,32 +19,24 @@ import {
  * Screen 2 — Character creation.
  *
  * Character centred, gender + race on the left, class on the right.
- * Defaults to human female.
+ * Defaults to human female (set in the player slice).
+ *
+ * Every choice is dispatched straight to Redux rather than held locally, so
+ * navigating away and back keeps the character intact.
  *
  * Note on the right-hand panel: the player actually picks a ROLE, which
  * resolves to a class (D10). Roles are therefore grouped under their class
  * heading, so the control reads as "class" while still recording the role —
  * nothing in resolution may branch on role, only on class.
  */
-const DEFAULT_RACE = 'human'
-const DEFAULT_GENDER = 'female'
+export default function CharacterCreation() {
+  const dispatch = useDispatch()
+  const { name, race, gender, role, class: classId } = useSelector(selectPlayer)
 
-export default function CharacterCreation({ onBack, onConfirm }) {
-  const [name, setName] = useState('')
-  const [race, setRace] = useState(DEFAULT_RACE)
-  const [gender, setGender] = useState(DEFAULT_GENDER)
-  // No class is chosen by default — the player must pick one.
-  const [role, setRole] = useState(null)
-
-  const selectedRole = options.roles.find((r) => r.id === role)
-  const selectedClass = options.classes.find((c) => c.id === selectedRole?.class)
+  const selectedClass = options.classes.find((c) => c.id === classId)
 
   // Class art once a class is chosen; the plain race+gender figure until then.
-  const art = resolveCharacterArt({
-    race,
-    gender,
-    classId: selectedClass?.id ?? null,
-  })
+  const art = resolveCharacterArt({ race, gender, classId })
 
   // Roles grouped under the class they resolve to.
   const classGroups = useMemo(
@@ -65,7 +60,7 @@ export default function CharacterCreation({ onBack, onConfirm }) {
           <Field label="Name">
             <TextInput
               value={name}
-              onChange={setName}
+              onChange={(v) => dispatch(setName(v))}
               maxLength={options.limits.nameMaxLength}
               placeholder="Unnamed"
             />
@@ -75,12 +70,16 @@ export default function CharacterCreation({ onBack, onConfirm }) {
             <ButtonRow
               items={options.genders}
               value={gender}
-              onChange={setGender}
+              onChange={(v) => dispatch(setGender(v))}
             />
           </Field>
 
           <Field label="Race">
-            <ButtonRow items={options.races} value={race} onChange={setRace} />
+            <ButtonRow
+              items={options.races}
+              value={race}
+              onChange={(v) => dispatch(setRace(v))}
+            />
           </Field>
         </Panel>
 
@@ -110,7 +109,7 @@ export default function CharacterCreation({ onBack, onConfirm }) {
                   <span
                     className={[
                       'font-display text-xs font-bold uppercase tracking-[0.18em]',
-                      cls.id === selectedClass?.id ? 'text-gold-300' : 'text-gold-200/40',
+                      cls.id === classId ? 'text-gold-300' : 'text-gold-200/40',
                     ].join(' ')}
                   >
                     {cls.name}
@@ -119,7 +118,11 @@ export default function CharacterCreation({ onBack, onConfirm }) {
                     {cls.stats.maxHealth} HP
                   </span>
                 </div>
-                <ButtonRow items={cls.roles} value={role} onChange={setRole} />
+                <ButtonRow
+                  items={cls.roles}
+                  value={role}
+                  onChange={(v) => dispatch(setRole(v))}
+                />
               </div>
             ))}
           </div>
@@ -152,20 +155,8 @@ export default function CharacterCreation({ onBack, onConfirm }) {
 
       {/* ------------------------------------------------------------ actions */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 p-5 lg:p-8">
-        <ActionButton onClick={onBack}>Back</ActionButton>
-        <ActionButton
-          primary
-          disabled={!selectedRole}
-          onClick={() =>
-            onConfirm?.({
-              name: name.trim() || 'Unnamed',
-              race,
-              gender,
-              role,
-              class: selectedRole.class,
-            })
-          }
-        >
+        <ActionButton onClick={() => dispatch(goTo('home'))}>Back</ActionButton>
+        <ActionButton primary disabled={!classId} onClick={() => dispatch(goTo('pet'))}>
           Proceed
         </ActionButton>
       </div>

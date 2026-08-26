@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { HOME_BACKGROUND } from '../config/assets'
 import { loadSave } from '../save/storage'
 import MusicToggle from '../audio/MusicToggle'
+import { goTo } from '../store/uiSlice'
+import { hydratePlayer, resetPlayer } from '../store/playerSlice'
 
 /**
  * Screen 1 — Welcome.
@@ -10,10 +13,22 @@ import MusicToggle from '../audio/MusicToggle'
  * New Game always, Continue only when a valid save passes the checksum, and
  * the localStorage warning.
  */
-export default function HomeScreen({ onNewGame, onContinue }) {
+export default function HomeScreen() {
+  const dispatch = useDispatch()
+  // Local: only this screen cares whether the save check has finished.
   // 'checking' | 'none' | 'valid' | 'invalid'
   const [status, setStatus] = useState('checking')
   const [save, setSave] = useState(null)
+
+  const newGame = () => {
+    dispatch(resetPlayer())
+    dispatch(goTo('creation'))
+  }
+
+  const continueGame = () => {
+    if (save?.character) dispatch(hydratePlayer(save.character))
+    dispatch(goTo('creation'))
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -63,13 +78,13 @@ export default function HomeScreen({ onNewGame, onContinue }) {
       <div className="relative flex h-full w-full flex-col justify-end p-8 sm:p-12 lg:p-16">
         <div className="fade-up flex max-w-xs flex-col gap-4">
           {status === 'valid' && (
-            <MenuButton primary onClick={() => onContinue(save)}>
+            <MenuButton primary onClick={continueGame}>
               Continue
               <SaveSummary save={save} />
             </MenuButton>
           )}
 
-          <MenuButton primary={status !== 'valid'} onClick={onNewGame}>
+          <MenuButton primary={status !== 'valid'} onClick={newGame}>
             New Game
           </MenuButton>
 

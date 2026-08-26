@@ -1,54 +1,21 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import { selectMusicEnabled } from '../store/uiSlice'
+import { TRACK_URL } from './track'
 
 /**
  * Background music.
  *
- * One <audio> element lives here at the app root, so navigating between screens
- * never restarts the track. Screens just render <MusicToggle />.
+ * One <audio> element lives here at the app root, so navigating between
+ * screens never restarts the track. The on/off flag is Redux state
+ * (`ui.musicEnabled`); the element itself is not, because it is an imperative
+ * resource rather than serialisable data.
  *
- * Whatever .mp3 sits in /audio is picked up automatically — drop a different
- * file in and it is used with no code change.
+ * The track itself comes from ./track.js.
  */
-const tracks = import.meta.glob('../../audio/*.mp3', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-})
-
-const TRACK_URL = Object.values(tracks)[0] ?? null
-
-const PREF_KEY = 'gauntlet.music'
-
-function readPref() {
-  try {
-    return localStorage.getItem(PREF_KEY) !== 'off'
-  } catch {
-    return true
-  }
-}
-
-function writePref(on) {
-  try {
-    localStorage.setItem(PREF_KEY, on ? 'on' : 'off')
-  } catch {
-    /* private mode — just don't persist */
-  }
-}
-
-const MusicContext = createContext({
-  enabled: true,
-  playing: false,
-  available: false,
-  toggle: () => {},
-})
-
-export const useMusic = () => useContext(MusicContext)
-
 export function MusicProvider({ children }) {
+  const enabled = useSelector(selectMusicEnabled)
   const audioRef = useRef(null)
-  // Music is ON by default; a previous "off" choice is remembered.
-  const [enabled, setEnabled] = useState(readPref)
-  const [playing, setPlaying] = useState(false)
 
   // Create the element once.
   useEffect(() => {
@@ -58,21 +25,13 @@ export function MusicProvider({ children }) {
     audio.volume = 0.4
     audio.preload = 'auto'
     audioRef.current = audio
-
-    const onPlay = () => setPlaying(true)
-    const onPause = () => setPlaying(false)
-    audio.addEventListener('play', onPlay)
-    audio.addEventListener('pause', onPause)
-
     return () => {
-      audio.removeEventListener('play', onPlay)
-      audio.removeEventListener('pause', onPause)
       audio.pause()
       audioRef.current = null
     }
   }, [])
 
-  // Follow the enabled flag. Browsers block autoplay until the page has been
+  // Follow the flag. Browsers block autoplay until the page has been
   // interacted with, so if play() is rejected we arm a one-shot listener and
   // start on the first click or keypress instead.
   useEffect(() => {
@@ -88,7 +47,9 @@ export function MusicProvider({ children }) {
 
     audio.play().catch(() => {
       const start = () => {
-        if (readPref()) audio.play().catch(() => {})
+        // Re-check: the player may have switched it off while waiting.
+        if (audioRef.current && !audioRef.current.paused) return
+        audio.play().catch(() => {})
         cleanup()
       }
       window.addEventListener('pointerdown', start, { once: true })
@@ -102,19 +63,5 @@ export function MusicProvider({ children }) {
     return () => cleanup()
   }, [enabled])
 
-  const toggle = () => {
-    setEnabled((on) => {
-      const next = !on
-      writePref(next)
-      return next
-    })
-  }
-
-  return (
-    <MusicContext.Provider
-      value={{ enabled, playing, available: Boolean(TRACK_URL), toggle }}
-    >
-      {children}
-    </MusicContext.Provider>
-  )
+  return children
 }

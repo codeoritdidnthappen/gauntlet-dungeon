@@ -1,7 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import options from '../../data/character-options.json'
 import { PET_CREATION_BACKGROUND, resolvePetArt } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
+import { goTo } from '../store/uiSlice'
+import { selectPlayer, setPet, setPetName } from '../store/playerSlice'
 import {
   ActionButton,
   ButtonRow,
@@ -21,6 +24,7 @@ import {
  *
  * Nothing is selected by default, matching the class control.
  */
+
 /** Dogs are loyal. Cats are present. */
 function blurbFor(petType, petName) {
   // Before naming, fall back to "Your dog" / "Your cat" — using the word
@@ -31,9 +35,9 @@ function blurbFor(petType, petName) {
     : `${name} is your faithful companion.`
 }
 
-export default function PetCreation({ onBack, onConfirm }) {
-  const [petName, setPetName] = useState('')
-  const [pet, setPet] = useState(null)
+export default function PetCreation() {
+  const dispatch = useDispatch()
+  const { pet, petName } = useSelector(selectPlayer)
 
   const selectedPet = options.pets.find((p) => p.id === pet)
   const art = resolvePetArt(pet, selectedPet?.type)
@@ -47,6 +51,11 @@ export default function PetCreation({ onBack, onConfirm }) {
     [],
   )
 
+  const choosePet = (id) => {
+    const chosen = options.pets.find((p) => p.id === id)
+    if (chosen) dispatch(setPet({ id: chosen.id, type: chosen.type }))
+  }
+
   return (
     <main className="relative h-full w-full overflow-hidden bg-soot-950">
       <ScreenBackdrop src={PET_CREATION_BACKGROUND} />
@@ -59,7 +68,7 @@ export default function PetCreation({ onBack, onConfirm }) {
           <Field label="Name">
             <TextInput
               value={petName}
-              onChange={setPetName}
+              onChange={(v) => dispatch(setPetName(v))}
               maxLength={options.limits.petNameMaxLength}
               placeholder="Unnamed"
             />
@@ -67,13 +76,15 @@ export default function PetCreation({ onBack, onConfirm }) {
 
           {typeGroups.map((type) => (
             <Field key={type.id} label={type.name}>
-              <ButtonRow items={type.pets} value={pet} onChange={setPet} />
+              <ButtonRow items={type.pets} value={pet} onChange={choosePet} />
             </Field>
           ))}
 
           <div className="mt-4 border-t border-gold-500/20 pt-3">
             <p className="font-body text-xs leading-relaxed text-gold-200/45">
-              {selectedPet ? blurbFor(selectedPet.type, petName) : 'Choose a companion to continue.'}
+              {selectedPet
+                ? blurbFor(selectedPet.type, petName)
+                : 'Choose a companion to continue.'}
             </p>
           </div>
         </Panel>
@@ -88,10 +99,12 @@ export default function PetCreation({ onBack, onConfirm }) {
               // Pets are wide rather than tall, so cap width too or a
               // landscape image overflows the centre column.
               style={{ maxHeight: `${art.scale * 100}%` }}
-              className="max-w-full w-auto object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+              className="w-auto max-w-full object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
             />
           ) : (
-            <MissingArt path={selectedPet ? `assets/pets/${pet.replace(/_/g, '-')}.png` : 'assets/pets/'} />
+            <MissingArt
+              path={selectedPet ? `assets/pets/${pet.replace(/_/g, '-')}.png` : 'assets/pets/'}
+            />
           )}
         </div>
 
@@ -101,17 +114,11 @@ export default function PetCreation({ onBack, onConfirm }) {
 
       {/* --------------------------------------------------------- actions */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 p-5 lg:p-8">
-        <ActionButton onClick={onBack}>Back</ActionButton>
+        <ActionButton onClick={() => dispatch(goTo('creation'))}>Back</ActionButton>
         <ActionButton
           primary
           disabled={!selectedPet}
-          onClick={() =>
-            onConfirm?.({
-              petType: selectedPet.type,
-              pet: selectedPet.id,
-              petName: petName.trim() || 'Unnamed',
-            })
-          }
+          onClick={() => dispatch(goTo('cards'))}
         >
           Proceed
         </ActionButton>

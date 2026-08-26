@@ -1,17 +1,20 @@
-import { useMusic } from './MusicProvider'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectMusicEnabled, toggleMusic } from '../store/uiSlice'
+import { TRACK_URL } from './track'
 
 /**
  * Music on/off. Renders nothing when there is no track to play.
  * Positioned by the screen that uses it.
  */
 export default function MusicToggle({ className = '' }) {
-  const { enabled, available, toggle } = useMusic()
-  if (!available) return null
+  const enabled = useSelector(selectMusicEnabled)
+  const dispatch = useDispatch()
+  if (!TRACK_URL) return null
 
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={() => dispatch(toggleMusic())}
       aria-pressed={enabled}
       aria-label={enabled ? 'Turn music off' : 'Turn music on'}
       title={enabled ? 'Music on' : 'Music off'}
