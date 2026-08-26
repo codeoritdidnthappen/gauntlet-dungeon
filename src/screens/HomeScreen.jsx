@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { HOME_BACKGROUND } from '../config/assets'
 import { loadSave } from '../save/storage'
+import { screenToRestore } from '../save/persistence'
 import MusicToggle from '../audio/MusicToggle'
 import { goTo } from '../store/uiSlice'
 import { hydratePlayer, resetPlayer } from '../store/playerSlice'
@@ -27,7 +28,9 @@ export default function HomeScreen() {
 
   const continueGame = () => {
     if (save?.character) dispatch(hydratePlayer(save.character))
-    dispatch(goTo('creation'))
+    // Same rule the reload uses: the map once the run is underway, otherwise
+    // wherever they left off.
+    dispatch(goTo(screenToRestore(save)))
   }
 
   useEffect(() => {

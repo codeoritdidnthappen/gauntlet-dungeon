@@ -8,7 +8,7 @@
 // "casual save-editing costs one extra step", and that is all it clears.
 
 const SAVE_KEY = 'gauntlet.save.v1'
-const SAVE_VERSION = 1
+const SAVE_VERSION = 2
 
 // Baked into the bundle on purpose — see the note above.
 const SECRET = 'gauntlet-dungeon-9f3a71c4e28b'

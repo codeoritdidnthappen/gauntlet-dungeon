@@ -3,7 +3,7 @@ import roomData from '../../data/rooms.json'
 import { resolveMap, resolveRoomIcon } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import { goTo } from '../store/uiSlice'
-import { selectNextRoomIndex } from '../store/playerSlice'
+import { beginRun, selectNextRoomIndex } from '../store/playerSlice'
 
 /**
  * Screen 5 — the run map.
@@ -97,7 +97,10 @@ export default function RunMap() {
             <button
               key={room.id}
               type="button"
-              onClick={() => dispatch(goTo('room'))}
+              onClick={() => {
+                dispatch(beginRun())
+                dispatch(goTo('room'))
+              }}
               aria-label={`Enter ${room.name}`}
               style={{ ...position, animation: 'map-node-pulse 2.2s ease-in-out infinite' }}
               className={[

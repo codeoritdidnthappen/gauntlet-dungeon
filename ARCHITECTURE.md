@@ -282,6 +282,13 @@ clickable. Exactly one node — `current` — is interactive at any time.
 
 **Continue always lands on the map.** A resumed run never restores mid-encounter.
 
+**Reloading resumes too, not just Continue.** The game is written to localStorage
+as it changes and read back before the first render, so refreshing the tab is not
+a way to lose a character halfway through creating one. Where it lands follows
+`runStarted`: before the run is underway, the screen they were on — creation, pet
+or loadout, all still editable; once underway, the map, at the point reached.
+Never back into a room.
+
 Consequence, worth confirming: **the save point is the map.** State is written on
 returning to the map, not during an encounter. That removes any need to serialise
 combat state — hand, draw pile, discard, enemy intents, turn counter — which is
