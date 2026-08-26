@@ -67,15 +67,11 @@ export default function RunMap() {
             top: `${nodes[0].yNormalized * 100}%`,
             width: `${markerPercent * HOME_SCALE}%`,
             aspectRatio: '1',
-            // Knocked back from the gold the icon ships with, so it sits in the
-            // parchment rather than glowing off it. Done here rather than in the
-            // svg because regenerating that file would undo it.
-            //
             // drop-shadow, not a box-shadow on a round div: at this size the
             // castle is far wider than the circle painted underneath, so a
             // circular glow reads as a smudge behind it. This one follows the
-            // silhouette.
-            filter: 'brightness(0.78) drop-shadow(0 0 9px rgba(233,205,122,0.85))',
+            // silhouette, which is what marks home as where the player is.
+            filter: 'drop-shadow(0 0 10px rgba(233,205,122,0.9))',
           }}
           className="-translate-x-1/2 -translate-y-1/2 absolute"
         >
