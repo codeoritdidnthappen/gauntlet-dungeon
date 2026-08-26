@@ -59,6 +59,11 @@ const initialState = {
   // chosen: a new character already has their five cards. No class is picked
   // yet, so this is the default five; setRole deals the class's own.
   loadout: [...startingLoadoutFor(null)],
+
+  // run progression — rooms already beaten, in the order they were beaten
+  // (ARCHITECTURE.md, for map display only, D5). The route is a single line, so
+  // how far along it the player is is just how many of these there are.
+  cleared: [],
 }
 
 const playerSlice = createSlice({
@@ -123,6 +128,16 @@ const playerSlice = createSlice({
     clearLoadout: (s) => {
       s.loadout = []
     },
+    /**
+     * Marks the room at `nodeIndex` beaten, which moves the run on to the next.
+     * Nothing dispatches this yet: a room cannot be finished until there is a
+     * fight to finish it.
+     */
+    clearRoom: (s, { payload }) => {
+      if (s.cleared.some((c) => c.nodeIndex === payload.nodeIndex)) return
+      s.cleared.push({ nodeIndex: payload.nodeIndex })
+    },
+
     /** Back to the granted five — used on restart and by New Game. */
     resetLoadout: (s) => {
       s.loadout = [...startingLoadoutFor(s.class)]
@@ -146,6 +161,7 @@ export const {
   removeCard,
   clearLoadout,
   resetLoadout,
+  clearRoom,
   hydratePlayer,
   resetPlayer,
 } = playerSlice.actions
@@ -157,6 +173,14 @@ export default playerSlice.reducer
 export const selectPlayer = (state) => state.player
 export const selectClassId = (state) => state.player.class
 export const selectLoadout = (state) => state.player.loadout
+export const selectCleared = (state) => state.player.cleared
+
+/**
+ * How far along the route the player is — the index of the room they may enter
+ * next. One path, no branching (D3), so it is simply the count of beaten rooms.
+ * Equal to the number of rooms once the run is done, which is no room at all.
+ */
+export const selectNextRoomIndex = (state) => state.player.cleared.length
 
 /** Combat stats as one object, for anything that shows or resolves them. */
 export const selectStats = (state) => ({
