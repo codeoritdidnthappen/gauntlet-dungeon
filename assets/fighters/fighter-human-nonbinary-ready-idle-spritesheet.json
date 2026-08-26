@@ -1,0 +1,13 @@
+{
+  "image": "fighter-human-nonbinary-ready-idle-spritesheet.png",
+  "frameWidth": 887,
+  "frameHeight": 1774,
+  "frameCount": 8,
+  "columns": 8,
+  "rows": 1,
+  "fps": 4.5351,
+  "loop": true,
+  "order": "left-to-right",
+  "motion": "dramatic-full-body-breathing",
+  "feetLocked": true
+}
