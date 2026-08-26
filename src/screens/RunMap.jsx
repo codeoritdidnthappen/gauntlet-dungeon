@@ -62,7 +62,9 @@ export default function RunMap() {
           }}
           className={[
             '-translate-x-1/2 -translate-y-1/2 absolute rounded-full',
-            'bg-gold-300/35 shadow-[0_0_18px_6px_rgba(233,205,122,0.55)]',
+            // Lit from behind rather than washed with colour: the icon supplies
+            // its own, and gold on gold reads flat.
+            'shadow-[0_0_16px_7px_rgba(233,205,122,0.45)]',
           ].join(' ')}
         >
           <RoomIcon src={resolveRoomIcon(roomData.start.icon)} name={roomData.start.name} />
@@ -117,8 +119,13 @@ export default function RunMap() {
 }
 
 /**
- * The mark on a room's circle. Drawn as ink on the parchment rather than a UI
- * element, so it belongs to the map instead of sitting on top of it.
+ * The mark on a circle. Inset so it sits inside the ring painted on the
+ * parchment rather than spilling over it — icons fill their own viewBox, and
+ * the marker box is the circle's full diameter.
+ *
+ * Styling is left to the icon. They carry their own colour and shadow, and the
+ * two in use already differ, so imposing one here would fight whichever came
+ * second.
  */
 function RoomIcon({ src, name, dimmed = false }) {
   return (
@@ -126,10 +133,7 @@ function RoomIcon({ src, name, dimmed = false }) {
       src={src}
       alt=""
       title={name}
-      className={[
-        'h-full w-full object-contain drop-shadow-[0_1px_2px_rgba(255,240,200,0.55)]',
-        dimmed ? 'opacity-40' : '',
-      ].join(' ')}
+      className={['h-full w-full object-contain p-[9%]', dimmed ? 'opacity-40' : ''].join(' ')}
     />
   )
 }
