@@ -1,9 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import roomData from '../../data/rooms.json'
 import { resolveCharacterArt, resolveIdleSprite, resolveRoomBackground } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
-import { ActionButton, ScreenBackdrop } from '../components/ui'
-import { goTo } from '../store/uiSlice'
+import { ScreenBackdrop } from '../components/ui'
 import { selectPlayer } from '../store/playerSlice'
 
 /**
@@ -18,6 +17,9 @@ import { selectPlayer } from '../store/playerSlice'
  * the hand of five goes (D16: every card available every turn, no draw). Both
  * sides are drawn small enough to leave it room; creation screens give a figure
  * the full height, a fight cannot.
+ *
+ * There is no way out. A room is entered, not visited: it ends by being won or
+ * lost, so this screen offers no navigation at all.
  */
 const ROOM_NUMBER = 1
 
@@ -25,7 +27,6 @@ const ROOM_NUMBER = 1
 const FIGURE_HEIGHT = 0.58
 
 export default function BattleRoom() {
-  const dispatch = useDispatch()
   const { race, gender, class: classId } = useSelector(selectPlayer)
 
   const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
@@ -74,10 +75,6 @@ export default function BattleRoom() {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------ actions */}
-      <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 bg-gradient-to-t from-soot-950 to-transparent p-5 lg:p-8">
-        <ActionButton onClick={() => dispatch(goTo('cards'))}>Back</ActionButton>
-      </div>
     </main>
   )
 }
