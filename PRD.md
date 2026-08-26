@@ -399,8 +399,8 @@ than handed over at creation.
 ### D15 — Deck economy (RATIFIED, revised 2026-08-26)
 
 - **Collection cap: 20 cards.** The most a player can own.
-- **Starting loadout: 5 cards** — **3 attack, 1 defend, 1 power**, fixed, the
-  same for every class. The player does **not** choose it.
+- **Starting loadout: 5 cards** — **3 attack, 1 defend, 1 power**, granted per
+  class. The player does **not** choose it.
 - **Loadout: grows from 5.** What you carry into a room, one card per line.
 - **Card management happens only outside a room**, from a button on the map.
 - **After each room:** three new cards are offered, **pick one — or heal instead.**
@@ -412,10 +412,18 @@ picking. The 20-card inventory cap and the reward loop are unchanged, so the
 20-vs-loadout gap still appears — it just appears a few rooms in, once there is
 more owned than carried, rather than at character creation.
 
+**Second revision (2026-08-26).** The granted five are no longer identical for
+every class. `notes.startingLoadout` is keyed by class: a class with its own
+entry opens with that five, everyone else with `default`. The Fighter is the
+first to use it, trading a Strike for Wallop. This settles the open question in
+CARDS.md — classes may be flavoured at the start — without reopening drafting:
+the five are still granted, never picked.
+
 Consequences worth holding:
 
-- Class pools are **progression**, not a starting menu. A Wizard begins with the
-  same three Strikes as everyone else and becomes a Wizard by what they pick up.
+- Class pools are **progression**, not a starting menu. A class may open with one
+  card of its own, but the rest of what makes it that class is picked up in the
+  dungeon, not chosen at creation.
 - The first rooms are deliberately thin — five cards, three of them the same
   Strike. Early enemy health has to be priced for that, not for a ten-card turn.
 - Energy is 3 (see the energy note in SCHEMA.md), refilled every turn. Against

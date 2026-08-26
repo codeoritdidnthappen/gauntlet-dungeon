@@ -17,13 +17,19 @@ const ROLE_TO_CLASS = Object.fromEntries(options.roles.map((r) => [r.id, r.class
 const CLASS_STATS = Object.fromEntries(options.classes.map((c) => [c.id, c.stats]))
 
 /**
- * The fixed starting loadout (D15, revised) — 3 attack, 1 defend, 1 power.
+ * The granted starting loadouts (D15, revised) — five cards, 3 attack, 1 defend,
+ * 1 power.
  *
- * The player does not build it; every run starts with the same five neutral
- * cards whatever the class. Composition lives in cards.json so content and code
- * stay editable apart.
+ * Still granted rather than built, but no longer identical for everyone: a class
+ * with its own entry is dealt that five, and every other class falls back to
+ * `default`. Composition lives in cards.json so content and code stay editable
+ * apart.
  */
-export const STARTING_LOADOUT = cardData.notes.startingLoadout
+const STARTING_LOADOUTS = cardData.notes.startingLoadout
+
+/** The five a class opens with. Unlisted classes get the shared default. */
+export const startingLoadoutFor = (classId) =>
+  STARTING_LOADOUTS[classId] ?? STARTING_LOADOUTS.default
 
 const initialState = {
   // identity
@@ -50,8 +56,9 @@ const initialState = {
   block: 0,
 
   // loadout — flat list of card ids, duplicates repeated (D15). Granted, not
-  // chosen: a new character already has their five cards.
-  loadout: [...STARTING_LOADOUT],
+  // chosen: a new character already has their five cards. No class is picked
+  // yet, so this is the default five; setRole deals the class's own.
+  loadout: [...startingLoadoutFor(null)],
 }
 
 const playerSlice = createSlice({
@@ -69,12 +76,13 @@ const playerSlice = createSlice({
     },
     /**
      * Sets the role, derives the class from it, and takes that class's combat
-     * stats. Changing role mid-creation re-rolls the stats to full, which is
-     * correct — creation is not a run.
+     * stats and starting five. Changing role mid-creation re-rolls both, which
+     * is correct — creation is not a run, and nothing has been earned yet.
      */
     setRole: (s, { payload }) => {
       s.role = payload
       s.class = ROLE_TO_CLASS[payload] ?? null
+      s.loadout = [...startingLoadoutFor(s.class)]
 
       const stats = CLASS_STATS[s.class]
       s.maxHealth = stats?.maxHealth ?? 0
@@ -117,7 +125,7 @@ const playerSlice = createSlice({
     },
     /** Back to the granted five — used on restart and by New Game. */
     resetLoadout: (s) => {
-      s.loadout = [...STARTING_LOADOUT]
+      s.loadout = [...startingLoadoutFor(s.class)]
     },
 
     /** Replace the whole character — used when loading a save. */

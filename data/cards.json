@@ -8,14 +8,23 @@
     "subtext": "D7. Player cards, so subtext is what the CANDIDATE says. Display only — never affects resolution.",
     "types": "attack | defend | power, matching the D15 starting loadout of 3 attack / 1 defend / 1 power.",
     "subtype": "Left blank where nothing useful applies, per instruction.",
-    "startingLoadout": [
-      "b24ad70a-ff52-4977-8618-8b8b7dc94534",
-      "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
-      "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
-      "580b290f-a70c-492d-8605-21d604a26afc",
-      "cff6c18b-89e4-4a99-9950-8e544bdd6bda"
-    ],
-    "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. This array is the source of truth; the game reads it rather than hardcoding ids. The five are, in order: Smite, Strike, Strike, Parry, Confidence — ids are UUIDs, so the names are recorded here to keep the array legible.",
+    "startingLoadout": {
+      "default": [
+        "b24ad70a-ff52-4977-8618-8b8b7dc94534",
+        "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
+        "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
+        "580b290f-a70c-492d-8605-21d604a26afc",
+        "cff6c18b-89e4-4a99-9950-8e544bdd6bda"
+      ],
+      "fighter": [
+        "b24ad70a-ff52-4977-8618-8b8b7dc94534",
+        "63e41b0e-c4ba-4ba1-aa9f-5e5b92df16ba",
+        "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
+        "580b290f-a70c-492d-8605-21d604a26afc",
+        "cff6c18b-89e4-4a99-9950-8e544bdd6bda"
+      ]
+    },
+    "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. Keyed by class: a class with its own entry is granted that five, and every other class falls back to the default entry. This object is the source of truth; the game reads it rather than hardcoding ids. default is Smite, Strike, Strike, Parry, Confidence; fighter swaps the second Strike for Wallop. Ids are UUIDs, so the names are recorded here to keep the arrays legible.",
     "blockDefault": "Block is 0 for every class except the Fighter (Full Stack), which resets to 1 each turn rather than to 0. Per-class values live in character-options.json under classes[].stats.startingBlock.",
     "separation": "Player cards can never be used by an enemy and enemy cards can never enter a player loadout. Enforced by the `side` field — see SCHEMA.md."
   },
