@@ -428,9 +428,13 @@ Room {
   becomes a list of enemy ids once there are enemies to name.
 - Rooms do not persist state. Enemy health is discarded at room end and enemies
   never return (D5); only the player carries forward (D4).
-- The run's rooms are an ordered list, and `rooms[i]` is the map's `nodes[i]`.
-  There are eight, matching the route drawn on the parchment; all but Room 1 are
+- The run's rooms are an ordered list. The map's first node is labelled START and
+  marks where the player begins rather than a room, so `rooms[i]` is the map's
+  `nodes[i + 1]`. There are seven, one per node after START; all but Room 1 are
   stubs carrying only `id`, `number` and `name`.
+- `icon: { filename, path }` is optional and names what sits on that room's
+  circle — an `.svg` under `assets/maps/`. A room without one shows an empty
+  marker.
 
 ### The map
 

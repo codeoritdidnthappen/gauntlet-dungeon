@@ -240,6 +240,30 @@ const MAP_META = Object.fromEntries(
 )
 
 /**
+ * Icons that sit on the map's circles — `assets/maps/{filename}.svg`.
+ *
+ * Keyed by the whole filename, extension included, rather than through urlOf:
+ * that helper only strips `.png`, so an svg would key as `wilbur.svg` and a
+ * lookup for `wilbur` would quietly miss.
+ */
+const MAP_ICONS = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../../assets/maps/*.svg', {
+      eager: true,
+      query: '?url',
+      import: 'default',
+    }),
+  ).map(([path, url]) => [artKey(path.split('/').pop()), url]),
+)
+
+/** A room's map icon, or null where it has none or the file is missing. */
+export function resolveRoomIcon(icon) {
+  const filename = icon?.filename
+  if (!filename) return null
+  return MAP_ICONS[artKey(filename)] ?? null
+}
+
+/**
  * The route map named in data, or null when either half is missing.
  *
  * @returns {{ url: string, meta: object } | null}
