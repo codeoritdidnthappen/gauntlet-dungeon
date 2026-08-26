@@ -32,6 +32,9 @@ import { selectNextRoomIndex } from '../store/playerSlice'
 /** How much larger the next room is drawn than the rest. */
 const NEXT_ROOM_SCALE = 1.4
 
+/** Home is a landmark rather than a stop, so it is drawn well over node size. */
+const HOME_SCALE = 1.9
+
 export default function RunMap() {
   const dispatch = useDispatch()
   const nextRoomIndex = useSelector(selectNextRoomIndex)
@@ -42,7 +45,6 @@ export default function RunMap() {
   const { nodes, width, nodeRadius } = map.meta
   // The markers scale with the parchment, so the radius is a share of its width.
   const markerPercent = ((nodeRadius * 2) / width) * 100
-  const markerSize = `${markerPercent}%`
 
   return (
     <main className="relative flex h-full w-full items-center justify-center overflow-hidden bg-soot-950">
@@ -63,15 +65,19 @@ export default function RunMap() {
           style={{
             left: `${nodes[0].xNormalized * 100}%`,
             top: `${nodes[0].yNormalized * 100}%`,
-            width: markerSize,
+            width: `${markerPercent * HOME_SCALE}%`,
             aspectRatio: '1',
+            // Knocked back from the gold the icon ships with, so it sits in the
+            // parchment rather than glowing off it. Done here rather than in the
+            // svg because regenerating that file would undo it.
+            //
+            // drop-shadow, not a box-shadow on a round div: at this size the
+            // castle is far wider than the circle painted underneath, so a
+            // circular glow reads as a smudge behind it. This one follows the
+            // silhouette.
+            filter: 'brightness(0.78) drop-shadow(0 0 9px rgba(233,205,122,0.85))',
           }}
-          className={[
-            '-translate-x-1/2 -translate-y-1/2 absolute rounded-full',
-            // Lit from behind rather than washed with colour: the icon supplies
-            // its own, and gold on gold reads flat.
-            'shadow-[0_0_16px_7px_rgba(233,205,122,0.45)]',
-          ].join(' ')}
+          className="-translate-x-1/2 -translate-y-1/2 absolute"
         >
           <RoomIcon src={resolveRoomIcon(roomData.start.icon)} name={roomData.start.name} />
         </div>
