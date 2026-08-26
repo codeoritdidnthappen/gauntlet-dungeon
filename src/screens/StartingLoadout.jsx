@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import cardData from '../../data/cards.json'
 import options from '../../data/character-options.json'
-import { CARD_SELECTION_BACKGROUND } from '../config/assets'
+import { CARD_SELECTION_BACKGROUND, CASTLE_ICON } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import GameCard from '../components/GameCard'
 import { ActionButton, Panel, ScreenBackdrop } from '../components/ui'
@@ -99,7 +99,10 @@ export default function StartingLoadout() {
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 bg-gradient-to-t from-soot-950 to-transparent p-5 lg:p-8">
         <ActionButton onClick={() => dispatch(goTo('pet'))}>Back</ActionButton>
         <ActionButton primary onClick={() => dispatch(goTo('map'))}>
-          Begin the Gauntlet
+          <span className="flex items-center gap-2.5">
+            <img src={CASTLE_ICON} alt="" className="h-5 w-5 shrink-0" />
+            Begin the Gauntlet
+          </span>
         </ActionButton>
       </div>
     </main>

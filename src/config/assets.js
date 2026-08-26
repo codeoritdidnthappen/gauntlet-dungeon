@@ -5,11 +5,15 @@ import homeBackground from '../../assets/exec-0c1c887b-3a09-41b0-875c-d9c48cc39c
 import characterCreationBackground from '../../assets/backgrounds/character-creation-background.png'
 import atriumBackground from '../../assets/backgrounds/atrium-background.png'
 import treehouseBackground from '../../assets/backgrounds/treehouse-background.png'
+import castleIcon from '../../assets/icons/castle.svg'
 
 export const HOME_BACKGROUND = homeBackground
 export const CHARACTER_CREATION_BACKGROUND = characterCreationBackground
 export const PET_CREATION_BACKGROUND = atriumBackground
 export const CARD_SELECTION_BACKGROUND = treehouseBackground
+
+/** Interface icons — named here rather than globbed, since code names them. */
+export const CASTLE_ICON = castleIcon
 
 /**
  * Art keys ignore the difference between `-` and `_`.
