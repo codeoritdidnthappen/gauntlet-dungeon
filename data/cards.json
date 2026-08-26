@@ -305,6 +305,24 @@
       }
     },
     {
+      "id": "455fdb94-cef7-4a75-9228-8ccbf73c7d2c",
+      "side": "player",
+      "name": "Echo",
+      "type": "power",
+      "subtype": "engine",
+      "class": "wizard",
+      "rarity": "rare",
+      "cost": 2,
+      "text": "The first card you play each turn is played twice this room.",
+      "subtext": "Let me say that again, because I think it matters.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "echo-form-power.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
       "id": "1e768fbb-b029-4fed-aefc-7d4fd624acd6",
       "side": "player",
       "name": "The Migration",

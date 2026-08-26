@@ -1,6 +1,6 @@
 # CARDS
 
-**Status:** 35 player cards + 37 enemy cards written.
+**Status:** 36 player cards + 37 enemy cards written.
 
 - `data/cards.json` — player cards
 - `data/enemy-cards.json` — enemy (interviewer) cards
@@ -47,7 +47,7 @@ Six cards each. Content in `data/cards.json`.
 Available to every class. Carries the basics (Strike, Defend) and the starting
 Power.
 
-### Wizard — 6 (Backend, Database)
+### Wizard — 7 (Backend, Database)
 *Big committed plays.* Deep Dive and The Migration resolve on a **later turn** —
 you commit before you know what is coming. Index and Query Plan are the setup.
 Cold Start is the cheap spammable floor so the class is never stuck (D11).
