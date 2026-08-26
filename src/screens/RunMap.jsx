@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux'
 import roomData from '../../data/rooms.json'
-import { resolveMap } from '../config/assets'
+import { resolveMap, resolveRoomIcon } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import { goTo } from '../store/uiSlice'
 
@@ -15,6 +15,10 @@ import { goTo } from '../store/uiSlice'
  * What this draws is one marker per room, positioned from the coordinates the
  * map's own JSON records — normalised, so they hold at any size. The markers
  * are the slots the room icons will sit in.
+ *
+ * The parchment's first circle is labelled START — it is where the player
+ * stands, not a room — so the rooms hang off the nodes after it: rooms[i] is
+ * nodes[i + 1].
  *
  * Only the next room can be entered (D3). Rooms past it are drawn but inert,
  * because nothing behind them exists yet.
@@ -47,9 +51,11 @@ export default function RunMap() {
         <img src={map.url} alt="" className="block max-h-screen w-auto max-w-full" />
 
         {roomData.rooms.map((room, i) => {
-          const node = nodes[i]
+          // nodes[0] is START; the rooms start at the node after it.
+          const node = nodes[i + 1]
           if (!node) return null
 
+          const icon = resolveRoomIcon(room.icon)
           const isNext = i === NEXT_ROOM_INDEX
           const position = {
             left: `${node.xNormalized * 100}%`,
@@ -67,11 +73,14 @@ export default function RunMap() {
               style={position}
               className={[
                 '-translate-x-1/2 -translate-y-1/2 absolute cursor-pointer rounded-full',
-                'border-2 border-gold-300 bg-gold-500/20',
-                'transition-colors duration-150 outline-none',
-                'hover:bg-gold-500/40 focus-visible:ring-2 focus-visible:ring-gold-400',
+                // Grows under the cursor and settles back when it leaves.
+                'transition-transform duration-200 ease-out hover:scale-150',
+                'outline-none focus-visible:ring-2 focus-visible:ring-gold-400',
+                icon ? '' : 'border-2 border-gold-300 bg-gold-500/20',
               ].join(' ')}
-            />
+            >
+              {icon && <RoomIcon src={icon} name={room.name} />}
+            </button>
           ) : (
             <div
               key={room.id}
@@ -79,10 +88,30 @@ export default function RunMap() {
               title={room.name}
               style={position}
               className="-translate-x-1/2 -translate-y-1/2 absolute rounded-full border border-dashed border-soot-900/50"
-            />
+            >
+              {icon && <RoomIcon src={icon} name={room.name} dimmed />}
+            </div>
           )
         })}
       </div>
     </main>
+  )
+}
+
+/**
+ * The mark on a room's circle. Drawn as ink on the parchment rather than a UI
+ * element, so it belongs to the map instead of sitting on top of it.
+ */
+function RoomIcon({ src, name, dimmed = false }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      title={name}
+      className={[
+        'h-full w-full object-contain drop-shadow-[0_1px_2px_rgba(255,240,200,0.55)]',
+        dimmed ? 'opacity-40' : '',
+      ].join(' ')}
+    />
   )
 }
