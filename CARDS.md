@@ -1,0 +1,148 @@
+# CARDS
+
+**Status:** 30 player cards + 37 enemy cards written.
+
+- `data/cards.json` — player cards
+- `data/enemy-cards.json` — enemy (interviewer) cards
+- `SCHEMA.md` — field definitions and the player/enemy separation rule
+
+Those files are the source of truth for content. This document covers design
+intent. Last updated 2026-08-24.
+
+Companion to PRD.md (design) and ARCHITECTURE.md (schema).
+
+---
+
+## Card shape (per D7)
+
+Every card carries a **mechanical payload** and **interview subtext**. The subtext
+is display-only and never affects resolution, so content and balance are edited
+independently.
+
+| Field | Meaning |
+|---|---|
+| `id` | stable key |
+| `name` | mechanical name — e.g. "Confusion" |
+| `text` | mechanical effect, one short line |
+| `subtext` | the interview line — e.g. *"Roast my setup!"* |
+| `cost` | energy |
+| `oncePerRoom` | usable once per encounter (D16) |
+| `cooldown` | turns unavailable after use (D16) |
+| `type` | attack / skill / power / status / curse |
+| `class` | wizard / fighter / rogue / duelist — or `neutral` |
+| `targets` | may reference `race` / `gender` (D12, Screen 2 spec) |
+
+Full schema lives in ARCHITECTURE.md §2.
+
+---
+
+## Class card pools
+
+Signature mechanics per D11. Each pool needs cards that express its shape and
+nothing that expresses another's.
+
+Six cards each. Content in `data/cards.json`.
+
+### Neutral — 6
+Available to every class. Carries the basics (Strike, Defend) and the starting
+Power.
+
+### Wizard — 6 (Backend, Database)
+*Big committed plays.* Deep Dive and The Migration resolve on a **later turn** —
+you commit before you know what is coming. Index and Query Plan are the setup.
+Cold Start is the cheap spammable floor so the class is never stuck (D11).
+
+### Fighter — 6 (Full Stack)
+*Consistency.* Highest unrestricted baseline — Ship It and Steady Hands have no
+cooldown at all. Whatever's Needed copies any other card at 60%, which is the
+class identity and the joke in the same mechanic.
+
+### Rogue — 6 (Frontend, Mobile)
+*Spiky, not fragile.* **Flourish** is the setup currency: Polish and Portfolio
+build it, The Reveal spends all of it at once. App Store Review is the platform-
+constraint card — enormous damage, then you lose a turn to approval.
+
+### Duelist — 6 (DevOps, Analyst)
+*Reactive.* **Riposte** deals its value back to anything that hits you. Root Cause
+doubles if you took damage last turn, so the class is rewarded for absorbing
+rather than initiating. Blameless reflects everything for one turn.
+
+### New keywords introduced
+- **Block** — standard damage absorption.
+- **Flourish** (Rogue) — stacking setup counter, spent by The Reveal.
+- **Riposte** (Duelist) — reflects its value at any attacker.
+
+---
+
+## Deck economy (D15)
+
+| | |
+|---|---|
+| Inventory | 20 cards owned |
+| Loadout | exactly 10, carried into a room |
+| Starting loadout | 10 — 5 attack, 4 defend, 1 power |
+| Management | only outside a room, via a map button |
+| Post-room | offered 3 cards, pick 1 — **or** heal instead |
+
+**All 10 are always available (D16).** No deck, no draw, no discard, no shuffle.
+Play them in any order at any time. The only restrictions are per-card:
+`oncePerRoom` and `cooldown`.
+
+Design consequence for card writing: **scarcity has to be authored into individual
+cards**, since it no longer comes from the shuffle. A card that would be
+overpowered if spammed needs `oncePerRoom` or a `cooldown` — there is no draw luck
+to rate-limit it.
+
+Starting loadout composition means the pools must supply, at minimum, basic
+attack, defend, and power cards per class.
+
+---
+
+## Open
+
+- **Energy per turn is assumed to be 3.** D6 says "fixed energy budget" but never
+  names a number. Every cost in `cards.json` is balanced against 3 — confirm it.
+- **Starting loadout** currently draws its 5 attack / 4 defend / 1 power from
+  neutral cards only (5× Strike, 4× Defend, 1× Confidence). Should each class
+  instead start with its own basics?
+- Duplicates: can the inventory hold two copies of the same card?
+- Pool size per class — currently 6 each, which is thin for a 10-card loadout.
+- Which cards are draftable mid-run vs. starting-pool only.
+- Card removal — does it exist, and where?
+- What happens when the 20-card cap is reached (one card per room means it binds
+  after ten rooms).
+- Race/gender-targeting cards (Discrimination type) — enemy side, see below.
+
+---
+
+## Enemy cards — 37, in `data/enemy-cards.json`
+
+The nine-category taxonomy is the `subtype` field, and it drives behaviour:
+
+| subtype | move archetype | n |
+|---|---|---|
+| intro | Mark | 7 |
+| hypothetical | wind-up | 1 |
+| passive_aggressive | debuff (Doubt) | 4 |
+| unhinged | random effect | 2 |
+| trap | dilemma | 11 |
+| discrimination | unblockable | 4 |
+| technical | skill check | 4 |
+| silence | **defend** — Block + no telegraph | 2 |
+| outro | execute, scales off Doubt + Mark | 2 |
+
+35 attack, 2 defend. Three Trap entries appeared twice in the source list
+(craziest thing, hardest thing, five/ten years) and were kept once each.
+
+**On the Discrimination cards.** Written as recognisable real-world
+microaggressions rather than slurs, and all four are unblockable — no card
+counters them, they cannot be reduced or evaded or riposted, and the player can
+only absorb them and keep walking. That is the point. It says the thing without a
+line of dialogue explaining it.
+
+**Enemy-side keywords:** Mark (tags the player for later bonus damage), Doubt
+(accumulates, Outro cards scale off it), Unblockable, Dilemma.
+
+The two Outro cards are the tally — they turn everything the interviewer noticed
+into damage at the end. `Any Questions` inverts it: it only hurts if you do
+nothing.

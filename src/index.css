@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/* Palette pulled from the title art — sepia, gold, soot. */
+@theme {
+  --font-display: "Cinzel", Georgia, "Times New Roman", serif;
+  --font-body: "IM Fell English", Georgia, serif;
+
+  --color-soot-950: #0a0805;
+  --color-soot-900: #14100a;
+  --color-soot-800: #221a10;
+  --color-soot-700: #33281a;
+
+  --color-gold-500: #c9a227;
+  --color-gold-400: #d9b64b;
+  --color-gold-300: #e8cd7a;
+  --color-gold-200: #f2e0ae;
+
+  --color-ember-600: #8a5a1c;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-soot-950);
+  color: var(--color-gold-200);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Torchlight flicker — CSS only, per the "minimal animation" decision. */
+@keyframes torch {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  45% {
+    opacity: 0.72;
+  }
+  70% {
+    opacity: 0.48;
+  }
+  85% {
+    opacity: 0.66;
+  }
+}
+
+.torch-flicker {
+  animation: torch 6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade-up {
+  animation: fade-up 700ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .torch-flicker,
+  .fade-up {
+    animation: none;
+  }
+}

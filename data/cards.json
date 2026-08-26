@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-08-24",
+  "notes": {
+    "energyPerTurn": 6,
+    "energyAssumption": "maxEnergy is 6 for every class (set in character-options.json). Card costs were originally priced against 3; they remain valid because they were priced RELATIVE to each other. At 6 energy the player plays ~4-5 cards per turn instead of ~2. Enemy health must scale to that, not to the old assumption.",
+    "scarcity": "D16 removed the deck/draw. Nothing is rate-limited by a shuffle, so scarcity is authored per card via oncePerRoom and cooldown. Cards with neither are intentionally spammable and priced low.",
+    "subtext": "D7. Player cards, so subtext is what the CANDIDATE says. Display only — never affects resolution.",
+    "types": "attack | defend | power, matching the D15 starting loadout of 5 attack / 4 defend / 1 power.",
+    "subtype": "Left blank where nothing useful applies, per instruction.",
+    "startingLoadout": [
+      "strike",
+      "strike",
+      "strike",
+      "strike",
+      "strike",
+      "defend",
+      "defend",
+      "defend",
+      "defend",
+      "confidence"
+    ],
+    "separation": "Player cards can never be used by an enemy and enemy cards can never enter a player loadout. Enforced by the `side` field — see SCHEMA.md."
+  },
+  "cards": [
+    {
+      "id": "strike",
+      "side": "player",
+      "name": "Strike",
+      "type": "attack",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "Deal 6 damage.",
+      "subtext": "I have about five years of experience with that.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "strike.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "defend",
+      "side": "player",
+      "name": "Defend",
+      "type": "defend",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "Gain 5 Block.",
+      "subtext": "That's a great question.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "defend.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "elaborate",
+      "side": "player",
+      "name": "Elaborate",
+      "type": "attack",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Deal 9 damage.",
+      "subtext": "Let me walk you through a specific example.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "elaborate.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "deflect",
+      "side": "player",
+      "name": "Deflect",
+      "type": "defend",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "common",
+      "cost": 0,
+      "text": "Gain 4 Block.",
+      "subtext": "I'd want to understand the constraints first.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "deflect.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "resume_highlight",
+      "side": "player",
+      "name": "Résumé Highlight",
+      "type": "attack",
+      "subtype": "burst",
+      "class": "neutral",
+      "rarity": "uncommon",
+      "cost": 2,
+      "text": "Deal 12 damage.",
+      "subtext": "It's actually on page two.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "resume_highlight.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "confidence",
+      "side": "player",
+      "name": "Confidence",
+      "type": "power",
+      "subtype": "buff",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "All your attacks deal 2 additional damage this room.",
+      "subtext": "I've done this before.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "confidence.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "cold_start",
+      "side": "player",
+      "name": "Cold Start",
+      "type": "attack",
+      "subtype": "",
+      "class": "wizard",
+      "rarity": "basic",
+      "cost": 0,
+      "text": "Deal 4 damage.",
+      "subtext": "Well — it depends.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "cold_start.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "architecture_diagram",
+      "side": "player",
+      "name": "Architecture Diagram",
+      "type": "attack",
+      "subtype": "",
+      "class": "wizard",
+      "rarity": "common",
+      "cost": 2,
+      "text": "Deal 14 damage.",
+      "subtext": "Can I draw this out?",
+      "oncePerRoom": false,
+      "cooldown": 2,
+      "image": {
+        "filename": "architecture_diagram.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "deep_dive",
+      "side": "player",
+      "name": "Deep Dive",
+      "type": "attack",
+      "subtype": "delayed",
+      "class": "wizard",
+      "rarity": "uncommon",
+      "cost": 2,
+      "text": "At the start of your next turn, deal 18 damage.",
+      "subtext": "Give me a second, I want to get this right.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "deep_dive.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "query_plan",
+      "side": "player",
+      "name": "Query Plan",
+      "type": "power",
+      "subtype": "setup",
+      "class": "wizard",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Your next attack this room deals double damage.",
+      "subtext": "Let me think about the access pattern.",
+      "oncePerRoom": false,
+      "cooldown": 2,
+      "image": {
+        "filename": "query_plan.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "index",
+      "side": "player",
+      "name": "Index",
+      "type": "power",
+      "subtype": "buff",
+      "class": "wizard",
+      "rarity": "uncommon",
+      "cost": 1,
+      "text": "The first card you play each turn costs 0 this room.",
+      "subtext": "We solved that with an index.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "index.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "migration",
+      "side": "player",
+      "name": "The Migration",
+      "type": "attack",
+      "subtype": "delayed",
+      "class": "wizard",
+      "rarity": "rare",
+      "cost": 3,
+      "text": "In two turns, deal 30 damage.",
+      "subtext": "It was a two-year migration.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "migration.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "ship_it",
+      "side": "player",
+      "name": "Ship It",
+      "type": "attack",
+      "subtype": "",
+      "class": "fighter",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "Deal 8 damage.",
+      "subtext": "I shipped it Friday.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "ship_it.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "both_ends",
+      "side": "player",
+      "name": "Both Ends",
+      "type": "attack",
+      "subtype": "hybrid",
+      "class": "fighter",
+      "rarity": "common",
+      "cost": 2,
+      "text": "Deal 7 damage. Gain 6 Block.",
+      "subtext": "I did the frontend and the backend.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "both_ends.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "steady_hands",
+      "side": "player",
+      "name": "Steady Hands",
+      "type": "defend",
+      "subtype": "scaling",
+      "class": "fighter",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Gain 6 Block, plus 2 for each turn already taken this room.",
+      "subtext": "I don't panic.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "steady_hands.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "whatevers_needed",
+      "side": "player",
+      "name": "Whatever's Needed",
+      "type": "attack",
+      "subtype": "flexible",
+      "class": "fighter",
+      "rarity": "uncommon",
+      "cost": 1,
+      "text": "Copy any other card in your loadout at 60% effect.",
+      "subtext": "Honestly, I'll pick up whatever's needed.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "whatevers_needed.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "overtime",
+      "side": "player",
+      "name": "Overtime",
+      "type": "attack",
+      "subtype": "cost-health",
+      "class": "fighter",
+      "rarity": "common",
+      "cost": 0,
+      "text": "Deal 10 damage. Lose 3 health.",
+      "subtext": "I stayed late a lot, yeah.",
+      "oncePerRoom": false,
+      "cooldown": 2,
+      "image": {
+        "filename": "overtime.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "full_stack",
+      "side": "player",
+      "name": "Full Stack",
+      "type": "power",
+      "subtype": "ramp",
+      "class": "fighter",
+      "rarity": "rare",
+      "cost": 2,
+      "text": "Gain 1 additional energy each turn this room.",
+      "subtext": "I can cover the whole thing myself.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "full_stack.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "polish",
+      "side": "player",
+      "name": "Polish",
+      "type": "power",
+      "subtype": "setup",
+      "class": "rogue",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "Gain 2 Flourish.",
+      "subtext": "I care a lot about the details.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "polish.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "pixel_perfect",
+      "side": "player",
+      "name": "Pixel Perfect",
+      "type": "attack",
+      "subtype": "combo",
+      "class": "rogue",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Deal 7 damage, or 10 if you already played a card this turn.",
+      "subtext": "Down to the pixel.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "pixel_perfect.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "smoke",
+      "side": "player",
+      "name": "Smoke",
+      "type": "defend",
+      "subtype": "evade",
+      "class": "rogue",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Gain 8 Block. Evade the next attack entirely.",
+      "subtext": "That was before my time.",
+      "oncePerRoom": false,
+      "cooldown": 2,
+      "image": {
+        "filename": "smoke.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "the_reveal",
+      "side": "player",
+      "name": "The Reveal",
+      "type": "attack",
+      "subtype": "burst",
+      "class": "rogue",
+      "rarity": "uncommon",
+      "cost": 2,
+      "text": "Deal 5 damage for each Flourish, then lose all Flourish.",
+      "subtext": "Actually — can I just show you the demo?",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "the_reveal.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "portfolio",
+      "side": "player",
+      "name": "Portfolio",
+      "type": "power",
+      "subtype": "engine",
+      "class": "rogue",
+      "rarity": "rare",
+      "cost": 2,
+      "text": "Gain 1 Flourish whenever you play a card this room.",
+      "subtext": "Everything's on my site if you want to look.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "portfolio.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "app_store_review",
+      "side": "player",
+      "name": "App Store Review",
+      "type": "attack",
+      "subtype": "burst",
+      "class": "rogue",
+      "rarity": "rare",
+      "cost": 3,
+      "text": "Deal 26 damage. Skip your next turn.",
+      "subtext": "We were stuck waiting on approval for nine days.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "app_store_review.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "post_mortem",
+      "side": "player",
+      "name": "Post-Mortem",
+      "type": "defend",
+      "subtype": "riposte",
+      "class": "duelist",
+      "rarity": "basic",
+      "cost": 1,
+      "text": "Gain 6 Riposte. Riposte deals its value back to any attacker.",
+      "subtext": "We wrote it all up afterward.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "post_mortem.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "runbook",
+      "side": "player",
+      "name": "Runbook",
+      "type": "defend",
+      "subtype": "",
+      "class": "duelist",
+      "rarity": "common",
+      "cost": 1,
+      "text": "Gain 9 Block.",
+      "subtext": "There's a runbook for that.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "runbook.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "on_call",
+      "side": "player",
+      "name": "On Call",
+      "type": "defend",
+      "subtype": "riposte",
+      "class": "duelist",
+      "rarity": "common",
+      "cost": 2,
+      "text": "Gain 10 Riposte and 5 Block.",
+      "subtext": "I've been on call for three years.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "on_call.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "root_cause",
+      "side": "player",
+      "name": "Root Cause",
+      "type": "attack",
+      "subtype": "conditional",
+      "class": "duelist",
+      "rarity": "common",
+      "cost": 2,
+      "text": "Deal 12 damage, doubled if you took damage last turn.",
+      "subtext": "The root cause was actually upstream of us.",
+      "oncePerRoom": false,
+      "cooldown": 1,
+      "image": {
+        "filename": "root_cause.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "alerting",
+      "side": "player",
+      "name": "Alerting",
+      "type": "power",
+      "subtype": "engine",
+      "class": "duelist",
+      "rarity": "uncommon",
+      "cost": 1,
+      "text": "Gain 3 Riposte at the start of each turn this room.",
+      "subtext": "We had alerting for exactly that.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "alerting.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "blameless",
+      "side": "player",
+      "name": "Blameless",
+      "type": "defend",
+      "subtype": "riposte",
+      "class": "duelist",
+      "rarity": "rare",
+      "cost": 3,
+      "text": "All damage taken this turn is dealt back to its source.",
+      "subtext": "We do blameless post-mortems.",
+      "oncePerRoom": true,
+      "cooldown": 0,
+      "image": {
+        "filename": "blameless.png",
+        "path": "assets/cards/"
+      }
+    }
+  ],
+  "side": "player"
+}

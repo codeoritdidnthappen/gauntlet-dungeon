@@ -1,0 +1,584 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-08-24",
+  "side": "enemy",
+  "notes": {
+    "separation": "Enemy cards can never enter a player loadout and player cards can never be used by an enemy. Enforced by the `side` field — see SCHEMA.md.",
+    "types": "attack | defend. Silence is defend, per instruction.",
+    "subtype": "The nine-category enemy taxonomy: intro, hypothetical, passive_aggressive, unhinged, trap, discrimination, technical, silence, outro.",
+    "subtext": "D7. The interview line IS the content — `name` is the mechanical label, `subtext` is what the interviewer actually says.",
+    "dedupe": "Three Trap entries were listed twice in the source (craziest thing, hardest thing, five/ten years). Kept once each.",
+    "discrimination": "Written as recognisable real-world microaggressions rather than slurs. All are unblockable: no card counters them, they cannot be reduced, and the player can only absorb them and keep walking. That is the design statement.",
+    "keywords": {
+      "Mark": "A label applied to the player. Later cards deal bonus damage against a marked target.",
+      "Doubt": "Accumulating debuff. Feeds Outro cards, which scale off it.",
+      "Block": "Standard absorption — used by the enemy on Silence cards.",
+      "Unblockable": "Ignores Block, evade, riposte and all mitigation.",
+      "Dilemma": "Player chooses which resource to pay. Both branches cost."
+    },
+    "energy": "Enemies have NO energy budget, matching Slay the Spire. One telegraphed intent per turn, chosen from a weighted move list with anti-repeat rules. Variety comes from COMPOUND intents (one card doing several things), not from spending a budget. The `cost` field has been removed from this side entirely."
+  },
+  "cards": [
+    {
+      "id": "e_background_check",
+      "side": "enemy",
+      "name": "Background Check",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 4 damage. Apply 1 Mark.",
+      "subtext": "Why don't you tell us about your background?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_background_check.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_role_scoping",
+      "side": "enemy",
+      "name": "Role Scoping",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 3 damage. Apply 1 Mark.",
+      "subtext": "What sort of role are you looking for?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_role_scoping.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_llm_sentiment",
+      "side": "enemy",
+      "name": "Sentiment Probe",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 4 damage. Apply 1 Mark.",
+      "subtext": "How do you feel about LLMs?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_llm_sentiment.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_integration_probe",
+      "side": "enemy",
+      "name": "Integration Probe",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 5 damage. Apply 1 Mark.",
+      "subtext": "How do you integrate LLMs?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_integration_probe.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_ai_usage",
+      "side": "enemy",
+      "name": "Usage Probe",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 4 damage. Apply 1 Mark.",
+      "subtext": "How do you use AI?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_ai_usage.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_workflow",
+      "side": "enemy",
+      "name": "Process Probe",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 4 damage. Apply 1 Mark.",
+      "subtext": "What is your workflow?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_workflow.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_tool_call",
+      "side": "enemy",
+      "name": "Definition Check",
+      "type": "attack",
+      "subtype": "intro",
+      "text": "Deal 5 damage. Apply 2 Mark.",
+      "subtext": "What is a tool call?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_tool_call.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_teach_the_team",
+      "side": "enemy",
+      "name": "The Scenario",
+      "type": "attack",
+      "subtype": "hypothetical",
+      "text": "Telegraphed. At the start of your next turn, deal 16 damage.",
+      "subtext": "How would you teach our team how to use AI?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_teach_the_team.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_why_us",
+      "side": "enemy",
+      "name": "Motive Question",
+      "type": "attack",
+      "subtype": "passive_aggressive",
+      "text": "Deal 3 damage. Apply 2 Doubt.",
+      "subtext": "Why do you want to work for us?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_why_us.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_good_fit",
+      "side": "enemy",
+      "name": "Fit Question",
+      "type": "attack",
+      "subtype": "passive_aggressive",
+      "text": "Deal 3 damage. Apply 2 Doubt.",
+      "subtext": "Why are you a good fit?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_good_fit.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_opportunist",
+      "side": "enemy",
+      "name": "Opportunist",
+      "type": "attack",
+      "subtype": "passive_aggressive",
+      "text": "Deal 5 damage. Apply 3 Doubt.",
+      "subtext": "You did crypto? Now you're doing AI? You seem kind of opportunistic.",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_opportunist.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_price_check",
+      "side": "enemy",
+      "name": "Price Check",
+      "type": "attack",
+      "subtype": "passive_aggressive",
+      "text": "Deal 6 damage. Apply 2 Doubt.",
+      "subtext": "Why are you worth 200k?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_price_check.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_roast_my_setup",
+      "side": "enemy",
+      "name": "Roast",
+      "type": "attack",
+      "subtype": "unhinged",
+      "text": "Deal a random 0–20 damage.",
+      "subtext": "Roast my setup!",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_roast_my_setup.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_cold_pitch",
+      "side": "enemy",
+      "name": "Cold Pitch",
+      "type": "attack",
+      "subtype": "unhinged",
+      "text": "Random: deal 14 damage, apply 4 Doubt, or lose 10 of its own health.",
+      "subtext": "Pretend we're a client and pitch us some services.",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_cold_pitch.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_craziest_thing",
+      "side": "enemy",
+      "name": "Craziest Thing",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 10 damage, or gain 4 Doubt.",
+      "subtext": "What's the craziest thing you've done in your life?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_craziest_thing.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_hardest_thing",
+      "side": "enemy",
+      "name": "Hardest Thing",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 10 damage, or gain 4 Doubt.",
+      "subtext": "What is the hardest thing you've ever done?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_hardest_thing.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_five_year_plan",
+      "side": "enemy",
+      "name": "Five Year Plan",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 8 damage, or gain 5 Doubt.",
+      "subtext": "Where do you see yourself in five years? Ten years?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_five_year_plan.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_lets_be_honest",
+      "side": "enemy",
+      "name": "Let's Be Honest",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 12 damage, or discard your highest-cost card for this room.",
+      "subtext": "Let's be honest with each other.",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_lets_be_honest.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_time_you_failed",
+      "side": "enemy",
+      "name": "Time You Failed",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 11 damage, or gain 4 Doubt.",
+      "subtext": "Tell me about a time you failed.",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_time_you_failed.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_biggest_weakness",
+      "side": "enemy",
+      "name": "Biggest Weakness",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 9 damage, or gain 5 Doubt.",
+      "subtext": "What's your biggest weakness?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_biggest_weakness.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_job_hopper",
+      "side": "enemy",
+      "name": "Job Hopper",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 10 damage, or gain 4 Doubt. Deals 4 additional damage if you are Marked.",
+      "subtext": "You've been bouncing around between jobs a bit, haven't you?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_job_hopper.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_wrong_industry",
+      "side": "enemy",
+      "name": "Wrong Industry",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 9 damage, or gain 4 Doubt.",
+      "subtext": "You sound like you're more interested in Ed Tech?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_wrong_industry.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_dog_or_girlfriend",
+      "side": "enemy",
+      "name": "Dog Or Girlfriend",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 12 damage, or gain 6 Doubt. There is no correct answer.",
+      "subtext": "Who do you miss more? Your dog or your girlfriend?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_dog_or_girlfriend.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_hot_take",
+      "side": "enemy",
+      "name": "Hot Take",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 8 damage, or gain 5 Doubt.",
+      "subtext": "What's your AI hot take?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_hot_take.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_salary_expectations",
+      "side": "enemy",
+      "name": "Salary Expectations",
+      "type": "attack",
+      "subtype": "trap",
+      "text": "Dilemma — choose: take 10 damage, or gain 5 Doubt. Whoever speaks first loses.",
+      "subtext": "What are your salary expectations?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_salary_expectations.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_disc_age",
+      "side": "enemy",
+      "name": "Ageism",
+      "type": "attack",
+      "subtype": "discrimination",
+      "text": "Unblockable. Deal 12 damage. Cannot be reduced, evaded or riposted.",
+      "subtext": "You'd be reporting to someone quite a bit younger than you. Is that going to be okay?",
+      "unblockable": true,
+      "targets": null,
+      "image": {
+        "filename": "e_disc_age.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_disc_religion",
+      "side": "enemy",
+      "name": "Religion",
+      "type": "attack",
+      "subtype": "discrimination",
+      "text": "Unblockable. Deal 12 damage. Cannot be reduced, evaded or riposted.",
+      "subtext": "We do a lot of team stuff on weekends. That's not going to be a problem, is it?",
+      "unblockable": true,
+      "targets": null,
+      "image": {
+        "filename": "e_disc_religion.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_disc_gender",
+      "side": "enemy",
+      "name": "Gender",
+      "type": "attack",
+      "subtype": "discrimination",
+      "text": "Unblockable. Deal 12 damage. Cannot be reduced, evaded or riposted.",
+      "subtext": "You'd be the only woman on the team. Would that bother you?",
+      "unblockable": true,
+      "targets": {
+        "field": "gender",
+        "values": []
+      },
+      "image": {
+        "filename": "e_disc_gender.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_disc_race",
+      "side": "enemy",
+      "name": "Race",
+      "type": "attack",
+      "subtype": "discrimination",
+      "text": "Unblockable. Deal 12 damage. Cannot be reduced, evaded or riposted.",
+      "subtext": "No, but where are you actually from?",
+      "unblockable": true,
+      "targets": {
+        "field": "race",
+        "values": []
+      },
+      "image": {
+        "filename": "e_disc_race.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_event_loop",
+      "side": "enemy",
+      "name": "Event Loop",
+      "type": "attack",
+      "subtype": "technical",
+      "text": "Skill check. Deal 18 damage unless you hold a Technical card. No partial credit.",
+      "subtext": "Explain the event loop in Node.js.",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_event_loop.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_assembly_sort",
+      "side": "enemy",
+      "name": "Assembly Sort",
+      "type": "attack",
+      "subtype": "technical",
+      "text": "Skill check. Deal 22 damage unless you hold a Technical card. No partial credit.",
+      "subtext": "Can you write a sorting function in assembly?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_assembly_sort.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_index_limits",
+      "side": "enemy",
+      "name": "Index Limits",
+      "type": "attack",
+      "subtype": "technical",
+      "text": "Skill check. Deal 18 damage unless you hold a Technical card. No partial credit.",
+      "subtext": "What are some of the things an index on a database won't help with?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_index_limits.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_tenant_slowdown",
+      "side": "enemy",
+      "name": "Tenant Slowdown",
+      "type": "attack",
+      "subtype": "technical",
+      "text": "Skill check. Deal 20 damage unless you hold a Technical card. No partial credit.",
+      "subtext": "A Java app is slow for a new tenant and it isn't application code. What's the first thing you check?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_tenant_slowdown.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_note_taking",
+      "side": "enemy",
+      "name": "Note Taking",
+      "type": "defend",
+      "subtype": "silence",
+      "text": "Gain 12 Block. No intent is telegraphed next turn.",
+      "subtext": "Okay. (writes something down)",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_note_taking.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_twenty_seconds",
+      "side": "enemy",
+      "name": "Twenty Seconds",
+      "type": "defend",
+      "subtype": "silence",
+      "text": "Gain 16 Block. You lose 4 health. No intent is telegraphed next turn.",
+      "subtext": "(types for twenty seconds)",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_twenty_seconds.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_any_questions",
+      "side": "enemy",
+      "name": "Any Questions",
+      "type": "attack",
+      "subtype": "outro",
+      "text": "Deal 20 damage if you play no card this turn. Otherwise nothing.",
+      "subtext": "Do you have any questions for us?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_any_questions.png",
+        "path": "assets/cards/enemy/"
+      }
+    },
+    {
+      "id": "e_anything_we_missed",
+      "side": "enemy",
+      "name": "Anything We Missed",
+      "type": "attack",
+      "subtype": "outro",
+      "text": "Execute. Deal 3 damage for each Doubt and each Mark you have accumulated.",
+      "subtext": "Anything we didn't ask that we should have?",
+      "unblockable": false,
+      "targets": null,
+      "image": {
+        "filename": "e_anything_we_missed.png",
+        "path": "assets/cards/enemy/"
+      }
+    }
+  ]
+}

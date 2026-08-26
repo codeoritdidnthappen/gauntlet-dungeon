@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-08-24",
+  "notes": {
+    "status": "STRUCTURE ONLY — no enemies or camps populated yet. Shape defined in SCHEMA.md §11.",
+    "mirror": "Enemies mirror PlayerCharacter: same Combatant base, same identity fields (name, race, gender, role, class). Class is derived from role via the same map as the player (SCHEMA.md §10).",
+    "art": "Because an enemy has class + race, it renders through D12's existing composition pipeline — body(class) + race overlay. No separate enemy art pipeline.",
+    "behaviour": "No energy. One telegraphed intent per turn, picked by weight from `intents` and constrained by `antiRepeat`. Multi-part turns are compound intents (one card doing several things), never two cards.",
+    "branching": "Nothing in resolution branches on an enemy's `class` or `role`. Behaviour comes entirely from `intents`. Class and role are visual and thematic.",
+    "persistence": "Enemies never return (D5). Enemy health is discarded at room end. Only the camp recurs — later nodes may hold different members of the same camp."
+  },
+
+  "camps": [],
+
+  "enemies": [],
+
+  "templates": {
+    "camp": {
+      "id": "",
+      "name": "",
+      "icon": { "filename": "", "path": "assets/camps/" }
+    },
+    "enemy": {
+      "id": "",
+      "name": "",
+      "race": "",
+      "gender": "",
+      "role": "",
+      "class": "",
+      "camp": "",
+      "maxHealth": 0,
+      "portrait": { "filename": "", "path": "assets/enemies/" },
+      "antiRepeat": { "maxInARow": 2 },
+      "intents": [
+        { "cardId": "", "weight": 1 }
+      ]
+    }
+  },
+
+  "validation": {
+    "everyIntentCardIsEnemySide": "each intents[].cardId must resolve to a card in data/enemy-cards.json with side === 'enemy'",
+    "classDerived": "class must equal ROLE_TO_CLASS[role] from data/character-options.json",
+    "raceIsKnown": "race must be one of the ids in character-options.json races",
+    "campIsKnown": "camp must be one of the ids in this file's camps array",
+    "weightsPositive": "every intents[].weight > 0"
+  },
+
+  "unset": {
+    "camps": "None defined. A camp is a faction of interviewers and is the only thing that recurs across the map.",
+    "enemies": "None defined.",
+    "enemyRoles": "Enemies currently draw from the same seven engineering roles as the player. Interviewer-specific roles — Recruiter, Hiring Manager, Founder — have no entry and no class mapping yet.",
+    "health": "No maxHealth values, for enemies or the player. Nothing in combat can be tuned until a health scale exists."
+  }
+}

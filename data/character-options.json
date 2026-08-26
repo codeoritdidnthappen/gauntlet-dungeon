@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-08-24",
+  "notes": {
+    "purpose": "The selectable sets the character-creation screens read. Everything here is a fixed enumeration — there is no character creator, only selection (D14).",
+    "screens": "Screen 2 reads races, genders, roles. Screen 3 reads petTypes and pets.",
+    "order": "Screen 2 order is name -> race -> gender -> role. Race and gender must resolve before role cards can render, because role cards depict the chosen race and gender.",
+    "branchability": "class, race and gender are branchable in resolution. role is NEVER branchable — it is display-only and resolves to class. See SCHEMA.md §9.",
+    "stats": "Default player stats are set by CLASS only. Race and gender do not affect stats at all. health starts at maxHealth; energy refills to maxEnergy at the start of every turn.",
+    "gender": "Male / Female / Non-binary. 'Non-binary' rather than 'They' so all three options are the same kind of label — 'they' is a pronoun, not a descriptor, and reads as an afterthought next to the other two. The pronoun is stored separately on each option because the text layer needs it (revive scene, narrator lines, endings). Gender does NOT affect stats (SCHEMA.md §14) but IS card-targetable.",
+    "pets": "Pets have no stats — id, type, name, image and nothing else. A Pet is not a Combatant. Choosing one pet over another changes only which image appears; the only mechanical role is the revive (D13)."
+  },
+  "races": [
+    {
+      "id": "elf",
+      "name": "Elf",
+      "image": {
+        "filename": "race_elf.png",
+        "path": "assets/races/"
+      }
+    },
+    {
+      "id": "dwarf",
+      "name": "Dwarf",
+      "image": {
+        "filename": "race_dwarf.png",
+        "path": "assets/races/"
+      }
+    },
+    {
+      "id": "human",
+      "name": "Human",
+      "image": {
+        "filename": "race_human.png",
+        "path": "assets/races/"
+      }
+    },
+    {
+      "id": "half_orc",
+      "name": "Half-Orc",
+      "image": {
+        "filename": "race_half_orc.png",
+        "path": "assets/races/"
+      }
+    }
+  ],
+  "genders": [
+    {
+      "id": "male",
+      "name": "Male",
+      "pronouns": {
+        "subject": "he",
+        "object": "him",
+        "possessive": "his",
+        "reflexive": "himself"
+      }
+    },
+    {
+      "id": "female",
+      "name": "Female",
+      "pronouns": {
+        "subject": "she",
+        "object": "her",
+        "possessive": "her",
+        "reflexive": "herself"
+      }
+    },
+    {
+      "id": "nonbinary",
+      "name": "Non-binary",
+      "pronouns": {
+        "subject": "they",
+        "object": "them",
+        "possessive": "their",
+        "reflexive": "themselves"
+      }
+    }
+  ],
+  "roles": [
+    {
+      "id": "backend",
+      "name": "Backend",
+      "class": "wizard",
+      "image": {
+        "filename": "role_backend.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "database",
+      "name": "Database",
+      "class": "wizard",
+      "image": {
+        "filename": "role_database.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "fullstack",
+      "name": "Full Stack",
+      "class": "fighter",
+      "image": {
+        "filename": "role_fullstack.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend",
+      "class": "rogue",
+      "image": {
+        "filename": "role_frontend.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile",
+      "class": "rogue",
+      "image": {
+        "filename": "role_mobile.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "devops",
+      "name": "DevOps",
+      "class": "duelist",
+      "image": {
+        "filename": "role_devops.png",
+        "path": "assets/roles/"
+      }
+    },
+    {
+      "id": "analyst",
+      "name": "Analyst",
+      "class": "duelist",
+      "image": {
+        "filename": "role_analyst.png",
+        "path": "assets/roles/"
+      }
+    }
+  ],
+  "classes": [
+    {
+      "id": "wizard",
+      "name": "Wizard",
+      "shape": "Big committed plays. Strong immediately; the cost is commitment, not weakness.",
+      "stats": {
+        "maxHealth": 74,
+        "maxEnergy": 6
+      }
+    },
+    {
+      "id": "fighter",
+      "name": "Fighter",
+      "shape": "Consistency. Highest baseline, no gimmick.",
+      "stats": {
+        "maxHealth": 82,
+        "maxEnergy": 6
+      }
+    },
+    {
+      "id": "rogue",
+      "name": "Rogue",
+      "shape": "Spiky, not fragile. Bursts that need a turn of setup.",
+      "stats": {
+        "maxHealth": 78,
+        "maxEnergy": 6
+      }
+    },
+    {
+      "id": "duelist",
+      "name": "Duelist",
+      "shape": "Reactive. Riposte counters that punish the enemy's action.",
+      "stats": {
+        "maxHealth": 72,
+        "maxEnergy": 6
+      }
+    }
+  ],
+  "petTypes": [
+    {
+      "id": "dog",
+      "name": "Dog"
+    },
+    {
+      "id": "cat",
+      "name": "Cat"
+    }
+  ],
+  "pets": [
+    {
+      "id": "golden_retriever",
+      "type": "dog",
+      "name": "Golden Retriever",
+      "image": {
+        "filename": "golden_retriever.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
+      "id": "yorkshire_terrier",
+      "type": "dog",
+      "name": "Yorkshire Terrier",
+      "image": {
+        "filename": "yorkshire_terrier.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
+      "id": "pit_bull_boxer",
+      "type": "dog",
+      "name": "Pit Bull/Boxer",
+      "image": {
+        "filename": "pit_bull_boxer.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
+      "id": "australian_shepherd",
+      "type": "dog",
+      "name": "Australian Shepherd",
+      "image": {
+        "filename": "australian_shepherd.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
+      "id": "siberian_husky",
+      "type": "dog",
+      "name": "Siberian Husky",
+      "image": {
+        "filename": "siberian_husky.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
+      "id": "tabby",
+      "type": "cat",
+      "name": "Tabby",
+      "image": {
+        "filename": "tabby.png",
+        "path": "assets/pets/"
+      }
+    }
+  ],
+  "limits": {
+    "nameMaxLength": 24,
+    "petNameMaxLength": 24,
+    "inventoryMax": 20,
+    "loadoutSize": 10,
+    "startingRevives": 3,
+    "maxEnergyAllClasses": 6
+  },
+  "unset": {
+    "enemyHealth": "No enemy maxHealth values yet. Enemy health must scale to a 6-energy player turn — roughly 4-5 cards played per turn, not the 2 that 3 energy would have allowed.",
+    "genderArtModel": "Still undecided whether gender is a cosmetic label, a feature overlay, or a separate body silhouette — see PRD Screen 2. Independent of the fact that gender is mechanically targetable.",
+    "petArt": "Breeds are defined but no art exists yet. Drop files at assets/pets/{id}.png — e.g. assets/pets/golden_retriever.png — and they are picked up with no code change."
+  }
+}
