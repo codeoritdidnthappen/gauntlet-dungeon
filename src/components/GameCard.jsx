@@ -31,30 +31,30 @@ export default function GameCard({ card, count = 0, onAdd, onRemove, disabled = 
       ].join(' ')}
     >
       <div className="mb-1 flex items-start justify-between gap-2">
-        <span className="font-display text-[13px] leading-tight font-bold text-gold-200">
+        <span className="font-display text-sm leading-tight font-bold text-gold-200">
           {card.name}
         </span>
         <span
           title={`${card.cost} energy`}
-          className="shrink-0 rounded-full border border-gold-500/50 px-1.5 font-display text-[11px] leading-4 text-gold-300"
+          className="shrink-0 rounded-full border border-gold-500/50 px-1.5 font-display text-2xs leading-4 text-gold-300"
         >
           {card.cost}
         </span>
       </div>
 
-      <p className="font-body text-[11px] leading-snug text-gold-200/75">{card.text}</p>
-      <p className="mt-1 font-body text-[11px] leading-snug text-gold-200/35 italic">
+      <p className="font-body text-2xs leading-snug text-gold-200/75">{card.text}</p>
+      <p className="mt-1 font-body text-2xs leading-snug text-gold-200/35 italic">
         “{card.subtext}”
       </p>
 
       {(card.oncePerRoom || card.cooldown > 0) && (
-        <p className="mt-1 font-display text-[9px] tracking-[0.1em] text-gold-200/30 uppercase">
+        <p className="mt-1 font-display text-3xs tracking-[0.1em] text-gold-200/30 uppercase">
           {card.oncePerRoom ? 'Once per room' : `Cooldown ${card.cooldown}`}
         </p>
       )}
 
       <div className="mt-2 flex items-center justify-between gap-2 border-t border-gold-500/15 pt-2">
-        <span className="font-body text-[11px] text-gold-200/45">
+        <span className="font-body text-2xs text-gold-200/45">
           {picked ? `×${count}` : ''}
         </span>
         <div className="flex gap-1">

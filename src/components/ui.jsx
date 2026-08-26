@@ -24,7 +24,7 @@ export function Panel({ title, children, className = '' }) {
 export function Field({ label, children }) {
   return (
     <div className="mb-4 last:mb-0">
-      <div className="mb-1.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-gold-200/45">
+      <div className="mb-1.5 font-display text-2xs font-bold uppercase tracking-[0.18em] text-gold-200/45">
         {label}
       </div>
       {children}
@@ -102,7 +102,7 @@ export function MissingArt({ path }) {
       <span className="font-display text-xs uppercase tracking-[0.18em] text-gold-200/40">
         No art yet
       </span>
-      <code className="font-body text-[11px] break-all text-gold-200/30">{path}</code>
+      <code className="font-body text-2xs break-all text-gold-200/30">{path}</code>
     </div>
   )
 }

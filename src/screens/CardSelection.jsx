@@ -101,7 +101,7 @@ export default function CardSelection() {
             )}
           </div>
 
-          <p className="mt-4 border-t border-gold-500/20 pt-3 font-body text-[11px] leading-relaxed text-gold-200/35">
+          <p className="mt-4 border-t border-gold-500/20 pt-3 font-body text-2xs leading-relaxed text-gold-200/35">
             All ten are available every turn — there is no deck and no draw.
           </p>
         </Panel>
@@ -119,7 +119,7 @@ export default function CardSelection() {
                   <h2 className="font-display text-xs font-bold tracking-[0.18em] text-gold-200/50 uppercase">
                     {TYPE_LABEL[type]}
                   </h2>
-                  <span className="font-body text-[11px] text-gold-200/30">
+                  <span className="font-body text-2xs text-gold-200/30">
                     {counts[type]} of {QUOTA[type]}
                   </span>
                 </div>
@@ -156,7 +156,7 @@ function QuotaRow({ label, have, need }) {
   const full = have === need
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="font-display text-[11px] font-bold tracking-[0.18em] text-gold-200/45 uppercase">
+      <span className="font-display text-2xs font-bold tracking-[0.18em] text-gold-200/45 uppercase">
         {label}
       </span>
       <span className="flex items-center gap-1.5">
