@@ -2,7 +2,7 @@
 
 Data shapes for the game. Content lives in:
 
-- `data/cards.json` — 30 player cards
+- `data/cards.json` — 33 player cards
 - `data/enemy-cards.json` — 37 enemy (interviewer) cards
 - `data/character-options.json` — the selectable sets for character creation
 - `data/enemies.json` — enemies and camps (structure only; unpopulated)
@@ -43,7 +43,7 @@ Present on every card, both sides.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `id` | string | stable unique key |
+| `id` | uuid | stable unique key — a v4 UUID, authored with the card and never regenerated |
 | `side` | `"player"` \| `"enemy"` | the separation rule, §1 |
 | `name` | string | mechanical label — e.g. "Strike", "Price Check" |
 | `type` | string | see §3 / §4 — the type sets differ by side |
@@ -54,6 +54,13 @@ Present on every card, both sides.
 | `image` | object | `{ filename, path }` — placeholder until art exists |
 
 `cost` is **player-side only**. Enemies have no energy — see §4.
+
+**On `id`.** Cards are keyed by UUID, not by a readable slug. `name` is the only
+human-facing identifier and is unique within a side, so it is what to read a card
+by when writing or reviewing content; `id` is what everything else references —
+`notes.startingLoadout`, and the player's `loadout` and `inventory`. A card's
+`id` is fixed for the life of that card: changing one orphans every reference to
+it, including a player's saved loadout.
 
 **On `subtext` (D7).** The two sides use it differently, and both are correct:
 

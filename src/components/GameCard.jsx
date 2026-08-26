@@ -26,7 +26,7 @@ const fill = (copy, playerName) => copy.replaceAll('${playerName}', playerName)
 export default function GameCard({ card, playerName }) {
   const art = resolveCardArt(card)
   const style = TYPE_STYLE[card.type] ?? TYPE_STYLE.power
-  const artPath = `${card.image?.path ?? 'assets/cards/'}${card.image?.filename ?? `${card.id}.png`}`
+  const artPath = card.image ? `${card.image.path}${card.image.filename}` : 'assets/cards/'
 
   return (
     <article

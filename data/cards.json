@@ -9,19 +9,19 @@
     "types": "attack | defend | power, matching the D15 starting loadout of 3 attack / 1 defend / 1 power.",
     "subtype": "Left blank where nothing useful applies, per instruction.",
     "startingLoadout": [
-      "smite",
-      "strike",
-      "strike",
-      "defend_parry",
-      "confidence"
+      "b24ad70a-ff52-4977-8618-8b8b7dc94534",
+      "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
+      "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
+      "580b290f-a70c-492d-8605-21d604a26afc",
+      "cff6c18b-89e4-4a99-9950-8e544bdd6bda"
     ],
-    "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. This array is the source of truth; the game reads it rather than hardcoding ids.",
+    "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. This array is the source of truth; the game reads it rather than hardcoding ids. The five are, in order: Smite, Strike, Strike, Parry, Confidence — ids are UUIDs, so the names are recorded here to keep the array legible.",
     "blockDefault": "Block is 0 for every class except the Fighter (Full Stack), which resets to 1 each turn rather than to 0. Per-class values live in character-options.json under classes[].stats.startingBlock.",
     "separation": "Player cards can never be used by an enemy and enemy cards can never enter a player loadout. Enforced by the `side` field — see SCHEMA.md."
   },
   "cards": [
     {
-      "id": "smite",
+      "id": "b24ad70a-ff52-4977-8618-8b8b7dc94534",
       "side": "player",
       "name": "Smite",
       "type": "attack",
@@ -41,7 +41,7 @@
       }
     },
     {
-      "id": "strike",
+      "id": "6a3c9e90-25c3-4b98-a093-91a3cf2af3c7",
       "side": "player",
       "name": "Strike",
       "type": "attack",
@@ -59,7 +59,7 @@
       }
     },
     {
-      "id": "defend_parry",
+      "id": "580b290f-a70c-492d-8605-21d604a26afc",
       "side": "player",
       "name": "Parry",
       "type": "defend",
@@ -78,7 +78,7 @@
       }
     },
     {
-      "id": "defend_block",
+      "id": "4d938faf-7aba-441c-bcab-50fc2be8ba42",
       "side": "player",
       "name": "Block",
       "type": "defend",
@@ -97,7 +97,7 @@
       }
     },
     {
-      "id": "defend",
+      "id": "5319549f-39b8-4d19-b911-458c5407e7ce",
       "side": "player",
       "name": "Defend",
       "type": "defend",
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "elaborate",
+      "id": "b4cfc6ba-2526-489a-8da9-df8d9574c0d9",
       "side": "player",
       "name": "Elaborate",
       "type": "attack",
@@ -133,7 +133,7 @@
       }
     },
     {
-      "id": "deflect",
+      "id": "5641c9af-d940-412f-abd9-7b16d24039b4",
       "side": "player",
       "name": "Deflect",
       "type": "defend",
@@ -151,7 +151,7 @@
       }
     },
     {
-      "id": "resume_highlight",
+      "id": "6f7f0fe2-32eb-4e37-8a6f-6d898e984ad3",
       "side": "player",
       "name": "Résumé Highlight",
       "type": "attack",
@@ -169,7 +169,7 @@
       }
     },
     {
-      "id": "confidence",
+      "id": "cff6c18b-89e4-4a99-9950-8e544bdd6bda",
       "side": "player",
       "name": "Confidence",
       "type": "power",
@@ -187,7 +187,7 @@
       }
     },
     {
-      "id": "cold_start",
+      "id": "3f1ae4f9-7df7-4756-93e5-06fbc9da7793",
       "side": "player",
       "name": "Cold Start",
       "type": "attack",
@@ -205,7 +205,7 @@
       }
     },
     {
-      "id": "architecture_diagram",
+      "id": "9cb45bf4-b81f-44ce-b48f-465a24d00199",
       "side": "player",
       "name": "Architecture Diagram",
       "type": "attack",
@@ -223,7 +223,7 @@
       }
     },
     {
-      "id": "deep_dive",
+      "id": "d990ebe3-7f61-44b1-a398-09f93b7ee8d0",
       "side": "player",
       "name": "Deep Dive",
       "type": "attack",
@@ -241,7 +241,7 @@
       }
     },
     {
-      "id": "query_plan",
+      "id": "7287303d-feeb-42a6-8021-f934c9c74c19",
       "side": "player",
       "name": "Query Plan",
       "type": "power",
@@ -259,7 +259,7 @@
       }
     },
     {
-      "id": "index",
+      "id": "70e4172d-c67d-4d6d-8833-6decfb3cb192",
       "side": "player",
       "name": "Index",
       "type": "power",
@@ -277,7 +277,7 @@
       }
     },
     {
-      "id": "migration",
+      "id": "1e768fbb-b029-4fed-aefc-7d4fd624acd6",
       "side": "player",
       "name": "The Migration",
       "type": "attack",
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": "ship_it",
+      "id": "8b6bbd39-8f65-4c4b-be2c-81c401bf2295",
       "side": "player",
       "name": "Ship It",
       "type": "attack",
@@ -313,7 +313,7 @@
       }
     },
     {
-      "id": "both_ends",
+      "id": "2b3f92b2-46fd-4914-8269-7f4a6e562a5a",
       "side": "player",
       "name": "Both Ends",
       "type": "attack",
@@ -331,7 +331,7 @@
       }
     },
     {
-      "id": "steady_hands",
+      "id": "0cad7930-ef71-4996-8ba6-25e7a9505d5d",
       "side": "player",
       "name": "Steady Hands",
       "type": "defend",
@@ -349,7 +349,7 @@
       }
     },
     {
-      "id": "whatevers_needed",
+      "id": "9f60f176-7cfc-4d5b-b4a6-91efe9b06bee",
       "side": "player",
       "name": "Whatever's Needed",
       "type": "attack",
@@ -367,7 +367,7 @@
       }
     },
     {
-      "id": "overtime",
+      "id": "1b423d95-0d00-4644-acb2-a21c249b5590",
       "side": "player",
       "name": "Overtime",
       "type": "attack",
@@ -385,7 +385,7 @@
       }
     },
     {
-      "id": "full_stack",
+      "id": "8182f021-cac9-450a-9ae6-73aa2f638b74",
       "side": "player",
       "name": "Full Stack",
       "type": "power",
@@ -403,7 +403,7 @@
       }
     },
     {
-      "id": "polish",
+      "id": "00fb8d67-106d-4d4d-ab5e-4ed4c644a349",
       "side": "player",
       "name": "Polish",
       "type": "power",
@@ -421,7 +421,7 @@
       }
     },
     {
-      "id": "pixel_perfect",
+      "id": "aa8f6b0f-d4a9-4592-8476-cb7258ce2078",
       "side": "player",
       "name": "Pixel Perfect",
       "type": "attack",
@@ -439,7 +439,7 @@
       }
     },
     {
-      "id": "smoke",
+      "id": "6c026868-7fb4-477b-8722-ed72fa59aa91",
       "side": "player",
       "name": "Smoke",
       "type": "defend",
@@ -457,7 +457,7 @@
       }
     },
     {
-      "id": "the_reveal",
+      "id": "610229f7-8648-4d89-bf65-5cbf22c5cd65",
       "side": "player",
       "name": "The Reveal",
       "type": "attack",
@@ -475,7 +475,7 @@
       }
     },
     {
-      "id": "portfolio",
+      "id": "681b06b5-2569-4e3c-9992-eea62eeb02a4",
       "side": "player",
       "name": "Portfolio",
       "type": "power",
@@ -493,7 +493,7 @@
       }
     },
     {
-      "id": "app_store_review",
+      "id": "d2a1ad32-0f49-46b0-a027-a12b1fef5038",
       "side": "player",
       "name": "App Store Review",
       "type": "attack",
@@ -511,7 +511,7 @@
       }
     },
     {
-      "id": "post_mortem",
+      "id": "f18bc5fc-703b-4324-946d-fd16bbd172ea",
       "side": "player",
       "name": "Post-Mortem",
       "type": "defend",
@@ -529,7 +529,7 @@
       }
     },
     {
-      "id": "runbook",
+      "id": "2f484bec-95f3-4cd0-af3b-114b1ae7a40d",
       "side": "player",
       "name": "Runbook",
       "type": "defend",
@@ -547,7 +547,7 @@
       }
     },
     {
-      "id": "on_call",
+      "id": "fbf2274d-e3c1-466d-b186-7aae65937e5b",
       "side": "player",
       "name": "On Call",
       "type": "defend",
@@ -565,7 +565,7 @@
       }
     },
     {
-      "id": "root_cause",
+      "id": "77acf213-6026-4267-a66b-93aee19922d9",
       "side": "player",
       "name": "Root Cause",
       "type": "attack",
@@ -583,7 +583,7 @@
       }
     },
     {
-      "id": "alerting",
+      "id": "34bdcdd7-fcd7-4424-9490-398f866de07e",
       "side": "player",
       "name": "Alerting",
       "type": "power",
@@ -601,7 +601,7 @@
       }
     },
     {
-      "id": "blameless",
+      "id": "7178c6bc-8911-431f-aa0e-bbdd3a21d27a",
       "side": "player",
       "name": "Blameless",
       "type": "defend",

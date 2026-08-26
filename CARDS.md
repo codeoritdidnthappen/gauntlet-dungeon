@@ -21,7 +21,7 @@ independently.
 
 | Field | Meaning |
 |---|---|
-| `id` | stable key |
+| `id` | stable key — a v4 UUID; read cards by `name` |
 | `name` | mechanical name — e.g. "Confusion" |
 | `text` | mechanical effect, one short line |
 | `subtext` | the interview line — e.g. *"Roast my setup!"* |
