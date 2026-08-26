@@ -236,6 +236,15 @@
       }
     },
     {
+      "id": "pomeranian",
+      "type": "dog",
+      "name": "Pomeranian",
+      "image": {
+        "filename": "pomeranian.png",
+        "path": "assets/pets/"
+      }
+    },
+    {
       "id": "tabby",
       "type": "cat",
       "name": "Tabby",
