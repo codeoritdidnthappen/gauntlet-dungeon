@@ -105,7 +105,7 @@ export default function PetCreation() {
             <MissingArt path={`assets/pets/${pet.replace(/_/g, '-')}.png`} />
           ) : (
             /* Nothing chosen yet — a prompt, not a missing-art marker. */
-            <p className="mb-16 self-center font-display text-lg text-gold-200/45">
+            <p className="mb-16 self-center font-display text-3xl text-gold-300">
               Choose a little buddy.
             </p>
           )}
