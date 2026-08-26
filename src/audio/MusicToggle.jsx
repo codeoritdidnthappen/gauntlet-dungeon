@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { selectMusicEnabled, toggleMusic } from '../store/uiSlice'
-import { TRACK_URL } from './track'
+import { HAS_MUSIC } from './track'
 
 /**
  * Music on/off. Renders nothing when there is no track to play.
@@ -9,7 +9,7 @@ import { TRACK_URL } from './track'
 export default function MusicToggle({ className = '' }) {
   const enabled = useSelector(selectMusicEnabled)
   const dispatch = useDispatch()
-  if (!TRACK_URL) return null
+  if (!HAS_MUSIC) return null
 
   return (
     <button

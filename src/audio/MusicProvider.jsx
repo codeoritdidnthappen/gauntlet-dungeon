@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import { selectMusicEnabled } from '../store/uiSlice'
-import { TRACK_URL } from './track'
+import { selectMusicEnabled, selectScreen } from '../store/uiSlice'
+import { trackFor } from './track'
 
 /**
  * Background music.
@@ -11,16 +11,22 @@ import { TRACK_URL } from './track'
  * (`ui.musicEnabled`); the element itself is not, because it is an imperative
  * resource rather than serialisable data.
  *
- * The track itself comes from ./track.js.
+ * Which track a screen plays comes from ./track.js. Screens sharing a track
+ * still hand over without a restart — the effect below is keyed on the URL, so
+ * it only re-runs when the track actually changes, which today means walking
+ * into or out of the battle room.
  */
 export function MusicProvider({ children }) {
   const enabled = useSelector(selectMusicEnabled)
+  const screen = useSelector(selectScreen)
+  const trackUrl = trackFor(screen)
   const audioRef = useRef(null)
 
-  // Create the element once.
+  // One element per track. Same URL across a navigation means no re-run, so the
+  // track plays on uninterrupted.
   useEffect(() => {
-    if (!TRACK_URL) return
-    const audio = new Audio(TRACK_URL)
+    if (!trackUrl) return
+    const audio = new Audio(trackUrl)
     audio.loop = true
     audio.volume = 0.4
     audio.preload = 'auto'
@@ -29,7 +35,7 @@ export function MusicProvider({ children }) {
       audio.pause()
       audioRef.current = null
     }
-  }, [])
+  }, [trackUrl])
 
   // Follow the flag. Browsers block autoplay until the page has been
   // interacted with, so if play() is rejected we arm a one-shot listener and
@@ -61,7 +67,7 @@ export function MusicProvider({ children }) {
     })
 
     return () => cleanup()
-  }, [enabled])
+  }, [enabled, trackUrl])
 
   return children
 }
