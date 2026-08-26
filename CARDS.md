@@ -1,6 +1,6 @@
 # CARDS
 
-**Status:** 31 player cards + 37 enemy cards written.
+**Status:** 33 player cards + 37 enemy cards written.
 
 - `data/cards.json` — player cards
 - `data/enemy-cards.json` — enemy (interviewer) cards
@@ -43,7 +43,7 @@ nothing that expresses another's.
 
 Six cards each. Content in `data/cards.json`.
 
-### Neutral — 7
+### Neutral — 9
 Available to every class. Carries the basics (Strike, Defend) and the starting
 Power.
 

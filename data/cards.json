@@ -12,7 +12,7 @@
       "smite",
       "strike",
       "strike",
-      "defend",
+      "defend_parry",
       "confidence"
     ],
     "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. This array is the source of truth; the game reads it rather than hardcoding ids.",
@@ -55,6 +55,44 @@
       "cooldown": 0,
       "image": {
         "filename": "strike.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "defend_parry",
+      "side": "player",
+      "name": "Defend Parry",
+      "type": "defend",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "block": 5,
+      "text": "Gain 5 Block.",
+      "subtext": "Let me push back on that a little.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "defend-sword.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
+      "id": "defend_block",
+      "side": "player",
+      "name": "Defend Block",
+      "type": "defend",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "block": 5,
+      "text": "Gain 5 Block.",
+      "subtext": "I'd want to check before I commit to that.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "defend-shield.png",
         "path": "assets/cards/"
       }
     },
