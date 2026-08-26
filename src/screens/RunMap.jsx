@@ -18,7 +18,8 @@ import { goTo } from '../store/uiSlice'
  *
  * The parchment's first circle is labelled START — it is where the player
  * stands, not a room — so the rooms hang off the nodes after it: rooms[i] is
- * nodes[i + 1].
+ * nodes[i + 1]. That first circle is home, and it is marked as where the player
+ * currently is: lit, and not something to click.
  *
  * Only the next room can be entered (D3). Rooms past it are drawn but inert,
  * because nothing behind them exists yet.
@@ -49,6 +50,23 @@ export default function RunMap() {
           against an auto-height box does not resolve. */}
       <div className="relative inline-block">
         <img src={map.url} alt="" className="block max-h-screen w-auto max-w-full" />
+
+        {/* Home, on the first circle. A place the player is, not one they go to. */}
+        <div
+          title={`${roomData.start.name} — you are here`}
+          style={{
+            left: `${nodes[0].xNormalized * 100}%`,
+            top: `${nodes[0].yNormalized * 100}%`,
+            width: markerSize,
+            aspectRatio: '1',
+          }}
+          className={[
+            '-translate-x-1/2 -translate-y-1/2 absolute rounded-full',
+            'bg-gold-300/35 shadow-[0_0_18px_6px_rgba(233,205,122,0.55)]',
+          ].join(' ')}
+        >
+          <RoomIcon src={resolveRoomIcon(roomData.start.icon)} name={roomData.start.name} />
+        </div>
 
         {roomData.rooms.map((room, i) => {
           // nodes[0] is START; the rooms start at the node after it.

@@ -8,7 +8,8 @@
     "background": "Resolved through the same filename lookup as card and pet art — assets/backgrounds/.",
     "rooms": "Seven, one for each node after the map's START. START marks where the player begins and is not a room, so rooms[i] is the map's nodes[i + 1]. Only Room 1 is built: the rest carry an id, a number and a name and nothing else.",
     "map": "The run's route. Its sibling .json names where each node sits on the parchment, normalised, so nodes[i] is rooms[i] — the circles and the dotted line between them are painted into the art, not drawn by the screen.",
-    "icon": "What sits on the room's circle on the map. Optional — a room without one shows an empty marker. Resolved from assets/maps/ like the parchment itself."
+    "icon": "What sits on the room's circle on the map. Optional — a room without one shows an empty marker. Resolved from assets/maps/ like the parchment itself.",
+    "start": "Where the player begins — the map's first node, the one the parchment labels START. It is a place, not a room: nothing is fought there and it is never entered, so it carries a name and an icon and nothing else."
   },
   "rooms": [
     {
@@ -61,5 +62,12 @@
   "map": {
     "filename": "parchment-route-map.png",
     "path": "assets/maps/"
+  },
+  "start": {
+    "name": "Home",
+    "icon": {
+      "filename": "castle.svg",
+      "path": "assets/maps/"
+    }
   }
 }
