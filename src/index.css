@@ -59,6 +59,23 @@ body {
   font-variant-numeric: lining-nums tabular-nums;
 }
 
+/* Sprite-sheet playback — walks a single row of frames with no JS per frame.
+
+   The sheet slides inside a window one frame wide. Travel is the sheet's full
+   width, so `steps(<frames>)` moves exactly one frame per step.
+
+   Percentages on `background-position` do NOT work here: they resolve against
+   (container - image), so the steps land on fractions of a frame and two frames
+   show at once. */
+@keyframes sprite-frames {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
 /* Torchlight flicker — CSS only, per the "minimal animation" decision. */
 @keyframes torch {
   0%,

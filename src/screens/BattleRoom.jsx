@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import roomData from '../../data/rooms.json'
-import { resolveCharacterArt, resolveRoomBackground } from '../config/assets'
+import { resolveCharacterArt, resolveIdleSprite, resolveRoomBackground } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import { ActionButton, ScreenBackdrop } from '../components/ui'
 import { goTo } from '../store/uiSlice'
@@ -31,6 +31,7 @@ export default function BattleRoom() {
   const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
   const background = resolveRoomBackground(room)
   const art = resolveCharacterArt({ race, gender, classId, pose: 'ready' })
+  const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
 
   return (
     <main className="relative h-full w-full overflow-hidden bg-soot-950">
@@ -48,7 +49,9 @@ export default function BattleRoom() {
       <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-36 lg:gap-12 lg:px-16 lg:pb-44">
         {/* ------------------------------------------------------ left: you */}
         <div className="flex min-w-0 flex-1 items-end justify-center">
-          {art ? (
+          {sprite ? (
+            <IdleSprite sprite={sprite} />
+          ) : art ? (
             <img
               key={art.key}
               src={art.url}
@@ -76,6 +79,37 @@ export default function BattleRoom() {
         <ActionButton onClick={() => dispatch(goTo('cards'))}>Back</ActionButton>
       </div>
     </main>
+  )
+}
+
+/**
+ * A figure standing and breathing, played from a sprite sheet.
+ *
+ * The sheet is one row of frames, so playback is a background-position sweep in
+ * `steps()` — no JS runs per frame, and the browser composites it. Frame size,
+ * count and rate all come from the sheet's own metadata, so a sheet cut
+ * differently plays correctly without a code change.
+ */
+function IdleSprite({ sprite }) {
+  const { frameWidth, frameHeight, frameCount, fps } = sprite.meta
+
+  return (
+    <div
+      aria-hidden="true"
+      // A window exactly one frame wide, with the sheet sliding behind it.
+      style={{ height: `${FIGURE_HEIGHT * 100}%`, aspectRatio: `${frameWidth} / ${frameHeight}` }}
+      className="overflow-hidden drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+    >
+      <img
+        src={sprite.url}
+        alt=""
+        // Full height and natural width makes the sheet exactly frameCount
+        // windows wide, so translating it by its own width steps one frame at a
+        // time. max-w-none keeps the browser from shrinking it to fit.
+        style={{ animation: `sprite-frames ${frameCount / fps}s steps(${frameCount}) infinite` }}
+        className="h-full w-auto max-w-none"
+      />
+    </div>
   )
 }
 
