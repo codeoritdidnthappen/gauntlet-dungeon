@@ -9,7 +9,7 @@
     "types": "attack | defend | power, matching the D15 starting loadout of 3 attack / 1 defend / 1 power.",
     "subtype": "Left blank where nothing useful applies, per instruction.",
     "startingLoadout": [
-      "strike",
+      "smite",
       "strike",
       "strike",
       "defend",
@@ -20,6 +20,26 @@
     "separation": "Player cards can never be used by an enemy and enemy cards can never enter a player loadout. Enforced by the `side` field — see SCHEMA.md."
   },
   "cards": [
+    {
+      "id": "smite",
+      "side": "player",
+      "name": "Smite",
+      "type": "attack",
+      "subtype": "",
+      "class": "neutral",
+      "rarity": "basic",
+      "cost": 1,
+      "damage": 8,
+      "blockDamage": 2,
+      "text": "Deal 8 dmg, -2 block.",
+      "subtext": "My name is ${playerName}. It's nice meeting you!",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "smite.png",
+        "path": "assets/cards/"
+      }
+    },
     {
       "id": "strike",
       "side": "player",
