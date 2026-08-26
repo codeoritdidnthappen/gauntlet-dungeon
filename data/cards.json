@@ -61,7 +61,7 @@
     {
       "id": "defend_parry",
       "side": "player",
-      "name": "Defend Parry",
+      "name": "Parry",
       "type": "defend",
       "subtype": "",
       "class": "neutral",
@@ -80,7 +80,7 @@
     {
       "id": "defend_block",
       "side": "player",
-      "name": "Defend Block",
+      "name": "Block",
       "type": "defend",
       "subtype": "",
       "class": "neutral",
