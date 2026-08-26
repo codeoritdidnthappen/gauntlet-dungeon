@@ -21,6 +21,32 @@ flicker — is CSS filters, blend modes, and keyframes.
 frame animation. CSS transitions and keyframes only. If something needs more than
 that, the design is wrong, not the stack.
 
+### State — Redux Toolkit
+
+`@reduxjs/toolkit` + `react-redux`. Two slices under `src/store/`:
+
+| Slice | Holds |
+|---|---|
+| `player` | name, race, gender, role, class, pet, petType, petName, loadout |
+| `ui` | current screen, music on/off |
+
+**The rule for what goes where:** anything that outlives the component that set
+it goes in Redux; anything only that component cares about stays in React
+state. So the character is Redux (built across three screens, carried for the
+whole run) while, say, the home screen's save-check status is local.
+
+Two consequences worth knowing:
+
+- **Screens dispatch `goTo` themselves** rather than being handed navigation
+  callbacks, because every screen navigates.
+- **The `<audio>` element is deliberately NOT in Redux** — it is an imperative,
+  non-serialisable resource. Only the `musicEnabled` flag is state; the element
+  lives in `MusicProvider` and reacts to it.
+
+`class` is derived inside the `setRole` reducer, so it can never drift from
+`role` (D10). The loadout is a flat array of card ids with duplicates repeated,
+matching SCHEMA.md §9 — not a `{id: count}` map.
+
 ## 1b. Persistence — localStorage, no backend
 
 **No Supabase, no server, no login, no accounts.** All state is local.
