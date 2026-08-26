@@ -198,14 +198,23 @@ const IDLE_SHEET_META = Object.fromEntries(
 )
 
 /**
- * The looping idle sheet for a figure, or null where none has been drawn.
+ * The looping idle sheet filed under a name, or null where none has been drawn.
+ *
+ * Enemies are named directly — `skeleton-swordsman`; player figures compose
+ * theirs from class, race, gender and pose. Both live under the same glob, so
+ * one lookup serves both sides.
  *
  * @returns {{ url: string, meta: object, key: string } | null}
  */
-export function resolveIdleSprite({ race, gender, classId, pose = 'ready' }) {
-  if (!classId) return null
-  const key = artKey(`${classId}-${race}-${gender}-${pose}-idle-spritesheet`)
+export function idleSpriteNamed(name) {
+  const key = artKey(`${name}-idle-spritesheet`)
   const url = IDLE_SHEETS[key]
   const meta = IDLE_SHEET_META[key]
   return url && meta ? { url, meta, key } : null
+}
+
+/** The looping idle sheet for a player figure, or null. */
+export function resolveIdleSprite({ race, gender, classId, pose = 'ready' }) {
+  if (!classId) return null
+  return idleSpriteNamed(`${classId}-${race}-${gender}-${pose}`)
 }
