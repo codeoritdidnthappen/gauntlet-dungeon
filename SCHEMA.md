@@ -436,6 +436,17 @@ Room {
   circle — an `.svg` under `assets/maps/`. A room without one shows an empty
   marker.
 
+`rooms.json` also carries `start` — the map's first node, the one the parchment
+labels START:
+
+```
+start: { name, icon: { filename, path } }
+```
+
+It is a **place, not a room**: nothing is fought there and it is never entered,
+so it has no id and no number. The map draws it lit, as where the player
+currently is, and it is not clickable.
+
 ### The map
 
 `rooms.json` also carries the run's route:
