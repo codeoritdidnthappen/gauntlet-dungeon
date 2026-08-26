@@ -77,10 +77,11 @@ balancing stay independent.
 | `cooldown` | int | turns unavailable after use; `0` = none (D16) |
 | `damage` | int | health damage dealt to the target |
 | `blockDamage` | int | block stripped from the target |
+| `block` | int | block granted to the player |
 
-`damage` and `blockDamage` are the numeric payload behind `text`. They are
-present only on cards authored with them so far; where they are absent, `text`
-is still the only statement of what the card does.
+`damage`, `blockDamage` and `block` are the numeric payload behind `text`. They
+are present only on cards authored with them so far; where they are absent,
+`text` is still the only statement of what the card does.
 
 `type` is **`attack` | `defend` | `power`**, matching D15's starting loadout of
 3 attack / 1 defend / 1 power.
