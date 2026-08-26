@@ -11,22 +11,27 @@ import { trackFor } from './track'
  * (`ui.musicEnabled`); the element itself is not, because it is an imperative
  * resource rather than serialisable data.
  *
- * Which track a screen plays comes from ./track.js. Screens sharing a track
- * still hand over without a restart — the effect below is keyed on the URL, so
- * it only re-runs when the track actually changes, which today means walking
- * into or out of the battle room.
+ * Which track a screen plays comes from ./track.js. Screens sharing a track are
+ * left alone entirely; changing track swaps the src on the element that is
+ * already there.
+ *
+ * That one element matters. Building a fresh Audio per track looks tidier and
+ * does not work: a new element has to win autoplay permission of its own, and
+ * a swap happens long after the click that allowed the first one, so it stalls
+ * silently — play() never settles and nothing is heard. An element that has
+ * already played keeps its permission through a src change.
  */
 export function MusicProvider({ children }) {
   const enabled = useSelector(selectMusicEnabled)
   const screen = useSelector(selectScreen)
   const trackUrl = trackFor(screen)
-  const audioRef = useRef(null)
 
-  // One element per track. Same URL across a navigation means no re-run, so the
-  // track plays on uninterrupted.
+  const audioRef = useRef(null)
+  const loadedRef = useRef(null)
+
+  // Create the element once, for the life of the app.
   useEffect(() => {
-    if (!trackUrl) return
-    const audio = new Audio(trackUrl)
+    const audio = new Audio()
     audio.loop = true
     audio.volume = 0.4
     audio.preload = 'auto'
@@ -34,7 +39,17 @@ export function MusicProvider({ children }) {
     return () => {
       audio.pause()
       audioRef.current = null
+      loadedRef.current = null
     }
+  }, [])
+
+  // Point it at the current screen's track. Guarded, because assigning the same
+  // src again would start it over.
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || !trackUrl || loadedRef.current === trackUrl) return
+    loadedRef.current = trackUrl
+    audio.src = trackUrl
   }, [trackUrl])
 
   // Follow the flag. Browsers block autoplay until the page has been
