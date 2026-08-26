@@ -287,7 +287,8 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
   every class but the Fighter, which is 1. Nothing else may change
   `startingBlock`; effects add to `block`.
 - `loadout.length === 5` at the start of a run, and the five ids are exactly
-  `cards.json → notes.startingLoadout` (D15). It grows from there via rewards.
+  `cards.json → notes.startingLoadout[class]`, or `[default]` where the class has
+  no entry of its own (D15). It grows from there via rewards.
 - `inventory.length <= 20` (D15).
 - `loadout ⊆ inventory`.
 - Every card in either list has `side === "player"` (§1).
@@ -296,7 +297,8 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
   all of the above (D13).
 - Loadout may only be edited **outside a room**, from the map button (D15).
 - The starting loadout is **granted, never chosen** — character creation writes it
-  with no player input (D15, revised).
+  with no player input (D15, revised). Choosing a role rewrites it, because the
+  role is what settles the class the five are dealt from.
 
 ---
 

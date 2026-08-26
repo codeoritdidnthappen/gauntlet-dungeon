@@ -104,10 +104,12 @@ and every card in them is earned in the dungeon rather than picked at creation.
 - ~~**Energy per turn is assumed to be 3.**~~ **Confirmed: 3**, for every class,
   refilled each turn (2026-08-26). Every cost in `cards.json` is balanced against
   it. Starting Block is likewise set — 0 for all, 1 for the Fighter.
-- **Starting loadout** is fixed at 3× Strike, 1× Defend, 1× Confidence for every
-  class (D15, revised). Open: should each class instead be granted its own
-  flavoured basics? Cheap to change — the composition is one array in
-  `cards.json → notes.startingLoadout`.
+- ~~**Starting loadout** — should each class be granted its own flavoured
+  basics?~~ **Answered: yes** (2026-08-26). `notes.startingLoadout` is keyed by
+  class; a class without an entry gets `default`. The Fighter is the only one
+  flavoured so far, opening with Wallop in place of a Strike. Still granted, not
+  drafted. Open: what the other three trade, and whether one card each is enough
+  to read as a class.
 - Duplicates: can the inventory hold two copies of the same card?
 - Pool size per class — 6 each. Less pressing now that the loadout is earned
   rather than drafted, but it caps how far a class can diverge over a run.
