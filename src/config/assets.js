@@ -127,3 +127,22 @@ export function resolveCharacterArt({ race, gender, classId = null, pose = 'rest
 
   return null
 }
+
+/**
+ * Card art — `assets/cards/{filename}`, taken from the card's `image` field in
+ * cards.json. No art exists yet; the glob simply resolves to nothing and cards
+ * draw a placeholder frame until the files land.
+ */
+export const CARD_ART = urlOf(
+  import.meta.glob('../../assets/cards/*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+)
+
+/** Art for a card, or null when none has been drawn yet. */
+export function resolveCardArt(card) {
+  const filename = card.image?.filename ?? `${card.id}.png`
+  return CARD_ART[artKey(filename.replace(/\.png$/, ''))] ?? null
+}
