@@ -2,24 +2,21 @@
   "schemaVersion": 1,
   "generated": "2026-08-24",
   "notes": {
-    "energyPerTurn": 6,
-    "energyAssumption": "maxEnergy is 6 for every class (set in character-options.json). Card costs were originally priced against 3; they remain valid because they were priced RELATIVE to each other. At 6 energy the player plays ~4-5 cards per turn instead of ~2. Enemy health must scale to that, not to the old assumption.",
+    "energyPerTurn": 3,
+    "energyAssumption": "maxEnergy is 3 for every class (set in character-options.json), refilled at the start of every turn and never carried over. This is the value the costs here were originally priced against, and the value the design returned to on 2026-08-26 after a spell at 6. At 3 the player plays ~2 cards per turn against an average cost of 1.4. Enemy health must scale to that, not to the 6-energy assumption it briefly carried.",
     "scarcity": "D16 removed the deck/draw. Nothing is rate-limited by a shuffle, so scarcity is authored per card via oncePerRoom and cooldown. Cards with neither are intentionally spammable and priced low.",
     "subtext": "D7. Player cards, so subtext is what the CANDIDATE says. Display only — never affects resolution.",
-    "types": "attack | defend | power, matching the D15 starting loadout of 5 attack / 4 defend / 1 power.",
+    "types": "attack | defend | power, matching the D15 starting loadout of 3 attack / 1 defend / 1 power.",
     "subtype": "Left blank where nothing useful applies, per instruction.",
     "startingLoadout": [
       "strike",
       "strike",
       "strike",
-      "strike",
-      "strike",
-      "defend",
-      "defend",
-      "defend",
       "defend",
       "confidence"
     ],
+    "startingLoadoutRule": "D15 (revised). The player does NOT pick a starting loadout. Every run begins with these five neutral cards — 3 attack, 1 defend, 1 power — regardless of class. Class cards enter the loadout later, through post-room rewards. This array is the source of truth; the game reads it rather than hardcoding ids.",
+    "blockDefault": "Block is 0 for every class except the Fighter (Full Stack), which resets to 1 each turn rather than to 0. Per-class values live in character-options.json under classes[].stats.startingBlock.",
     "separation": "Player cards can never be used by an enemy and enemy cards can never enter a player loadout. Enforced by the `side` field — see SCHEMA.md."
   },
   "cards": [

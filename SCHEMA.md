@@ -75,9 +75,8 @@ balancing stay independent.
 | `rarity` | `basic` \| `common` \| `uncommon` \| `rare` | Slay the Spire tiers |
 | `oncePerRoom` | bool | usable a single time per encounter (D16) |
 | `cooldown` | int | turns unavailable after use; `0` = none (D16) |
-
 `type` is **`attack` | `defend` | `power`**, matching D15's starting loadout of
-5 attack / 4 defend / 1 power.
+3 attack / 1 defend / 1 power.
 
 `subtype` is mechanical flavour — `burst`, `delayed`, `riposte`, `setup`,
 `engine`, `scaling`, `combo`, `hybrid`, `flexible`, `ramp`, `evade`,
@@ -192,7 +191,10 @@ Combatant {
 
 Rules:
 
-- `block` is transient and zeroed at the start of the owner's turn.
+- `block` is transient and reset at the start of the owner's turn — to the
+  owner's **starting block**, not unconditionally to zero. For enemies and for
+  three of the four classes that value *is* zero, so the usual Spire rule holds;
+  the Fighter resets to 1 (§14).
 - `statuses` is a flat counter map so new keywords need no schema change.
 - **Player `health` persists across the whole run** (D4). Enemy `health` is
   discarded when the room ends (D5 — enemies never return).
@@ -233,12 +235,15 @@ PlayerCharacter extends Combatant {
 
   // energy — player only; enemies have none (§4)
   energy:     int           // current; refills to maxEnergy at the start of every turn
-  maxEnergy:  int           // base budget per turn
+  maxEnergy:  int           // base budget per turn — 3 for every class
+
+  // block — `block` itself is inherited from Combatant (§7)
+  startingBlock: int        // what block resets to each turn; 0, or 1 for Fighter
 
   // run progression
   revivesRemaining: int     // starts at 3 (D13)
   inventory:  CardId[]      // owned, max 20 (D15) — all side:"player"
-  loadout:    CardId[]      // carried into a room, exactly 10 (D15)
+  loadout:    CardId[]      // carried into a room; starts at exactly 5 (D15)
 }
 ```
 
@@ -259,11 +264,15 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 
 - `energy` is set to `maxEnergy` at the start of every player turn, and unspent
   energy does **not** carry over.
-- `maxEnergy` is the base. Effects may raise it **within a room only** — Full
+- `maxEnergy` is **3 for every class**. Effects may raise it **within a room only** — Full
   Stack grants +1 per turn — and it reverts when the room ends. Keep the base and
   the in-room modified value distinct so a room never permanently alters the
   character.
-- `loadout.length === 10` exactly — not 9, not 11 (D15).
+- `block` is set to `startingBlock` at the start of every player turn — 0 for
+  every class but the Fighter, which is 1. Nothing else may change
+  `startingBlock`; effects add to `block`.
+- `loadout.length === 5` at the start of a run, and the five ids are exactly
+  `cards.json → notes.startingLoadout` (D15). It grows from there via rewards.
 - `inventory.length <= 20` (D15).
 - `loadout ⊆ inventory`.
 - Every card in either list has `side === "player"` (§1).
@@ -271,6 +280,8 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 - `revivesRemaining` starts at 3; at 0 the next death ends the run and discards
   all of the above (D13).
 - Loadout may only be edited **outside a room**, from the map button (D15).
+- The starting loadout is **granted, never chosen** — character creation writes it
+  with no player input (D15, revised).
 
 ---
 
@@ -421,15 +432,21 @@ Choosing one pet over another changes nothing except which image appears.
 identity and art (D12), plus a card-targeting surface. Values live in
 `data/character-options.json` under `classes[].stats`.
 
-| Class | Roles | maxHealth | maxEnergy |
-|---|---|---|---|
-| **Fighter** | Full Stack | 82 | 6 |
-| **Rogue** | Frontend, Mobile | 78 | 6 |
-| **Wizard** | Backend, Database | 74 | 6 |
-| **Duelist** | DevOps, Analyst | 72 | 6 |
+| Class | Roles | maxHealth | maxEnergy | startingBlock |
+|---|---|---|---|---|
+| **Fighter** | Full Stack | 82 | 3 | **1** |
+| **Rogue** | Frontend, Mobile | 78 | 3 | 0 |
+| **Wizard** | Backend, Database | 74 | 3 | 0 |
+| **Duelist** | DevOps, Analyst | 72 | 3 | 0 |
 
 `health` starts at `maxHealth`. `energy` refills to `maxEnergy` at the start of
-every turn (§8).
+every turn (§8). `block` resets to `startingBlock` at the start of every turn
+(§7) — so the Fighter's 1 is a standing passive, renewed each turn, not a
+one-time grant at the top of the room.
+
+**Energy is flat across classes.** All four sit at 3. Class differentiation is
+carried by health, by the card pools (D11), and now by starting block — not by
+the size of the turn budget.
 
 ### Why the health spread is narrow
 
@@ -440,19 +457,25 @@ edge of the four — both its signature mechanics (Riposte, and Root Cause doubl
 after damage) *want* it to be hit, so it has the least health and the most reason
 to spend it.
 
-### Why energy is 6
+### Why energy is 3
 
-Average card cost across the 30 player cards is **1.4**, so 6 energy buys about
-**4.3 cards per turn**. At 3 it would have been 2.1 — fewer than the three-card
-turn the design calls for.
+Average card cost across the 30 player cards is **1.4**, so 3 energy buys about
+**2.1 cards per turn**. That is Spire's number, and it is the number every cost
+in `cards.json` was originally priced against.
 
-There is a structural reason too. In Slay the Spire energy is not the only
-limiter; a 5-card hand also gates the turn. **D16 removed that** — all 10 loadout
-cards are available every turn — so energy is the *only* gate besides cooldowns,
-and it has to be larger than Spire's 3 to compensate.
+Energy briefly went to 6 on the reasoning that D16 removed the other limiter — in
+Spire a 5-card hand gates the turn as much as energy does, and with the whole
+loadout available every turn energy is the *only* gate besides cooldowns. **That
+is now reversed** (2026-08-26). Two turns of two cards is the intended texture,
+and a 6-energy turn made the loadout a checklist to empty rather than a choice.
 
-Card costs were priced **relative to each other**, so raising the budget did not
-invalidate them. It raises output per turn, which enemy health absorbs.
+Card costs were priced **relative to each other**, so moving the budget in either
+direction did not invalidate them — it changes output per turn, which enemy
+health absorbs.
+
+Consequence, holding D15's revised five-card start: opening turns are gated by
+**both** limits at once — three energy and only five cards, three of them the
+same Strike. Price the first rooms low.
 
 ### Run-level budget
 

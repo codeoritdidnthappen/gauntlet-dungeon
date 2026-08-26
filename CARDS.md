@@ -7,7 +7,7 @@
 - `SCHEMA.md` — field definitions and the player/enemy separation rule
 
 Those files are the source of truth for content. This document covers design
-intent. Last updated 2026-08-24.
+intent. Last updated 2026-08-26.
 
 Companion to PRD.md (design) and ARCHITECTURE.md (schema).
 
@@ -79,12 +79,12 @@ rather than initiating. Blameless reflects everything for one turn.
 | | |
 |---|---|
 | Inventory | 20 cards owned |
-| Loadout | exactly 10, carried into a room |
-| Starting loadout | 10 — 5 attack, 4 defend, 1 power |
+| Loadout | carried into a room; starts at 5 and grows |
+| Starting loadout | 5 — 3 attack, 1 defend, 1 power, **granted, not chosen** |
 | Management | only outside a room, via a map button |
 | Post-room | offered 3 cards, pick 1 — **or** heal instead |
 
-**All 10 are always available (D16).** No deck, no draw, no discard, no shuffle.
+**The whole loadout is always available (D16).** No deck, no draw, no discard, no shuffle.
 Play them in any order at any time. The only restrictions are per-card:
 `oncePerRoom` and `cooldown`.
 
@@ -93,20 +93,24 @@ cards**, since it no longer comes from the shuffle. A card that would be
 overpowered if spammed needs `oncePerRoom` or a `cooldown` — there is no draw luck
 to rate-limit it.
 
-Starting loadout composition means the pools must supply, at minimum, basic
-attack, defend, and power cards per class.
+The starting five are neutral — 3× Strike, 1× Defend, 1× Confidence — so the
+class pools do **not** have to supply basics. They supply what a class *becomes*,
+and every card in them is earned in the dungeon rather than picked at creation.
 
 ---
 
 ## Open
 
-- **Energy per turn is assumed to be 3.** D6 says "fixed energy budget" but never
-  names a number. Every cost in `cards.json` is balanced against 3 — confirm it.
-- **Starting loadout** currently draws its 5 attack / 4 defend / 1 power from
-  neutral cards only (5× Strike, 4× Defend, 1× Confidence). Should each class
-  instead start with its own basics?
+- ~~**Energy per turn is assumed to be 3.**~~ **Confirmed: 3**, for every class,
+  refilled each turn (2026-08-26). Every cost in `cards.json` is balanced against
+  it. Starting Block is likewise set — 0 for all, 1 for the Fighter.
+- **Starting loadout** is fixed at 3× Strike, 1× Defend, 1× Confidence for every
+  class (D15, revised). Open: should each class instead be granted its own
+  flavoured basics? Cheap to change — the composition is one array in
+  `cards.json → notes.startingLoadout`.
 - Duplicates: can the inventory hold two copies of the same card?
-- Pool size per class — currently 6 each, which is thin for a 10-card loadout.
+- Pool size per class — 6 each. Less pressing now that the loadout is earned
+  rather than drafted, but it caps how far a class can diverge over a run.
 - Which cards are draftable mid-run vs. starting-pool only.
 - Card removal — does it exist, and where?
 - What happens when the 20-card cap is reached (one card per room means it binds

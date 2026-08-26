@@ -85,7 +85,7 @@ The game is a real single-player roguelike, not a card game shaped like one.
 - run structure and permadeath
 
 **No longer in — removed by D16:**
-- ~~a deck you draw from~~ — all 10 loadout cards are always available
+- ~~a deck you draw from~~ — every loadout card is always available
 - ~~draw / discard / shuffle / reshuffle~~
 - ~~card removal as a lever~~ — meaningless when the loadout is chosen fresh each
   room
@@ -383,41 +383,56 @@ Type is chosen before the pet cards, mirroring race-before-role on Screen 2.
 Both creation screens therefore follow one pattern: **text field, then a narrowing
 choice, then cards.** One component, one layout, twice.
 
-### Screen 4 — Choose your cards (RATIFIED)
-The player selects their cards. **The available pool is filtered by the class**
-they resolved to on Screen 2.
+### Screen 4 — Starting loadout (RATIFIED, revised 2026-08-26)
+The player is **shown** the five cards they start with. There is no selection —
+every run begins with the same fixed loadout of **3 attack, 1 defend, 1 power**,
+whatever class Screen 2 resolved to.
 
 Card-to-class breakdown is stubbed in **CARDS.md** — structure only, no content.
 
-**Note: this deviates from D6.** Slay the Spire hands you a fixed starting deck;
-it does not let you build one. Choosing your own cards up front is closer to a
-constructed/TCG model. That is a legitimate change, but D6 is the stated
-mechanical base, so it should be a deliberate deviation rather than drift.
+**This restores D6.** The screen used to let the player build a ten-card loadout
+from their class pool, which was a constructed/TCG model rather than the Spire
+model D6 names as the base. A fixed starting deck is what D6 actually describes,
+and it gives class cards somewhere to go: they are earned in the dungeon rather
+than handed over at creation.
 
-### D15 — Deck economy (RATIFIED)
+### D15 — Deck economy (RATIFIED, revised 2026-08-26)
 
 - **Collection cap: 20 cards.** The most a player can own.
-- **Loadout: 10 cards.** You take exactly 10 into a room.
-- **Hand limit: 10.**
-- **Starting deck: 10 cards** — 5 attack, 4 defend, 1 power.
+- **Starting loadout: 5 cards** — **3 attack, 1 defend, 1 power**, fixed, the
+  same for every class. The player does **not** choose it.
+- **Loadout: grows from 5.** What you carry into a room, one card per line.
 - **Card management happens only outside a room**, from a button on the map.
 - **After each room:** three new cards are offered, **pick one — or heal instead.**
 
-The interesting part is the 20-vs-10 gap: you own up to twenty and carry ten, so
-choosing the loadout before each room is a real recurring decision, and it is
-genuinely distinct from Spire (where the whole deck always comes with you).
+**Revision.** The original D15 gave a ten-card starting loadout — 5 attack, 4
+defend, 1 power — drafted by the player on Screen 4. That is retired. The run now
+opens with five granted cards and the loadout is built by playing, not by
+picking. The 20-card inventory cap and the reward loop are unchanged, so the
+20-vs-loadout gap still appears — it just appears a few rooms in, once there is
+more owned than carried, rather than at character creation.
+
+Consequences worth holding:
+
+- Class pools are **progression**, not a starting menu. A Wizard begins with the
+  same three Strikes as everyone else and becomes a Wizard by what they pick up.
+- The first rooms are deliberately thin — five cards, three of them the same
+  Strike. Early enemy health has to be priced for that, not for a ten-card turn.
+- Energy is 3 (see the energy note in SCHEMA.md), refilled every turn. Against
+  five cards averaging ~1 energy, opening turns are gated by both limits at once —
+  about two cards played out of five held. Price the first rooms for that.
 
 #### Terminology (fixed)
 
 - **Inventory** — 20 cards. Everything owned.
-- **Loadout** — exactly 10. What is carried into a room. Not 9, not 11.
+- **Loadout** — what is carried into a room. Starts at exactly 5.
 
 There is no separate "hand limit." That phrasing was an incorrect import from
 Spire and is retired.
 
-#### D16 — All 10 are always available (RATIFIED)
+#### D16 — The whole loadout is always available (RATIFIED)
 
-Inside a room, **all 10 loadout cards are available every turn**, playable in any
+Inside a room, **every loadout card is available every turn**, playable in any
 order, at any time.
 
 There is **no deck, no draw pile, no discard pile, no shuffle**. Nothing is

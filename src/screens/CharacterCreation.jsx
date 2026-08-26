@@ -135,9 +135,13 @@ export default function CharacterCreation() {
                     <span className="text-gold-200/40">Health</span>{' '}
                     {selectedClass.stats.maxHealth}
                   </span>
-                  <span>
+                  <span title="Refills every turn">
                     <span className="text-gold-200/40">Energy</span>{' '}
                     {selectedClass.stats.maxEnergy}
+                  </span>
+                  <span title="What Block resets to each turn">
+                    <span className="text-gold-200/40">Block</span>{' '}
+                    {selectedClass.stats.startingBlock}
                   </span>
                 </div>
                 <p className="mt-2 font-body text-xs leading-relaxed text-gold-200/45">
