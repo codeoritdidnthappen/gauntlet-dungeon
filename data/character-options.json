@@ -6,7 +6,7 @@
     "screens": "Screen 2 reads races, genders, roles. Screen 3 reads petTypes and pets.",
     "order": "Screen 2 order is name -> race -> gender -> role. Race and gender must resolve before role cards can render, because role cards depict the chosen race and gender.",
     "branchability": "class, race and gender are branchable in resolution. role is NEVER branchable — it is display-only and resolves to class. See SCHEMA.md §9.",
-    "stats": "Default player stats are set by CLASS only. Race and gender do not affect stats at all. health starts at maxHealth; energy refills to maxEnergy at the start of every turn.",
+    "stats": "Default player stats are set by CLASS only. Race and gender do not affect stats at all. health starts at maxHealth; energy refills to maxEnergy (3 for every class) at the start of every turn and never carries over; block resets to startingBlock at the start of every turn — 0 for every class except fighter (the Full Stack role), which resets to 1.",
     "gender": "Male / Female / Non-binary. 'Non-binary' rather than 'They' so all three options are the same kind of label — 'they' is a pronoun, not a descriptor, and reads as an afterthought next to the other two. The pronoun is stored separately on each option because the text layer needs it (revive scene, narrator lines, endings). Gender does NOT affect stats (SCHEMA.md §14) but IS card-targetable.",
     "pets": "Pets have no stats — id, type, name, image and nothing else. A Pet is not a Combatant. Choosing one pet over another changes only which image appears; the only mechanical role is the revive (D13)."
   },
@@ -148,7 +148,8 @@
       "shape": "Any sufficiently designed system is indistinguishable from magic.",
       "stats": {
         "maxHealth": 74,
-        "maxEnergy": 6
+        "maxEnergy": 3,
+        "startingBlock": 0
       }
     },
     {
@@ -157,7 +158,8 @@
       "shape": "A jack of all trades is a master of none, but oftentimes better than a master of one.",
       "stats": {
         "maxHealth": 82,
-        "maxEnergy": 6
+        "maxEnergy": 3,
+        "startingBlock": 1
       }
     },
     {
@@ -166,7 +168,8 @@
       "shape": "Rogues like to be where the action is, but prefer to watch from the dev tools.",
       "stats": {
         "maxHealth": 78,
-        "maxEnergy": 6
+        "maxEnergy": 3,
+        "startingBlock": 0
       }
     },
     {
@@ -175,7 +178,8 @@
       "shape": "You brought a sword to a 500 Internal Server Error.",
       "stats": {
         "maxHealth": 72,
-        "maxEnergy": 6
+        "maxEnergy": 3,
+        "startingBlock": 0
       }
     }
   ],
@@ -258,9 +262,10 @@
     "nameMaxLength": 24,
     "petNameMaxLength": 24,
     "inventoryMax": 20,
-    "loadoutSize": 10,
+    "loadoutSize": 5,
     "startingRevives": 3,
-    "maxEnergyAllClasses": 6
+    "maxEnergyAllClasses": 3,
+    "startingBlockDefault": 0
   },
   "unset": {
     "enemyHealth": "No enemy maxHealth values yet. Enemy health must scale to a 6-energy player turn — roughly 4-5 cards played per turn, not the 2 that 3 energy would have allowed.",

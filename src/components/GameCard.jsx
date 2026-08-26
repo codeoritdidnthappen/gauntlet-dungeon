@@ -4,6 +4,9 @@
  * `name` + `text` are the mechanics; `subtext` is the interview line (D7) and
  * is display-only. No card art exists yet, so the card is drawn in DOM — which
  * suits a game whose joke lives in the text.
+ *
+ * Read-only by default. Pass `onAdd` / `onRemove` and it grows the +/− stepper
+ * used wherever a loadout is actually edited (the map's card management, D15).
  */
 const TYPE_ACCENT = {
   attack: 'border-l-red-900/70',
@@ -20,6 +23,7 @@ const RARITY_RING = {
 
 export default function GameCard({ card, count = 0, onAdd, onRemove, disabled = false }) {
   const picked = count > 0
+  const editable = Boolean(onAdd || onRemove)
 
   return (
     <div
@@ -53,19 +57,27 @@ export default function GameCard({ card, count = 0, onAdd, onRemove, disabled = 
         </p>
       )}
 
-      <div className="mt-2 flex items-center justify-between gap-2 border-t border-gold-500/15 pt-2">
-        <span className="font-body text-2xs text-gold-200/45">
-          {picked ? `×${count}` : ''}
-        </span>
-        <div className="flex gap-1">
-          <StepButton onClick={onRemove} disabled={!picked} label={`Remove one ${card.name}`}>
-            −
-          </StepButton>
-          <StepButton onClick={onAdd} disabled={disabled} label={`Add one ${card.name}`}>
-            +
-          </StepButton>
+      {editable ? (
+        <div className="mt-2 flex items-center justify-between gap-2 border-t border-gold-500/15 pt-2">
+          <span className="font-body text-2xs text-gold-200/45">
+            {picked ? `×${count}` : ''}
+          </span>
+          <div className="flex gap-1">
+            <StepButton onClick={onRemove} disabled={!picked} label={`Remove one ${card.name}`}>
+              −
+            </StepButton>
+            <StepButton onClick={onAdd} disabled={disabled} label={`Add one ${card.name}`}>
+              +
+            </StepButton>
+          </div>
         </div>
-      </div>
+      ) : (
+        count > 1 && (
+          <div className="mt-2 border-t border-gold-500/15 pt-2 font-body text-2xs text-gold-200/45">
+            ×{count}
+          </div>
+        )
+      )}
     </div>
   )
 }

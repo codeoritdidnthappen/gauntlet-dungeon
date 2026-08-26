@@ -44,8 +44,9 @@ Two consequences worth knowing:
   lives in `MusicProvider` and reacts to it.
 
 `class` is derived inside the `setRole` reducer, so it can never drift from
-`role` (D10). The loadout is a flat array of card ids with duplicates repeated,
-matching SCHEMA.md §9 — not a `{id: count}` map.
+`role` (D10). The loadout is granted at creation from
+`cards.json → notes.startingLoadout`, and is a flat array of card ids with
+duplicates repeated, matching SCHEMA.md §9 — not a `{id: count}` map.
 
 ## 1b. Persistence — localStorage, no backend
 
@@ -232,8 +233,8 @@ One object, serializable, reset on restart:
   composure:    int
   bullshit:     int
   inventory:    Card[]         // owned, cap 20 (D15)
-  loadout:      Card[]         // carried into a room, exactly 10 (D15)
-  // NO deck / draw / discard / shuffle — all 10 are always available (D16)
+  loadout:      Card[]         // carried into a room; starts at exactly 5 (D15)
+  // NO deck / draw / discard / shuffle — the whole loadout is always available (D16)
   revivesRemaining: int        // starts at 3 (D13)
   afflictions:  Affliction[]
   open_claims:  { tag, encounterIndex }[]   // outstanding lies, current room only
@@ -254,8 +255,8 @@ Screen 1: Welcome           (artwork, minimal animation, localStorage warning)
         │     name (text) -> race (cards) -> gender -> role (cards, drawn as chosen)
         ├─> Screen 3: Pet
         │     petName (text) -> type (dog|cat) -> pet (cards within that type)
-        └─> Screen 4: Choose your cards
-              pool filtered by `class` (see CARDS.md)
+        └─> Screen 4: Starting loadout
+              the granted 5 (3 attack / 1 defend / 1 power) — shown, not chosen
 
               └─> Dungeon Entrance     (first gameplay screen — D3)
                     └─> Linear Map     (D1: one straight line of node circles)
@@ -291,7 +292,7 @@ the tab mid-interview costs that interview, not the run.
 
 ## 5. Encounter turn loop
 
-All 10 loadout cards are on screen and playable every turn (D16). Per-card
+Every loadout card is on screen and playable every turn (D16). Per-card
 availability is tracked as encounter state, not as piles:
 
 ```
@@ -300,6 +301,8 @@ cardState: { [cardId]: { usedThisRoom: bool, cooldownRemaining: int } }
 
 ```
 start of turn
+  → refill energy to maxEnergy (3, no carry-over); reset block to startingBlock
+    (0 — or 1 for the Fighter)
   → tick cooldowns down; re-enable anything that hit 0
   → interviewer telegraphs intent (visible before you commit)
   → player plays cards until out of energy / ends turn

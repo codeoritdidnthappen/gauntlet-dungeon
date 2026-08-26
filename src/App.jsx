@@ -4,7 +4,7 @@ import { MusicProvider } from './audio/MusicProvider'
 import HomeScreen from './screens/HomeScreen'
 import CharacterCreation from './screens/CharacterCreation'
 import PetCreation from './screens/PetCreation'
-import CardSelection from './screens/CardSelection'
+import StartingLoadout from './screens/StartingLoadout'
 
 /**
  * Screen routing.
@@ -23,7 +23,7 @@ const SCREENS = {
   home: HomeScreen,
   creation: CharacterCreation,
   pet: PetCreation,
-  cards: CardSelection,
+  cards: StartingLoadout,
 }
 
 export default function App() {
