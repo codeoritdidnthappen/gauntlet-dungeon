@@ -172,3 +172,40 @@ export function resolveRoomBackground(room) {
   if (!filename) return null
   return BACKGROUND_ART[artKey(filename.replace(/\.png$/, ''))] ?? null
 }
+
+/**
+ * Idle animation sheets — `assets/{class}s/{class}-{race}-{gender}-{pose}-idle-spritesheet.png`,
+ * each with a sibling `.json` naming its frame size, count and rate.
+ *
+ * Only some figures have one. A figure without a sheet falls back to its still
+ * art, so animating a new one is a matter of dropping two files in.
+ */
+const IDLE_SHEETS = urlOf(
+  import.meta.glob('../../assets/*/*-idle-spritesheet.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+)
+
+const IDLE_SHEET_META = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../../assets/*/*-idle-spritesheet.json', {
+      eager: true,
+      import: 'default',
+    }),
+  ).map(([path, meta]) => [artKey(path.split('/').pop().replace(/\.json$/, '')), meta]),
+)
+
+/**
+ * The looping idle sheet for a figure, or null where none has been drawn.
+ *
+ * @returns {{ url: string, meta: object, key: string } | null}
+ */
+export function resolveIdleSprite({ race, gender, classId, pose = 'ready' }) {
+  if (!classId) return null
+  const key = artKey(`${classId}-${race}-${gender}-${pose}-idle-spritesheet`)
+  const url = IDLE_SHEETS[key]
+  const meta = IDLE_SHEET_META[key]
+  return url && meta ? { url, meta, key } : null
+}
