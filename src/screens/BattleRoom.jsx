@@ -1,6 +1,11 @@
 import { useSelector } from 'react-redux'
 import roomData from '../../data/rooms.json'
-import { resolveCharacterArt, resolveIdleSprite, resolveRoomBackground } from '../config/assets'
+import {
+  idleSpriteNamed,
+  resolveCharacterArt,
+  resolveIdleSprite,
+  resolveRoomBackground,
+} from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import { ScreenBackdrop } from '../components/ui'
 import { selectPlayer } from '../store/playerSlice'
@@ -8,8 +13,8 @@ import { selectPlayer } from '../store/playerSlice'
 /**
  * Screen 5 — a battle room.
  *
- * Staging only. Combat is not implemented: the room declares how many
- * interviewers face the player and this draws that many placeholders.
+ * Staging only. Combat is not implemented: the room names who faces the player
+ * and this draws them, falling back to an empty slot where the art is missing.
  *
  * The layout is built for a turn-based fight rather than a portrait screen.
  * The two sides face each other across the floor — player left, interviewers
@@ -69,9 +74,14 @@ export default function BattleRoom() {
 
         {/* -------------------------------------------- right: interviewers */}
         <div className="flex min-w-0 flex-1 items-end justify-center gap-4 lg:gap-8">
-          {Array.from({ length: room.enemySlots }, (_, i) => (
-            <FigureSlot key={i} label="Interviewer" />
-          ))}
+          {room.enemies.map((name, i) => {
+            const enemy = idleSpriteNamed(name)
+            return enemy ? (
+              <IdleSprite key={name} sprite={enemy} />
+            ) : (
+              <FigureSlot key={`${name}-${i}`} label="Interviewer" />
+            )
+          })}
         </div>
       </div>
 

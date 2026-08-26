@@ -1,0 +1,14 @@
+{
+  "image": "skeleton-swordsman-idle-spritesheet.png",
+  "frameWidth": 887,
+  "frameHeight": 1774,
+  "frameCount": 8,
+  "columns": 8,
+  "rows": 1,
+  "fps": 4.5351,
+  "loop": true,
+  "order": "left-to-right",
+  "motion": "undead-idle-sway",
+  "feetLocked": true,
+  "facing": "left"
+}

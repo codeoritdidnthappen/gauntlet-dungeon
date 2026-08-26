@@ -410,7 +410,7 @@ Room {
   id:         uuid          // v4, like cards (§2) — what the map references
   number:     int           // display and ordering only, never a lookup key
   name:       string
-  enemySlots: int           // how many interviewers stand across the table
+  enemies:    string[]      // who stands across the table — see below
   background: { filename, path }   // assets/backgrounds/
 }
 ```
@@ -422,10 +422,10 @@ Room {
 - `background.filename` resolves against `assets/backgrounds/` through the same
   lookup as card and pet art. A room whose file is missing renders on the flat
   backdrop rather than failing.
-- `enemySlots` is **provisional**. It exists because `data/enemies.json` is still
-  unpopulated, so a room cannot yet name who it holds; the screen draws that many
-  placeholders. It becomes a list of enemy ids once there are enemies to name,
-  and the count then comes from that list's length.
+- `enemies` is **provisional**. Its entries are art keys under `assets/enemies/`,
+  not enemy ids, because `data/enemies.json` is still unpopulated — there is no
+  enemy entity to point at yet. An entry with no art draws an empty slot. It
+  becomes a list of enemy ids once there are enemies to name.
 - Rooms do not persist state. Enemy health is discarded at room end and enemies
   never return (D5); only the player carries forward (D4).
 
