@@ -5,18 +5,61 @@
     "status": "Room 1 only. Staged, not playable — no enemies exist yet, so the room declares how many face the player and the screen draws that many placeholders.",
     "id": "A v4 UUID, like cards (SCHEMA.md §2). The map references rooms by it; `number` is for display and ordering, never for lookup.",
     "enemies": "Who stands across the table, and how many. Provisional: these are art keys under assets/enemies/, not enemy ids, because data/enemies.json is still unpopulated — there is no enemy entity to point at yet. It becomes a list of enemy ids once there is one.",
-    "background": "Resolved through the same filename lookup as card and pet art — assets/backgrounds/."
+    "background": "Resolved through the same filename lookup as card and pet art — assets/backgrounds/.",
+    "rooms": "Eight, matching the eight nodes drawn on the route map. Only Room 1 is built: the rest carry an id, a number and a name and nothing else, because there is no content for them yet.",
+    "map": "The run's route. Its sibling .json names where each node sits on the parchment, normalised, so nodes[i] is rooms[i] — the circles and the dotted line between them are painted into the art, not drawn by the screen."
   },
   "rooms": [
     {
       "id": "d401bccd-75ae-4f92-ae92-90c58da818c0",
       "number": 1,
       "name": "Room 1",
-      "enemies": ["skeleton-swordsman"],
+      "enemies": [
+        "skeleton-swordsman"
+      ],
       "background": {
         "filename": "conference-room-background.png",
         "path": "assets/backgrounds/"
       }
+    },
+    {
+      "id": "358d24e3-9c8c-4fcd-818d-70a64851ae87",
+      "number": 2,
+      "name": "Room 2"
+    },
+    {
+      "id": "18a0d9ae-1f52-401f-9ac7-8965b7cee15a",
+      "number": 3,
+      "name": "Room 3"
+    },
+    {
+      "id": "e59a6775-5042-4705-97d1-abd644b04925",
+      "number": 4,
+      "name": "Room 4"
+    },
+    {
+      "id": "e7617867-ac92-41e9-a9dc-044d56c035c1",
+      "number": 5,
+      "name": "Room 5"
+    },
+    {
+      "id": "0213cf12-4531-4acb-b93d-3951e1704c9a",
+      "number": 6,
+      "name": "Room 6"
+    },
+    {
+      "id": "3a11c3a0-a4de-4154-b884-968ae69b92a5",
+      "number": 7,
+      "name": "Room 7"
+    },
+    {
+      "id": "d29ac281-8314-483f-9fa2-393d841ae0f1",
+      "number": 8,
+      "name": "Room 8"
     }
-  ]
+  ],
+  "map": {
+    "filename": "parchment-route-map.png",
+    "path": "assets/maps/"
+  }
 }
