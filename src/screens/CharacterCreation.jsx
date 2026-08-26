@@ -114,7 +114,7 @@ export default function CharacterCreation() {
                   >
                     {cls.name}
                   </span>
-                  <span className="font-body text-[11px] text-gold-200/30">
+                  <span className="font-body text-2xs text-gold-200/30">
                     {cls.stats.maxHealth} HP
                   </span>
                 </div>
