@@ -64,6 +64,13 @@ const initialState = {
   // (ARCHITECTURE.md, for map display only, D5). The route is a single line, so
   // how far along it the player is is just how many of these there are.
   cleared: [],
+
+  /**
+   * Whether the player has walked into a room yet. Creation is editable right
+   * up until they do; after that the run is underway and a refresh returns them
+   * to the map rather than to the screen they were on.
+   */
+  runStarted: false,
 }
 
 const playerSlice = createSlice({
@@ -129,6 +136,15 @@ const playerSlice = createSlice({
       s.loadout = []
     },
     /**
+     * The player has entered a room. From here the run is underway: creation is
+     * behind them, and a reload puts them back on the map (ARCHITECTURE.md §4 —
+     * a resumed run never restores mid-encounter).
+     */
+    beginRun: (s) => {
+      s.runStarted = true
+    },
+
+    /**
      * Marks the room at `nodeIndex` beaten, which moves the run on to the next.
      * Nothing dispatches this yet: a room cannot be finished until there is a
      * fight to finish it.
@@ -161,6 +177,7 @@ export const {
   removeCard,
   clearLoadout,
   resetLoadout,
+  beginRun,
   clearRoom,
   hydratePlayer,
   resetPlayer,
@@ -174,6 +191,7 @@ export const selectPlayer = (state) => state.player
 export const selectClassId = (state) => state.player.class
 export const selectLoadout = (state) => state.player.loadout
 export const selectCleared = (state) => state.player.cleared
+export const selectRunStarted = (state) => state.player.runStarted
 
 /**
  * How far along the route the player is — the index of the room they may enter
