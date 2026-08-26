@@ -101,10 +101,13 @@ export default function PetCreation() {
               style={{ maxHeight: `${art.scale * 100}%` }}
               className="w-auto max-w-full object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
             />
+          ) : selectedPet ? (
+            <MissingArt path={`assets/pets/${pet.replace(/_/g, '-')}.png`} />
           ) : (
-            <MissingArt
-              path={selectedPet ? `assets/pets/${pet.replace(/_/g, '-')}.png` : 'assets/pets/'}
-            />
+            /* Nothing chosen yet — a prompt, not a missing-art marker. */
+            <p className="mb-16 self-center font-display text-lg text-gold-200/45">
+              Choose a little buddy.
+            </p>
           )}
         </div>
 
