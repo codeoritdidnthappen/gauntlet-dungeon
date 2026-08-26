@@ -5,6 +5,7 @@ import HomeScreen from './screens/HomeScreen'
 import CharacterCreation from './screens/CharacterCreation'
 import PetCreation from './screens/PetCreation'
 import StartingLoadout from './screens/StartingLoadout'
+import BattleRoom from './screens/BattleRoom'
 
 /**
  * Screen routing.
@@ -12,6 +13,11 @@ import StartingLoadout from './screens/StartingLoadout'
  * Flow (ARCHITECTURE.md §4):
  *   home -> [New Game]  -> creation -> pet -> cards -> entrance -> map
  *        -> [Continue]  -> map (never resumes mid-encounter)
+ *
+ * `entrance` and `map` do not exist yet, so screen 4 currently proceeds
+ * straight into `room` — the only way to reach the battle room, and better
+ * than the self-navigation it replaced. Restore the documented flow once the
+ * map is built.
  *
  * The current screen lives in Redux because every screen navigates; screens
  * dispatch `goTo` themselves rather than being handed callbacks.
@@ -24,6 +30,7 @@ const SCREENS = {
   creation: CharacterCreation,
   pet: PetCreation,
   cards: StartingLoadout,
+  room: BattleRoom,
 }
 
 export default function App() {

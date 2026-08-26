@@ -400,6 +400,37 @@ Cleared map nodes render the camp icon and enemy name (D5).
 
 ---
 
+## 11b. Room
+
+A node on the map, and the place a fight happens. Content lives in
+`data/rooms.json`.
+
+```
+Room {
+  id:         uuid          // v4, like cards (§2) — what the map references
+  number:     int           // display and ordering only, never a lookup key
+  name:       string
+  enemySlots: int           // how many interviewers stand across the table
+  background: { filename, path }   // assets/backgrounds/
+}
+```
+
+### Rules
+
+- `id` is a UUID and is fixed for the life of the room. `number` is for reading,
+  not for finding: nothing may look a room up by it.
+- `background.filename` resolves against `assets/backgrounds/` through the same
+  lookup as card and pet art. A room whose file is missing renders on the flat
+  backdrop rather than failing.
+- `enemySlots` is **provisional**. It exists because `data/enemies.json` is still
+  unpopulated, so a room cannot yet name who it holds; the screen draws that many
+  placeholders. It becomes a list of enemy ids once there are enemies to name,
+  and the count then comes from that list's length.
+- Rooms do not persist state. Enemy health is discarded at room end and enemies
+  never return (D5); only the player carries forward (D4).
+
+---
+
 ## 12. Pet
 
 ```

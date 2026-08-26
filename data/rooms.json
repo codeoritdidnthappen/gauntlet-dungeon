@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-08-26",
+  "notes": {
+    "status": "Room 1 only. Staged, not playable — no enemies exist yet, so the room declares how many face the player and the screen draws that many placeholders.",
+    "id": "A v4 UUID, like cards (SCHEMA.md §2). The map references rooms by it; `number` is for display and ordering, never for lookup.",
+    "enemySlots": "How many interviewers stand across the table. Provisional: it becomes a list of enemy ids once data/enemies.json is populated. Room 1 is the Recruiter Screen, a single interviewer (PRD M4); The Panel is three.",
+    "background": "Resolved through the same filename lookup as card and pet art — assets/backgrounds/."
+  },
+  "rooms": [
+    {
+      "id": "d401bccd-75ae-4f92-ae92-90c58da818c0",
+      "number": 1,
+      "name": "Room 1",
+      "enemySlots": 1,
+      "background": {
+        "filename": "mess-hall-background.png",
+        "path": "assets/backgrounds/"
+      }
+    }
+  ]
+}
