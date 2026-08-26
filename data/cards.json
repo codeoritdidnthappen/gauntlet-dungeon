@@ -565,6 +565,25 @@
       }
     },
     {
+      "id": "048cc807-a61d-47d1-8fdd-7278c7a67970",
+      "side": "player",
+      "name": "Riposte",
+      "type": "attack",
+      "subtype": "conditional",
+      "class": "duelist",
+      "rarity": "common",
+      "cost": 1,
+      "damage": 6,
+      "text": "Deal 6 damage. Hits twice if you took damage this turn.",
+      "subtext": "Since you brought it up \u2014 I had a question about that too.",
+      "oncePerRoom": false,
+      "cooldown": 0,
+      "image": {
+        "filename": "riposte.png",
+        "path": "assets/cards/"
+      }
+    },
+    {
       "id": "77acf213-6026-4267-a66b-93aee19922d9",
       "side": "player",
       "name": "Root Cause",
