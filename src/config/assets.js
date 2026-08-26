@@ -218,3 +218,37 @@ export function resolveIdleSprite({ race, gender, classId, pose = 'ready' }) {
   if (!classId) return null
   return idleSpriteNamed(`${classId}-${race}-${gender}-${pose}`)
 }
+
+/**
+ * Route maps — `assets/maps/{filename}`, each with a sibling `.json` naming
+ * where its nodes sit as fractions of the image. The circles and the dotted
+ * line between them are painted into the art; the coordinates exist so the
+ * screen can put something on top of each one.
+ */
+const MAP_ART = urlOf(
+  import.meta.glob('../../assets/maps/*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+)
+
+const MAP_META = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../../assets/maps/*.json', { eager: true, import: 'default' }),
+  ).map(([path, meta]) => [artKey(path.split('/').pop().replace(/\.json$/, '')), meta]),
+)
+
+/**
+ * The route map named in data, or null when either half is missing.
+ *
+ * @returns {{ url: string, meta: object } | null}
+ */
+export function resolveMap(map) {
+  const filename = map?.filename
+  if (!filename) return null
+  const key = artKey(filename.replace(/\.png$/, ''))
+  const url = MAP_ART[key]
+  const meta = MAP_META[key]
+  return url && meta ? { url, meta } : null
+}

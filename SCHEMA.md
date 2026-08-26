@@ -428,6 +428,25 @@ Room {
   becomes a list of enemy ids once there are enemies to name.
 - Rooms do not persist state. Enemy health is discarded at room end and enemies
   never return (D5); only the player carries forward (D4).
+- The run's rooms are an ordered list, and `rooms[i]` is the map's `nodes[i]`.
+  There are eight, matching the route drawn on the parchment; all but Room 1 are
+  stubs carrying only `id`, `number` and `name`.
+
+### The map
+
+`rooms.json` also carries the run's route:
+
+```
+map: { filename, path }    // assets/maps/
+```
+
+Its sibling `.json` — same basename — records each node's position as a fraction
+of the image (`xNormalized`, `yNormalized`) plus a `nodeRadius`. **The circles
+and the dotted line between them are painted into the art**; the coordinates
+exist so the screen can place something over each circle, and being fractions
+they hold at any size. A screen overlaying them must anchor to the image's own
+box — give the box a shape of its own and the image letterboxes inside it, and
+every marker drifts off its circle.
 
 ---
 
