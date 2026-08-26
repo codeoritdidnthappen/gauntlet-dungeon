@@ -84,7 +84,7 @@ export default function StartingLoadout() {
             You are a {className}
           </h1>
           <p className="mt-1 shrink-0 font-body text-xs text-gold-200/45">
-            {className} cards are earned in the dungeon, one room at a time.
+            {className} cards are earned in the dungeon, one Jira ticket at a time.
           </p>
 
           <div className="mt-6 grid w-full max-w-4xl shrink-0 grid-cols-5 gap-2 lg:max-w-5xl lg:gap-3">
