@@ -14,7 +14,7 @@
       "name": "Room 1",
       "enemySlots": 1,
       "background": {
-        "filename": "mess-hall-background.png",
+        "filename": "conference-room-background.png",
         "path": "assets/backgrounds/"
       }
     }
