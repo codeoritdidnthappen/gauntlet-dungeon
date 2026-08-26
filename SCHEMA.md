@@ -256,6 +256,7 @@ PlayerCharacter extends Combatant {
   startingBlock: int        // what block resets to each turn; 0, or 1 for Fighter
 
   // run progression
+  cleared:    { nodeIndex }[]   // rooms beaten, in order — map display only (D5)
   revivesRemaining: int     // starts at 3 (D13)
   inventory:  CardId[]      // owned, max 20 (D15) — all side:"player"
   loadout:    CardId[]      // carried into a room; starts at exactly 5 (D15)
@@ -296,6 +297,11 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 - `revivesRemaining` starts at 3; at 0 the next death ends the run and discards
   all of the above (D13).
 - Loadout may only be edited **outside a room**, from the map button (D15).
+- `cleared` is how far along the route the run has got. The route is a single
+  line (D3), so the room the player may enter next is simply `cleared.length` —
+  and when that equals the number of rooms, the run is over and no room is
+  enterable. The map draws that room larger and pulsing, so the treatment walks
+  the route as rooms are beaten.
 - The starting loadout is **granted, never chosen** — character creation writes it
   with no player input (D15, revised). Choosing a role rewrites it, because the
   role is what settles the class the five are dealt from.

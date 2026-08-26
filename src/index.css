@@ -76,6 +76,20 @@ body {
   }
 }
 
+/* The next room on the map, breathing so the eye finds it.
+
+   Animates `transform` rather than the `scale` property, so it composes with
+   the hover growth instead of replacing it — the two multiply. */
+@keyframes map-node-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 /* Torchlight flicker — CSS only, per the "minimal animation" decision. */
 @keyframes torch {
   0%,

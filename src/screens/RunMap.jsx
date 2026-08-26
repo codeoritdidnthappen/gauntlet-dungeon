@@ -1,8 +1,9 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import roomData from '../../data/rooms.json'
 import { resolveMap, resolveRoomIcon } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import { goTo } from '../store/uiSlice'
+import { selectNextRoomIndex } from '../store/playerSlice'
 
 /**
  * Screen 5 — the run map.
@@ -21,22 +22,27 @@ import { goTo } from '../store/uiSlice'
  * nodes[i + 1]. That first circle is home, and it is marked as where the player
  * currently is: lit, and not something to click.
  *
- * Only the next room can be entered (D3). Rooms past it are drawn but inert,
- * because nothing behind them exists yet.
+ * Only the next room can be entered (D3) — the one after the last the player
+ * beat. It is drawn larger than the rest and pulses, so where to go next is
+ * obvious without reading anything, and that treatment moves along the route as
+ * rooms are beaten. Rooms already beaten keep their mark; rooms beyond the next
+ * are dim, because they have not been reached.
  */
 
-/** Room 1 until a run tracks its own progress. */
-const NEXT_ROOM_INDEX = 0
+/** How much larger the next room is drawn than the rest. */
+const NEXT_ROOM_SCALE = 1.4
 
 export default function RunMap() {
   const dispatch = useDispatch()
+  const nextRoomIndex = useSelector(selectNextRoomIndex)
   const map = resolveMap(roomData.map)
 
   if (!map) return null
 
   const { nodes, width, nodeRadius } = map.meta
   // The markers scale with the parchment, so the radius is a share of its width.
-  const markerSize = `${((nodeRadius * 2) / width) * 100}%`
+  const markerPercent = ((nodeRadius * 2) / width) * 100
+  const markerSize = `${markerPercent}%`
 
   return (
     <main className="relative flex h-full w-full items-center justify-center overflow-hidden bg-soot-950">
@@ -76,11 +82,12 @@ export default function RunMap() {
           if (!node) return null
 
           const icon = resolveRoomIcon(room.icon)
-          const isNext = i === NEXT_ROOM_INDEX
+          const isNext = i === nextRoomIndex
+          const isCleared = i < nextRoomIndex
           const position = {
             left: `${node.xNormalized * 100}%`,
             top: `${node.yNormalized * 100}%`,
-            width: markerSize,
+            width: `${isNext ? markerPercent * NEXT_ROOM_SCALE : markerPercent}%`,
             aspectRatio: '1',
           }
 
@@ -90,11 +97,13 @@ export default function RunMap() {
               type="button"
               onClick={() => dispatch(goTo('room'))}
               aria-label={`Enter ${room.name}`}
-              style={position}
+              style={{ ...position, animation: 'map-node-pulse 2.2s ease-in-out infinite' }}
               className={[
                 '-translate-x-1/2 -translate-y-1/2 absolute cursor-pointer rounded-full',
-                // Grows under the cursor and settles back when it leaves.
-                'transition-transform duration-200 ease-out hover:scale-150',
+                // Grows under the cursor and settles back when it leaves. This
+                // sets `scale`, which the pulse's `transform` multiplies rather
+                // than overrides.
+                'transition-transform duration-200 ease-out hover:scale-125',
                 'outline-none focus-visible:ring-2 focus-visible:ring-gold-400',
                 icon ? '' : 'border-2 border-gold-300 bg-gold-500/20',
               ].join(' ')}
@@ -107,9 +116,12 @@ export default function RunMap() {
               aria-hidden="true"
               title={room.name}
               style={position}
-              className="-translate-x-1/2 -translate-y-1/2 absolute rounded-full border border-dashed border-soot-900/50"
+              className={[
+                '-translate-x-1/2 -translate-y-1/2 absolute rounded-full',
+                isCleared ? '' : 'border border-dashed border-soot-900/50',
+              ].join(' ')}
             >
-              {icon && <RoomIcon src={icon} name={room.name} dimmed />}
+              {icon && <RoomIcon src={icon} name={room.name} dimmed={!isCleared} />}
             </div>
           )
         })}
