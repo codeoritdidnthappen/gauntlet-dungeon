@@ -1,6 +1,6 @@
 # CARDS
 
-**Status:** 33 player cards + 37 enemy cards written.
+**Status:** 34 player cards + 37 enemy cards written.
 
 - `data/cards.json` — player cards
 - `data/enemy-cards.json` — enemy (interviewer) cards
@@ -62,7 +62,7 @@ class identity and the joke in the same mechanic.
 build it, The Reveal spends all of it at once. App Store Review is the platform-
 constraint card — enormous damage, then you lose a turn to approval.
 
-### Duelist — 6 (DevOps, Analyst)
+### Duelist — 7 (DevOps, Analyst)
 *Reactive.* **Riposte** deals its value back to anything that hits you. Root Cause
 doubles if you took damage last turn, so the class is rewarded for absorbing
 rather than initiating. Blameless reflects everything for one turn.
