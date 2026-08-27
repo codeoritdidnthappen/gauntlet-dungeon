@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import cardData from '../../data/cards.json'
 import roomData from '../../data/rooms.json'
 import {
   idleSpriteNamed,
@@ -7,8 +9,9 @@ import {
   resolveRoomBackground,
 } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
-import { ScreenBackdrop } from '../components/ui'
-import { selectPlayer } from '../store/playerSlice'
+import GameCard from '../components/GameCard'
+import { ActionButton, ScreenBackdrop } from '../components/ui'
+import { selectDisplayName, selectLoadout, selectPlayer, selectStats } from '../store/playerSlice'
 
 /**
  * Screen 5 — a battle room.
@@ -16,12 +19,17 @@ import { selectPlayer } from '../store/playerSlice'
  * Staging only. Combat is not implemented: the room names who faces the player
  * and this draws them, falling back to an empty slot where the art is missing.
  *
- * The layout is built for a turn-based fight rather than a portrait screen.
- * The two sides face each other across the floor — player left, interviewers
- * right — and the lower band is deliberately left empty, because that is where
- * the hand of five goes (D16: every card available every turn, no draw). Both
- * sides are drawn small enough to leave it room; creation screens give a figure
- * the full height, a fight cannot.
+ * The layout is built for a turn-based fight rather than a portrait screen. The
+ * two sides face each other across the floor — player left, interviewers right —
+ * with a health bar under each, and the lower band carries the hand fanned
+ * across the centre, End Turn and the discard to the right. Both figures are
+ * drawn small enough to leave that band room; creation screens give a figure the
+ * full height, a fight cannot.
+ *
+ * Room 1 is scripted and the player moves first, so the hand is live from the
+ * moment the room opens. Nothing resolves yet: the cards are the player's real
+ * five and the health is real, but playing a card does nothing, End Turn ends
+ * nothing, and the discard stays empty.
  *
  * There is no way out. A room is entered, not visited: it ends by being won or
  * lost, so this screen offers no navigation at all.
@@ -42,8 +50,16 @@ const FIGURE_HEIGHT = 0.58
  */
 const PLAYER_IDLE_SLOWDOWN = 1.09
 
+const CARD_BY_ID = Object.fromEntries(cardData.cards.map((c) => [c.id, c]))
+
 export default function BattleRoom() {
   const { race, gender, class: classId } = useSelector(selectPlayer)
+  const { health, maxHealth } = useSelector(selectStats)
+  const loadout = useSelector(selectLoadout)
+  const playerName = useSelector(selectDisplayName)
+
+  /** The five carried in, in the order they were dealt. */
+  const hand = useMemo(() => loadout.map((id) => CARD_BY_ID[id]).filter(Boolean), [loadout])
 
   const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
   const background = resolveRoomBackground(room)
@@ -63,9 +79,9 @@ export default function BattleRoom() {
       {/* ------------------------------------------------------------- stage */}
       {/* items-stretch, not items-end: the columns need a definite height for
           the figures below to size against a share of it. */}
-      <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-36 lg:gap-12 lg:px-16 lg:pb-44">
+      <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-48 lg:gap-12 lg:px-16 lg:pb-56">
         {/* ------------------------------------------------------ left: you */}
-        <div className="flex min-w-0 flex-1 items-end justify-center">
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-end">
           {sprite ? (
             <IdleSprite sprite={sprite} slowdown={PLAYER_IDLE_SLOWDOWN} />
           ) : art ? (
@@ -81,22 +97,60 @@ export default function BattleRoom() {
           ) : (
             <FigureSlot label="You" />
           )}
+
+          <HealthBar current={health} max={maxHealth} />
         </div>
 
         {/* -------------------------------------------- right: interviewers */}
-        <div className="flex min-w-0 flex-1 items-end justify-center gap-4 lg:gap-8">
-          {room.enemies.map((name, i) => {
-            const enemy = idleSpriteNamed(name)
-            return enemy ? (
-              <IdleSprite key={name} sprite={enemy} />
-            ) : (
-              <FigureSlot key={`${name}-${i}`} label="Interviewer" />
+        <div className="flex min-w-0 flex-1 items-stretch justify-center gap-4 lg:gap-8">
+          {room.enemies.map((enemy, i) => {
+            const idle = idleSpriteNamed(enemy.art)
+            return (
+              <div
+                key={enemy.art ?? i}
+                className="flex min-w-0 flex-col items-center justify-end"
+              >
+                {idle ? <IdleSprite sprite={idle} /> : <FigureSlot label={enemy.name} />}
+                <HealthBar current={enemy.maxHealth} max={enemy.maxHealth} />
+              </div>
             )
           })}
         </div>
       </div>
 
-      <DiscardPile className="absolute right-6 bottom-6 z-10 lg:right-10 lg:bottom-8" />
+      {/* ------------------------------------------------------------- hand */}
+      {/* Fanned from the centre and hanging off the bottom edge, so five cards
+          fit across without shrinking past reading size. Hovering lifts one
+          clear of its neighbours — overlapped, they cannot be read otherwise. */}
+      <div className="pointer-events-none absolute inset-x-0 -bottom-16 z-10 flex items-end justify-center">
+        {hand.map((card, i) => {
+          const fromCentre = i - (hand.length - 1) / 2
+          return (
+            <div
+              key={`${card.id}-${i}`}
+              style={{
+                transform: `rotate(${fromCentre * 4}deg) translateY(${Math.abs(fromCentre) * 12}px)`,
+                marginInline: '-0.9rem',
+                zIndex: i,
+              }}
+              className={[
+                'pointer-events-auto w-36 origin-bottom transition-transform duration-150 ease-out',
+                'hover:z-30 hover:!-translate-y-16 hover:!rotate-0 lg:w-40',
+              ].join(' ')}
+            >
+              <GameCard card={card} playerName={playerName} />
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ---------------------------------------------------------- controls */}
+      <div className="absolute right-6 bottom-6 z-20 flex flex-col items-end gap-3 lg:right-10 lg:bottom-8">
+        <ActionButton primary onClick={() => {}}>
+          End Turn
+        </ActionButton>
+        <DiscardPile />
+      </div>
     </main>
   )
 }
@@ -122,7 +176,7 @@ function DiscardPile({ className = '' }) {
   ]
 
   return (
-    <div className={`${className} w-24 lg:w-28`} title="Discard">
+    <div className={`${className} w-14 lg:w-16`} title="Discard">
       <div className="relative aspect-[5/7] w-full">
         {stack.map(({ rotate, x, y, opacity }, i) => (
           <div
@@ -143,6 +197,31 @@ function DiscardPile({ className = '' }) {
 
       <p className="mt-1.5 text-center font-display text-3xs tracking-[0.18em] text-gold-200/40 uppercase">
         Discard
+      </p>
+    </div>
+  )
+}
+
+/**
+ * A combatant's health, under their feet.
+ *
+ * Reads as a bar plus the numbers, because a bar alone cannot tell 3 from 4 and
+ * this is a game about arithmetic.
+ */
+function HealthBar({ current, max }) {
+  if (!max) return null
+  const share = Math.max(0, Math.min(1, current / max))
+
+  return (
+    <div className="mt-3 w-32 shrink-0 lg:w-40">
+      <div className="h-2 w-full overflow-hidden rounded-sm border border-soot-950/80 bg-soot-950/70">
+        <div
+          style={{ width: `${share * 100}%` }}
+          className="h-full bg-red-800 transition-[width] duration-300 ease-out"
+        />
+      </div>
+      <p className="mt-1 text-center font-body text-2xs text-gold-200/80">
+        {current} / {max}
       </p>
     </div>
   )

@@ -4,7 +4,7 @@
   "notes": {
     "status": "Room 1 only. Staged, not playable — no enemies exist yet, so the room declares how many face the player and the screen draws that many placeholders.",
     "id": "A v4 UUID, like cards (SCHEMA.md §2). The map references rooms by it; `number` is for display and ordering, never for lookup.",
-    "enemies": "Who stands across the table, and how many. Provisional: these are art keys under assets/enemies/, not enemy ids, because data/enemies.json is still unpopulated — there is no enemy entity to point at yet. It becomes a list of enemy ids once there is one.",
+    "enemies": "Who stands across the table. Provisional: an entry names its art under assets/enemies/ and carries its own maxHealth, because data/enemies.json is still unpopulated and there is no enemy entity to point at. maxHealth here is a placeholder — SCHEMA.md §7 has enemy health as deliberately unchosen and it has not been balanced against anything. It becomes a list of enemy ids once there are enemies.",
     "background": "Resolved through the same filename lookup as card and pet art — assets/backgrounds/.",
     "rooms": "Seven, one for each node after the map's START. START marks where the player begins and is not a room, so rooms[i] is the map's nodes[i + 1]. Only Room 1 is built: the rest carry an id, a number and a name and nothing else.",
     "map": "The run's route. Its sibling .json names where each node sits on the parchment, normalised, so nodes[i] is rooms[i] — the circles and the dotted line between them are painted into the art, not drawn by the screen.",
@@ -17,7 +17,11 @@
       "number": 1,
       "name": "Room 1",
       "enemies": [
-        "skeleton-swordsman"
+        {
+          "art": "skeleton-swordsman",
+          "name": "Skeleton Swordsman",
+          "maxHealth": 24
+        }
       ],
       "background": {
         "filename": "conference-room-background.png",
