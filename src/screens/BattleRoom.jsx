@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import cardData from '../../data/cards.json'
+import enemyCardData from '../../data/enemy-cards.json'
 import roomData from '../../data/rooms.json'
 import {
   enemyStillNamed,
@@ -43,8 +44,12 @@ import {
  * resets block, and deals the same five again — one loadout, no deck, so every
  * turn opens with the same hand until there are more cards to draw from.
  *
- * Nothing a card says has happened yet: no damage, no block, and the enemy does
- * not act.
+ * End Turn hands over: the interviewer shows the card it is playing in the
+ * middle of the room, sends it to the same pile, and swings — the two figures
+ * closing on each other exactly as they do when the player attacks, with the
+ * art swapped for who is swinging.
+ *
+ * Nothing a card says has happened yet: no damage and no block, either way.
  *
  * There is no way out. A room is entered, not visited: it ends by being won or
  * lost, so this screen offers no navigation at all.
@@ -66,6 +71,16 @@ const FIGURE_HEIGHT = 0.58
 const PLAYER_IDLE_SLOWDOWN = 1.09
 
 const CARD_BY_ID = Object.fromEntries(cardData.cards.map((c) => [c.id, c]))
+
+/**
+ * What an interviewer opens with. The `intro` subtype is the gentle end of the
+ * enemy deck — an opening question, four or five damage — which is what Room 1
+ * wants until intents are authored per enemy.
+ */
+const INTRO_ATTACKS = enemyCardData.cards.filter((c) => c.type === 'attack' && c.subtype === 'intro')
+
+/** How long the interviewer's card sits in the middle before it is played. */
+const REVEAL_MS = 900
 
 /** How long the figure holds the card's pose. Matches the cast-pose keyframe. */
 const CAST_MS = 2000
@@ -93,6 +108,8 @@ export default function BattleRoom() {
     power: resolveCharacterArt({ race, gender, classId, pose: 'scroll' }),
     attack: resolveCharacterArt({ race, gender, classId, pose: 'sword' }),
   }
+  const takingHit = resolveCharacterArt({ race, gender, classId, pose: 'hit' })
+
 
   // The pose currently being held, or null. Momentary and purely shown, so it is
   // local: nothing outside this screen has any use for it.
@@ -103,6 +120,18 @@ export default function BattleRoom() {
   // player's pose, so the blow and the reaction are one exchange.
   const [struck, setStruck] = useState(false)
   const struckTimer = useRef(null)
+
+  // The interviewer's turn: the card it played, and whether it is still being
+  // read or already landing. Null between turns.
+  const [enemyTurn, setEnemyTurn] = useState(null)
+  const enemyTimers = useRef([])
+  const enemyCardRef = useRef(null)
+  const [enemyCardFlight, setEnemyCardFlight] = useState(null)
+  // Whichever side is acting, both close on each other. Only the art differs by
+  // who is swinging, so a missing pose costs the picture, not the movement.
+  const enemyStriking = enemyTurn?.phase === 'strike'
+  const playerPose = enemyStriking ? takingHit : cast
+  const playerMoving = enemyStriking || Boolean(cast)
 
   // A played card flies to the pile and then leaves the hand. `flights` holds
   // the trip for each card still travelling, by its place in the hand; `played`
@@ -118,6 +147,7 @@ export default function BattleRoom() {
     () => () => {
       clearTimeout(castTimer.current)
       clearTimeout(struckTimer.current)
+      enemyTimers.current.forEach(clearTimeout)
     },
     [],
   )
@@ -201,14 +231,49 @@ export default function BattleRoom() {
   }
 
   /**
-   * End the turn: energy and block back to full, and the same five dealt again.
-   * There is no deck to draw from — the loadout is the hand — so until there
-   * are more cards every turn opens the same way.
+   * End the turn and hand it to the interviewer.
+   *
+   * It shows what it is playing before it plays it — ARCHITECTURE.md §5 calls
+   * the telegraph load-bearing, and a card read in the middle of the room is the
+   * plainest form of it. Then the card goes to the pile and the blow lands, and
+   * only after that does the player's next turn begin.
    */
   const endTurn = () => {
-    dispatch(startTurn())
-    setPlayed(new Set())
-    setFlights({})
+    if (enemyTurn) return
+
+    const card = INTRO_ATTACKS[Math.floor(Math.random() * INTRO_ATTACKS.length)]
+    setEnemyTurn({ card, phase: 'reveal' })
+
+    enemyTimers.current = [
+      setTimeout(() => {
+        setEnemyTurn({ card, phase: 'strike' })
+        flyEnemyCard()
+      }, REVEAL_MS),
+
+      setTimeout(() => {
+        setEnemyTurn(null)
+        setEnemyCardFlight(null)
+        dispatch(startTurn())
+        setPlayed(new Set())
+        setFlights({})
+      }, REVEAL_MS + CAST_MS),
+    ]
+  }
+
+  /** The interviewer's card takes the same measured trip the player's cards do. */
+  const flyEnemyCard = () => {
+    const el = enemyCardRef.current
+    const pile = pileRef.current?.getBoundingClientRect()
+    if (!el || !pile) return
+
+    el.style.setProperty('transform', 'none')
+    const r = el.getBoundingClientRect()
+    el.style.removeProperty('transform')
+
+    setEnemyCardFlight({
+      dx: pile.left + pile.width / 2 - (r.left + r.width / 2),
+      dy: pile.top + pile.height / 2 - (r.top + r.height / 2),
+    })
   }
 
   return (
@@ -227,16 +292,24 @@ export default function BattleRoom() {
       <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-48 lg:gap-12 lg:px-16 lg:pb-56">
         {/* ------------------------------------------------------ left: you */}
         <div className="flex min-w-0 flex-1 flex-col items-center justify-end">
-          {cast ? (
+          {playerPose ? (
             <img
-              key={cast.key}
-              src={cast.url}
+              key={playerPose.key}
+              src={playerPose.url}
               alt=""
               style={{
-                maxHeight: `${cast.scale * FIGURE_HEIGHT * 100}%`,
-                animation: `cast-pose ${CAST_MS}ms ease-in-out`,
+                maxHeight: `${playerPose.scale * FIGURE_HEIGHT * 100}%`,
+                animation: `clash-right ${CAST_MS}ms ease-in-out`,
               }}
               className="w-auto origin-bottom object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+            />
+          ) : sprite ? (
+            <IdleSprite
+              sprite={sprite}
+              slowdown={PLAYER_IDLE_SLOWDOWN}
+              // No struck pose drawn for this figure: it still gives ground, so
+              // the exchange reads even without the art.
+              animation={playerMoving ? `clash-right ${CAST_MS}ms ease-in-out` : undefined}
             />
           ) : sprite ? (
             <IdleSprite sprite={sprite} slowdown={PLAYER_IDLE_SLOWDOWN} />
@@ -261,26 +334,32 @@ export default function BattleRoom() {
         <div className="flex min-w-0 flex-1 items-stretch justify-center gap-4 lg:gap-8">
           {room.enemies.map((enemy, i) => {
             const idle = idleSpriteNamed(enemy.art)
-            const hit = enemyStillNamed(`${enemy.art}-hit`)
-            const reeling = struck && hit
+            const still = enemyStillNamed(
+              enemyStriking ? `${enemy.art}-attack` : `${enemy.art}-hit`,
+            )
+            const showStill = (enemyStriking || struck) && still
+            const moving = enemyStriking || struck
 
             return (
               <div
                 key={enemy.art ?? i}
                 className="flex min-w-0 flex-col items-center justify-end"
               >
-                {reeling ? (
+                {showStill ? (
                   <img
-                    src={hit}
+                    src={still}
                     alt=""
                     style={{
                       maxHeight: `${FIGURE_HEIGHT * 100}%`,
-                      animation: `enemy-hit ${CAST_MS}ms ease-in-out`,
+                      animation: `clash-left ${CAST_MS}ms ease-in-out`,
                     }}
                     className="w-auto origin-bottom object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
                   />
                 ) : idle ? (
-                  <IdleSprite sprite={idle} />
+                  <IdleSprite
+                    sprite={idle}
+                    animation={moving ? `clash-left ${CAST_MS}ms ease-in-out` : undefined}
+                  />
                 ) : (
                   <FigureSlot label={enemy.name} />
                 )}
@@ -353,6 +432,34 @@ export default function BattleRoom() {
         })}
       </div>
 
+      {/* The interviewer's card, read in the middle of the room before it lands
+          and then sent to the same pile the player's cards go to. */}
+      {enemyTurn && (
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+          <div
+            ref={enemyCardRef}
+            style={
+              enemyCardFlight
+                ? {
+                    '--fan-rotate': '0deg',
+                    '--fan-drop': '0px',
+                    '--fly-x': `${enemyCardFlight.dx}px`,
+                    '--fly-y': `${enemyCardFlight.dy}px`,
+                    animation: `discard-flight ${DISCARD_MS}ms ease-in forwards`,
+                    transformOrigin: 'center',
+                  }
+                : undefined
+            }
+            className="w-40 lg:w-44"
+          >
+            <GameCard card={enemyTurn.card} playerName={playerName} />
+            <p className="mt-2 text-center font-display text-3xs tracking-[0.18em] text-gold-200/50 uppercase">
+              {room.enemies[0]?.name ?? 'Interviewer'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Energy, where the player is already looking when choosing a card. */}
       <div className="absolute bottom-8 left-8 z-20 text-center lg:bottom-10 lg:left-12">
         <p className="font-display text-3xl font-bold text-gold-300">
@@ -367,7 +474,7 @@ export default function BattleRoom() {
 
       {/* ---------------------------------------------------------- controls */}
       <div className="absolute right-6 bottom-6 z-20 flex flex-col items-end gap-3 lg:right-10 lg:bottom-8">
-        <ActionButton primary onClick={endTurn}>
+        <ActionButton primary onClick={endTurn} disabled={Boolean(enemyTurn)}>
           End Turn
         </ActionButton>
         <DiscardPile stackRef={pileRef} />
@@ -457,16 +564,22 @@ function HealthBar({ current, max }) {
  * differently plays correctly without a code change. `slowdown` stretches that
  * rate for a figure that should not run at it.
  */
-function IdleSprite({ sprite, slowdown = 1 }) {
+function IdleSprite({ sprite, slowdown = 1, animation }) {
   const { frameWidth, frameHeight, frameCount, fps } = sprite.meta
   const seconds = (frameCount / fps) * slowdown
 
   return (
     <div
       aria-hidden="true"
-      // A window exactly one frame wide, with the sheet sliding behind it.
-      style={{ height: `${FIGURE_HEIGHT * 100}%`, aspectRatio: `${frameWidth} / ${frameHeight}` }}
-      className="overflow-hidden drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+      // A window exactly one frame wide, with the sheet sliding behind it. The
+      // window can itself be animated — a figure with no still to swap to still
+      // takes part in an exchange, breathing as it moves.
+      style={{
+        height: `${FIGURE_HEIGHT * 100}%`,
+        aspectRatio: `${frameWidth} / ${frameHeight}`,
+        animation,
+      }}
+      className="origin-bottom overflow-hidden drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
     >
       <img
         src={sprite.url}

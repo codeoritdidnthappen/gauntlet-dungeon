@@ -56,7 +56,7 @@ export const CHARACTER_ART = urlOf(
  * in cards, pets and backgrounds too.
  */
 export const CLASS_ART = urlOf(
-  import.meta.glob('../../assets/*/*-{rest,ready,sword,scroll}.png', {
+  import.meta.glob('../../assets/*/*-{rest,ready,sword,scroll,hit}.png', {
     eager: true,
     query: '?url',
     import: 'default',

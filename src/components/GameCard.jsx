@@ -41,6 +41,8 @@ export default function GameCard({ card, playerName }) {
         <span className="font-display text-2xs leading-tight font-bold text-gold-200">
           {card.name}
         </span>
+        {/* Enemy cards carry no cost — SCHEMA.md §3, energy is player-side. */}
+        {card.cost != null && (
         <span
           title={`${card.cost} energy`}
           className={[
@@ -51,6 +53,7 @@ export default function GameCard({ card, playerName }) {
         >
           {card.cost}
         </span>
+        )}
       </div>
 
       {/* --------------------------------------------------------------- art */}
