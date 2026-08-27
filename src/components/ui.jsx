@@ -80,7 +80,7 @@ export function ActionButton({ children, onClick, primary = false, disabled = fa
       onClick={onClick}
       disabled={disabled}
       className={[
-        'rounded-sm border px-8 py-2.5 font-display text-sm font-bold uppercase tracking-[0.18em]',
+        'group rounded-sm border px-8 py-2.5 font-display text-sm font-bold uppercase tracking-[0.18em]',
         'backdrop-blur-[3px] transition-colors duration-150 outline-none',
         'focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-soot-950',
         disabled
