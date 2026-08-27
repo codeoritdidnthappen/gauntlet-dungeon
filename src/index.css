@@ -90,6 +90,30 @@ body {
   }
 }
 
+/* End Turn, once there is nothing left to spend.
+
+   Size and colour together, because either alone is easy to miss: the swell
+   catches the eye at the edge of vision and the lift in gold says the button is
+   waiting rather than merely present. Both ends of the cycle state the button's
+   resting colours, so the pulse returns it to exactly how it draws unanimated.
+
+   While this runs it overrides the button's hover colours — an animation beats a
+   plain declaration — which costs nothing, since the pulse is already brighter
+   than hover ever gets. */
+@keyframes end-turn-ready {
+  0%,
+  100% {
+    transform: scale(1);
+    border-color: color-mix(in srgb, var(--color-gold-500) 70%, transparent);
+    color: var(--color-gold-300);
+  }
+  50% {
+    transform: scale(1.06);
+    border-color: var(--color-gold-300);
+    color: var(--color-gold-200);
+  }
+}
+
 /* The hand leaving for the discard pile.
 
    An animation rather than a transition: the resting transform comes from a
