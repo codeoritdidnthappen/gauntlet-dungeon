@@ -34,8 +34,10 @@ import {
  * full height, a fight cannot.
  *
  * Room 1 is scripted and the player moves first, so the hand is live from the
- * moment the room opens. A card costs energy, flies to the pile as it is played,
- * and the rest stay in hand until the energy runs out. End Turn refills it,
+ * moment the room opens. A card costs energy, puts the figure in the pose it
+ * calls for — sword for an attack, scroll for a power — and flies to the pile as
+ * it is played. The rest stay in hand until the energy runs out, and then follow
+ * it, since nothing left is playable. End Turn refills it,
  * resets block, and deals the same five again — one loadout, no deck, so every
  * turn opens with the same hand until there are more cards to draw from.
  *
@@ -63,7 +65,7 @@ const PLAYER_IDLE_SLOWDOWN = 1.09
 
 const CARD_BY_ID = Object.fromEntries(cardData.cards.map((c) => [c.id, c]))
 
-/** How long the figure stays in the scroll pose. Matches the cast-scroll keyframe. */
+/** How long the figure holds the card's pose. Matches the cast-pose keyframe. */
 const CAST_MS = 2000
 
 /** How long the hand takes to reach the pile. */
@@ -83,11 +85,16 @@ export default function BattleRoom() {
   const background = resolveRoomBackground(room)
   const art = resolveCharacterArt({ race, gender, classId, pose: 'ready' })
   const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
-  const scroll = resolveCharacterArt({ race, gender, classId, pose: 'scroll' })
+  // The pose a card puts the figure in. Only the human fighter has these drawn,
+  // so every other race keeps its idle.
+  const poses = {
+    power: resolveCharacterArt({ race, gender, classId, pose: 'scroll' }),
+    attack: resolveCharacterArt({ race, gender, classId, pose: 'sword' }),
+  }
 
-  // Playing a power reads the scroll. Momentary and purely shown, so it is
+  // The pose currently being held, or null. Momentary and purely shown, so it is
   // local: nothing outside this screen has any use for it.
-  const [casting, setCasting] = useState(false)
+  const [cast, setCast] = useState(null)
   const castTimer = useRef(null)
 
   // A played card flies to the pile and then leaves the hand. `flights` holds
@@ -156,15 +163,22 @@ export default function BattleRoom() {
 
     dispatch(spendEnergy(card.cost))
 
-    // Only a power has a scroll to read, and only where that pose is drawn —
-    // the other races have no scroll art yet, so their figure stays as it is.
-    if (card.type === 'power' && scroll) {
+    const pose = poses[card.type]
+    if (pose) {
       clearTimeout(castTimer.current)
-      setCasting(true)
-      castTimer.current = setTimeout(() => setCasting(false), CAST_MS)
+      setCast(pose)
+      castTimer.current = setTimeout(() => setCast(null), CAST_MS)
     }
 
     discardCard(i)
+
+    // Out of energy: nothing left is playable, so the rest of the hand goes with
+    // it rather than sitting there greyed out.
+    if (energy - card.cost <= 0) {
+      hand.forEach((_, j) => {
+        if (j !== i && !played.has(j) && !flights[j]) discardCard(j)
+      })
+    }
   }
 
   /**
@@ -194,14 +208,14 @@ export default function BattleRoom() {
       <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-48 lg:gap-12 lg:px-16 lg:pb-56">
         {/* ------------------------------------------------------ left: you */}
         <div className="flex min-w-0 flex-1 flex-col items-center justify-end">
-          {casting ? (
+          {cast ? (
             <img
-              key={scroll.key}
-              src={scroll.url}
+              key={cast.key}
+              src={cast.url}
               alt=""
               style={{
-                maxHeight: `${scroll.scale * FIGURE_HEIGHT * 100}%`,
-                animation: `cast-scroll ${CAST_MS}ms ease-in-out`,
+                maxHeight: `${cast.scale * FIGURE_HEIGHT * 100}%`,
+                animation: `cast-pose ${CAST_MS}ms ease-in-out`,
               }}
               className="w-auto origin-bottom object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
             />
