@@ -102,6 +102,14 @@ export default function BattleRoom() {
    * The trip is measured rather than guessed: each card is asked where it is and
    * the pile where it is, so the cards converge on it wherever the layout has
    * put them, at any window size.
+   *
+   * Measured with the fan switched off. The flight's transform replaces the
+   * fan's rather than adding to it, so a card travels from where it would sit
+   * unfanned — measure it fanned and every card lands short by however far the
+   * fan had moved it.
+   *
+   * The target is the middle of the stack itself, not of the pile's box: that
+   * box includes the caption beneath, whose centre is lower than the cards'.
    */
   const discardHand = () => {
     const pile = pileRef.current?.getBoundingClientRect()
@@ -111,7 +119,9 @@ export default function BattleRoom() {
     setFlight(
       cardRefs.current.map((el) => {
         if (!el) return { dx: 0, dy: 0 }
+        el.style.setProperty('transform', 'none')
         const r = el.getBoundingClientRect()
+        el.style.removeProperty('transform')
         return { dx: target.x - (r.left + r.width / 2), dy: target.y - (r.top + r.height / 2) }
       }),
     )
@@ -212,7 +222,11 @@ export default function BattleRoom() {
             return (
             <button
               key={`${card.id}-${i}`}
-              ref={(el) => (cardRefs.current[i] = el)}
+              // Braces, not an implicit return: React 19 reads a value returned
+              // from a callback ref as a cleanup function.
+              ref={(el) => {
+                cardRefs.current[i] = el
+              }}
               type="button"
               onClick={() => playCard(card)}
               aria-label={`Play ${card.name}`}
@@ -257,9 +271,7 @@ export default function BattleRoom() {
         <ActionButton primary onClick={() => {}}>
           End Turn
         </ActionButton>
-        <div ref={pileRef}>
-          <DiscardPile />
-        </div>
+        <DiscardPile stackRef={pileRef} />
       </div>
     </main>
   )
@@ -276,7 +288,7 @@ export default function BattleRoom() {
  * Empty for now, and drawn all the same, so the player learns where the pile is
  * before anything is in it.
  */
-function DiscardPile({ className = '' }) {
+function DiscardPile({ className = '', stackRef = null }) {
   // Back to front. Each card below the top sits further out of square, so their
   // edges show along two sides and the pile reads as more than one card.
   const stack = [
@@ -287,7 +299,7 @@ function DiscardPile({ className = '' }) {
 
   return (
     <div className={`${className} w-14 lg:w-16`} title="Discard">
-      <div className="relative aspect-[5/7] w-full">
+      <div ref={stackRef} className="relative aspect-[5/7] w-full">
         {stack.map(({ rotate, x, y, opacity }, i) => (
           <div
             key={i}
