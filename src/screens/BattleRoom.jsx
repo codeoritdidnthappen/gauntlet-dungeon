@@ -62,8 +62,8 @@ import {
  */
 const ROOM_NUMBER = 1
 
-/** Which interviewer an attack goes at. Rooms hold one, so there is no choice. */
-const TARGET = 0
+/** No corpse takes a turn or a hit: play goes to the first one still standing. */
+const firstStanding = (foes) => foes.findIndex((f) => f.health > 0)
 
 /** Share of the stage height a figure may fill. Creation screens use all of it. */
 const FIGURE_HEIGHT = 0.58
@@ -253,13 +253,14 @@ export default function BattleRoom() {
     }
 
     if (card.type === 'attack') {
-      setFoes((current) =>
-        current.map((foe, i) => {
-          if (i !== TARGET) return foe
+      setFoes((current) => {
+        const target = firstStanding(current)
+        return current.map((foe, i) => {
+          if (i !== target) return foe
           const after = resolveAttack({ card, block: foe.block, health: foe.health })
           return { block: after.block, health: after.health }
-        }),
-      )
+        })
+      })
     }
   }
 
@@ -304,12 +305,15 @@ export default function BattleRoom() {
   const endTurn = () => {
     if (over || enemyTurn) return
 
+    // Whoever is still standing takes the turn; `over` has already ruled out
+    // the case where nobody is.
+    const actor = room.enemies[firstStanding(foes)]
     const card = INTRO_ATTACKS[Math.floor(Math.random() * INTRO_ATTACKS.length)]
-    setEnemyTurn({ card, phase: 'reveal' })
+    setEnemyTurn({ card, actor, phase: 'reveal' })
 
     enemyTimers.current = [
       setTimeout(() => {
-        setEnemyTurn({ card, phase: 'strike' })
+        setEnemyTurn({ card, actor, phase: 'strike' })
         flyEnemyCard()
         // The blow lands with the animation that shows it landing.
         dispatch(takeDamage(card))
@@ -400,7 +404,12 @@ export default function BattleRoom() {
             const still = enemyStillNamed(
               enemyStriking ? `${enemy.art}-attack` : `${enemy.art}-hit`,
             )
-            const showStill = (enemyStriking || struck) && still
+            // Out of health and out of the fight. The blow that did it still
+            // plays out first — it reels, and drops once the reeling is over,
+            // rather than blinking into a corpse mid-swing.
+            const corpse =
+              foes[i].health <= 0 && !struck ? enemyStillNamed(`${enemy.art}-dead`) : null
+            const showStill = !corpse && (enemyStriking || struck) && still
             const moving = enemyStriking || struck
 
             return (
@@ -408,7 +417,16 @@ export default function BattleRoom() {
                 key={enemy.art ?? i}
                 className="flex min-w-0 flex-col items-center justify-end"
               >
-                {showStill ? (
+                {corpse ? (
+                  // Lying where it fell: no idle, no clash, no bar. It is
+                  // scenery now.
+                  <img
+                    src={corpse}
+                    alt=""
+                    style={{ maxHeight: `${FIGURE_HEIGHT * 100}%` }}
+                    className="w-auto object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+                  />
+                ) : showStill ? (
                   <img
                     src={still}
                     alt=""
@@ -426,7 +444,7 @@ export default function BattleRoom() {
                 ) : (
                   <FigureSlot label={enemy.name} />
                 )}
-                <HealthBar current={foes[i].health} max={enemy.maxHealth} />
+                {!corpse && <HealthBar current={foes[i].health} max={enemy.maxHealth} />}
               </div>
             )
           })}
@@ -516,7 +534,7 @@ export default function BattleRoom() {
             className="w-40 lg:w-44"
           >
             <p className="mb-2 text-center font-display text-3xs tracking-[0.18em] text-gold-200/50 uppercase">
-              {room.enemies[0]?.name ?? 'Interviewer'}
+              {enemyTurn.actor?.name ?? 'Interviewer'}
             </p>
             <GameCard card={enemyTurn.card} playerName={playerName} />
           </div>
