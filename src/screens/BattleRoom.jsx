@@ -129,13 +129,19 @@ export default function BattleRoom() {
             <div
               key={`${card.id}-${i}`}
               style={{
-                transform: `rotate(${fromCentre * 4}deg) translateY(${Math.abs(fromCentre) * 12}px)`,
+                '--fan-rotate': `${fromCentre * 4}deg`,
+                '--fan-drop': `${Math.abs(fromCentre) * 12}px`,
                 marginInline: '-0.9rem',
                 zIndex: i,
               }}
               className={[
-                'pointer-events-auto w-36 origin-bottom transition-transform duration-150 ease-out',
-                'hover:z-30 hover:!-translate-y-16 hover:!rotate-0 lg:w-40',
+                'pointer-events-auto w-36 origin-bottom transition-transform duration-150 ease-out lg:w-40',
+                // The fan and the hover both write `transform`, so hovering
+                // replaces the fan rather than stacking on top of it — set as
+                // separate rotate/translate properties they would compose, and
+                // an outer card would rise still tilted.
+                '[transform:rotate(var(--fan-rotate))_translateY(var(--fan-drop))]',
+                'hover:z-30 hover:[transform:translateY(-3.5rem)_scale(1.3)]',
               ].join(' ')}
             >
               <GameCard card={card} playerName={playerName} />
