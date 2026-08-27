@@ -44,8 +44,8 @@ import {
  * resets block, and deals the same five again — one loadout, no deck, so every
  * turn opens with the same hand until there are more cards to draw from.
  *
- * End Turn hands over: the interviewer shows the card it is playing in the
- * middle of the room, sends it to the same pile, and swings — the two figures
+ * End Turn hands over: the interviewer shows the card it is playing low in the
+ * middle of the room, above the hand, sends it to the same pile, and swings — the two figures
  * closing on each other exactly as they do when the player attacks, with the
  * art swapped for who is swinging.
  *
@@ -104,11 +104,18 @@ export default function BattleRoom() {
   const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
   // The pose a card puts the figure in. Only the human fighter has these drawn,
   // so every other race keeps its idle.
-  const poses = {
-    power: resolveCharacterArt({ race, gender, classId, pose: 'scroll' }),
-    attack: resolveCharacterArt({ race, gender, classId, pose: 'sword' }),
+  //
+  // Insisting on class art is the point: asked for a pose it does not have,
+  // resolveCharacterArt falls back to the plain creation-screen portrait, which
+  // is the right answer on the creation screens and the wrong one here — it
+  // ignores the pose, so the figure sheds its armour to swing or to be hit.
+  // Better no pose at all, and the idle keeps the movement.
+  const poseArt = (pose) => {
+    const found = resolveCharacterArt({ race, gender, classId, pose })
+    return found?.isClassArt ? found : null
   }
-  const takingHit = resolveCharacterArt({ race, gender, classId, pose: 'hit' })
+  const poses = { power: poseArt('scroll'), attack: poseArt('sword') }
+  const takingHit = poseArt('hit')
 
 
   // The pose currently being held, or null. Momentary and purely shown, so it is
@@ -311,8 +318,6 @@ export default function BattleRoom() {
               // the exchange reads even without the art.
               animation={playerMoving ? `clash-right ${CAST_MS}ms ease-in-out` : undefined}
             />
-          ) : sprite ? (
-            <IdleSprite sprite={sprite} slowdown={PLAYER_IDLE_SLOWDOWN} />
           ) : art ? (
             <img
               key={art.key}
@@ -435,7 +440,7 @@ export default function BattleRoom() {
       {/* The interviewer's card, read in the middle of the room before it lands
           and then sent to the same pile the player's cards go to. */}
       {enemyTurn && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-x-0 bottom-44 z-30 flex justify-center lg:bottom-52">
           <div
             ref={enemyCardRef}
             style={
@@ -452,10 +457,10 @@ export default function BattleRoom() {
             }
             className="w-40 lg:w-44"
           >
-            <GameCard card={enemyTurn.card} playerName={playerName} />
-            <p className="mt-2 text-center font-display text-3xs tracking-[0.18em] text-gold-200/50 uppercase">
+            <p className="mb-2 text-center font-display text-3xs tracking-[0.18em] text-gold-200/50 uppercase">
               {room.enemies[0]?.name ?? 'Interviewer'}
             </p>
+            <GameCard card={enemyTurn.card} playerName={playerName} />
           </div>
         </div>
       )}
