@@ -284,12 +284,14 @@ clickable. Exactly one node — `current` — is interactive at any time.
 
 **Reloading is not resuming.** The game is written to localStorage as it changes
 and read back before the first render, so refreshing the tab never costs a
-character halfway through being made. But a reload does not put the player back
-where they stood — it puts them at the top of whichever half of the game they
-are in, which follows `mode`:
+character halfway through being made. But a reload always lands on the **welcome
+screen**, whatever the player was doing. Continuing is a choice they make there,
+and it is the only place New Game is offered, so a reload has to pass through it
+rather than around it.
 
-- `creation` — the **welcome screen**. The half-built character is kept, and
-  Continue returns to the screen it was left on.
+Continue then goes where `mode` says:
+
+- `creation` — back to the exact screen the character was left on.
 - `battle` — the **map**, at the point reached. Never back into a room.
 
 The Begin the Gauntlet button sets the mode; nothing infers it.

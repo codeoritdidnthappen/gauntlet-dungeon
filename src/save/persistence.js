@@ -7,17 +7,15 @@ import { loadSave, writeSave } from './storage'
  * written to localStorage as they change, and read back before the first render
  * so the player lands where they left off rather than at the welcome screen.
  *
- * Where a reload lands depends only on the mode:
+ * A reload always lands on the welcome screen, whatever the player was doing.
+ * Continuing is a choice they make there, not something a refresh does for them
+ * — and it is the only place New Game is offered, so a reload must pass through
+ * it rather than around it.
  *
- *   - **creation** — the welcome screen. The half-built character is kept, and
- *     Continue goes back to the screen it was left on.
- *   - **battle** — the map, at the point reached. Never back into a room:
- *     ARCHITECTURE.md §4 has the save point as the map precisely so combat state
- *     never has to be serialised, and a resumed run never restores
- *     mid-encounter.
- *
- * A reload is not a way to carry on where you stood. It puts the player at the
- * top of whichever half of the game they are in.
+ * Continue then goes where the mode says: the map for a run underway, at the
+ * point reached, or back to the exact screen a half-built character was left on.
+ * Never back into a room — ARCHITECTURE.md §4 has the save point as the map
+ * precisely so combat state never has to be serialised.
  */
 
 /** Screens a reload may land on. `room` is deliberately absent. */
@@ -45,28 +43,20 @@ export function screenToContinue(save) {
 }
 
 /**
- * Where a reload lands: the map mid-run, the welcome screen otherwise.
+ * The saved character, for the store to start from.
  *
- * Deliberately not the screen they were on. Nothing is lost by it — the
- * character is still saved, and Continue picks it back up where it was left —
- * but a reload lands somewhere predictable rather than wherever the player
- * happened to be standing.
- */
-export function screenToRestore(save) {
-  return save?.character?.mode === 'battle' ? 'map' : 'home'
-}
-
-/**
- * Read the save and say what to do with it.
+ * No screen comes back with it: a reload lands on the welcome screen, which is
+ * where the store starts anyway. Hydrating regardless keeps the store and the
+ * save saying the same thing, so a write from anywhere cannot quietly replace a
+ * real game with an empty one.
  *
- * @returns {Promise<{ character: object, screen: string } | null>} null when
- * there is nothing to resume, or when the save failed its checksum — a save
- * that does not verify is refused rather than partly applied.
+ * @returns {Promise<object | null>} null when there is nothing to resume, or
+ * when the save failed its checksum — a save that does not verify is refused
+ * rather than partly applied.
  */
-export async function readResumePoint() {
+export async function readSavedCharacter() {
   const result = await loadSave()
-  if (result.status !== 'valid' || !result.data?.character) return null
-  return { character: result.data.character, screen: screenToRestore(result.data) }
+  return result.status === 'valid' && result.data?.character ? result.data.character : null
 }
 
 /**

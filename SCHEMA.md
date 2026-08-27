@@ -298,10 +298,11 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 - `revivesRemaining` starts at 3; at 0 the next death ends the run and discards
   all of the above (D13).
 - Loadout may only be edited **outside a room**, from the map button (D15).
-- `mode` separates "still deciding" from "underway", and decides where a reload
-  lands: the **welcome screen** in `creation`, the **map** in `battle`
-  (ARCHITECTURE.md §4 — a resumed run never restores mid-encounter). Either way
-  nothing is lost; Continue goes back to the screen the player was on.
+- `mode` separates "still deciding" from "underway", and decides where
+  **Continue** goes: the **map** in `battle`, at the point reached
+  (ARCHITECTURE.md §4 — a resumed run never restores mid-encounter), or back to
+  the exact screen a `creation` character was left on. A reload always lands on
+  the welcome screen whatever the mode, so `mode` never decides that.
 - **`mode` is set, never inferred.** The Begin the Gauntlet button flips it, and
   that click is the whole rule — it is not worked out from whether a room has
   been entered, or from which screen is showing. One place decides, so there is
