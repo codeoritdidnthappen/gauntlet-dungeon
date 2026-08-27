@@ -285,9 +285,9 @@ clickable. Exactly one node — `current` — is interactive at any time.
 **Reloading resumes too, not just Continue.** The game is written to localStorage
 as it changes and read back before the first render, so refreshing the tab is not
 a way to lose a character halfway through creating one. Where it lands follows
-`runStarted`: before the run is underway, the screen they were on — creation, pet
-or loadout, all still editable; once underway, the map, at the point reached.
-Never back into a room.
+`mode`: in `creation`, the screen they were on — character, pet or loadout, all
+still editable; in `battle`, the map, at the point reached. Never back into a
+room. The Begin the Gauntlet button sets the mode; nothing infers it.
 
 Consequence, worth confirming: **the save point is the map.** State is written on
 returning to the map, not during an encounter. That removes any need to serialise

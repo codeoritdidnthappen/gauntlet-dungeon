@@ -36,7 +36,7 @@ export function snapshotOf(state) {
  */
 export function screenToRestore(save) {
   if (!save) return 'home'
-  if (save.character?.runStarted) return 'map'
+  if (save.character?.mode === 'battle') return 'map'
   return RESUMABLE.has(save.screen) ? save.screen : 'home'
 }
 
