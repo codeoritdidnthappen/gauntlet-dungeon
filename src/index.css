@@ -119,16 +119,34 @@ body {
    the floor while the translate walks them down. */
 @keyframes cast-pose {
   0% {
-    transform: translateY(0) scale(1);
+    transform: translate(0, 0) scale(1);
   }
   18% {
-    transform: translateY(4%) scale(1.14);
+    transform: translate(4%, 7%) scale(1.24);
   }
   82% {
-    transform: translateY(4%) scale(1.14);
+    transform: translate(4%, 7%) scale(1.24);
   }
   100% {
-    transform: translateY(0) scale(1);
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* Taking the blow: the interviewer reels toward the player as the player comes
+   at them, so the two meet in the middle of the floor. Mirrors cast-pose on the
+   horizontal and runs to the same clock, so they move as one exchange. */
+@keyframes enemy-hit {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  18% {
+    transform: translate(-4%, 7%) scale(1.24);
+  }
+  82% {
+    transform: translate(-4%, 7%) scale(1.24);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
   }
 }
 

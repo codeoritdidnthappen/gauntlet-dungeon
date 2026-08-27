@@ -209,6 +209,23 @@ const IDLE_SHEET_META = Object.fromEntries(
 )
 
 /**
+ * Enemy stills — `assets/enemies/{name}.png`, e.g. `skeleton-swordsman-hit`.
+ * The sheets live alongside them and simply key under their own longer names.
+ */
+const ENEMY_STILLS = urlOf(
+  import.meta.glob('../../assets/enemies/*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  }),
+)
+
+/** A named enemy still, or null where it has not been drawn. */
+export function enemyStillNamed(name) {
+  return ENEMY_STILLS[artKey(name)] ?? null
+}
+
+/**
  * The looping idle sheet filed under a name, or null where none has been drawn.
  *
  * Enemies are named directly — `skeleton-swordsman`; player figures compose

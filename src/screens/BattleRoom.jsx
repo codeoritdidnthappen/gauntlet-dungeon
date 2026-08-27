@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import cardData from '../../data/cards.json'
 import roomData from '../../data/rooms.json'
 import {
+  enemyStillNamed,
   idleSpriteNamed,
   resolveCharacterArt,
   resolveIdleSprite,
@@ -36,7 +37,8 @@ import {
  * Room 1 is scripted and the player moves first, so the hand is live from the
  * moment the room opens. A card costs energy, puts the figure in the pose it
  * calls for — sword for an attack, scroll for a power — and flies to the pile as
- * it is played. The rest stay in hand until the energy runs out, and then follow
+ * it is played. An attack also throws the interviewer into its hit pose, reeling
+ * the other way on the same clock, so the two read as one exchange. The rest stay in hand until the energy runs out, and then follow
  * it, since nothing left is playable. End Turn refills it,
  * resets block, and deals the same five again — one loadout, no deck, so every
  * turn opens with the same hand until there are more cards to draw from.
@@ -97,6 +99,11 @@ export default function BattleRoom() {
   const [cast, setCast] = useState(null)
   const castTimer = useRef(null)
 
+  // Whether the interviewers are taking a hit. Runs to the same clock as the
+  // player's pose, so the blow and the reaction are one exchange.
+  const [struck, setStruck] = useState(false)
+  const struckTimer = useRef(null)
+
   // A played card flies to the pile and then leaves the hand. `flights` holds
   // the trip for each card still travelling, by its place in the hand; `played`
   // is the ones already gone. Both are per-turn and per-room, and
@@ -107,7 +114,13 @@ export default function BattleRoom() {
   const pileRef = useRef(null)
   const cardRefs = useRef([])
 
-  useEffect(() => () => clearTimeout(castTimer.current), [])
+  useEffect(
+    () => () => {
+      clearTimeout(castTimer.current)
+      clearTimeout(struckTimer.current)
+    },
+    [],
+  )
 
   // Walking in starts a turn (ARCHITECTURE.md §5). Without it the room opens on
   // whatever energy the save happened to hold — energy is saved along with the
@@ -168,6 +181,12 @@ export default function BattleRoom() {
       clearTimeout(castTimer.current)
       setCast(pose)
       castTimer.current = setTimeout(() => setCast(null), CAST_MS)
+    }
+
+    if (card.type === 'attack') {
+      clearTimeout(struckTimer.current)
+      setStruck(true)
+      struckTimer.current = setTimeout(() => setStruck(false), CAST_MS)
     }
 
     discardCard(i)
@@ -242,12 +261,29 @@ export default function BattleRoom() {
         <div className="flex min-w-0 flex-1 items-stretch justify-center gap-4 lg:gap-8">
           {room.enemies.map((enemy, i) => {
             const idle = idleSpriteNamed(enemy.art)
+            const hit = enemyStillNamed(`${enemy.art}-hit`)
+            const reeling = struck && hit
+
             return (
               <div
                 key={enemy.art ?? i}
                 className="flex min-w-0 flex-col items-center justify-end"
               >
-                {idle ? <IdleSprite sprite={idle} /> : <FigureSlot label={enemy.name} />}
+                {reeling ? (
+                  <img
+                    src={hit}
+                    alt=""
+                    style={{
+                      maxHeight: `${FIGURE_HEIGHT * 100}%`,
+                      animation: `enemy-hit ${CAST_MS}ms ease-in-out`,
+                    }}
+                    className="w-auto origin-bottom object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+                  />
+                ) : idle ? (
+                  <IdleSprite sprite={idle} />
+                ) : (
+                  <FigureSlot label={enemy.name} />
+                )}
                 <HealthBar current={enemy.maxHealth} max={enemy.maxHealth} />
               </div>
             )
