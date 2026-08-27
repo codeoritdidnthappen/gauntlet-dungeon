@@ -100,7 +100,29 @@ export default function StartingLoadout() {
         <ActionButton onClick={() => dispatch(goTo('pet'))}>Back</ActionButton>
         <ActionButton primary onClick={() => dispatch(goTo('map'))}>
           <span className="flex items-center gap-2.5">
-            <img src={CASTLE_ICON} alt="" className="h-5 w-5 shrink-0" />
+            {/* The castle is painted rather than drawn: the svg supplies only
+                its shape, as a mask, and the colour comes from here so it can
+                brighten with the label on hover. An <img> cannot do that —
+                nothing outside an svg loaded that way can reach its fill. The
+                resting gold is the one the file itself carries. */}
+            <span
+              aria-hidden="true"
+              style={{
+                // Quoted: the icon inlines as a data URI carrying the svg's own
+                // style attribute, so it holds parentheses and commas that a
+                // bare url() cannot. Unquoted the whole declaration is thrown
+                // out and the mask silently does nothing.
+                maskImage: `url("${CASTLE_ICON}")`,
+                WebkitMaskImage: `url("${CASTLE_ICON}")`,
+                maskRepeat: 'no-repeat',
+                WebkitMaskRepeat: 'no-repeat',
+                maskSize: 'contain',
+                WebkitMaskSize: 'contain',
+                maskPosition: 'center',
+                WebkitMaskPosition: 'center',
+              }}
+              className="mb-1 h-5 w-5 shrink-0 bg-[#d9ae4e] transition-colors duration-150 group-hover:bg-gold-200"
+            />
             Begin the Gauntlet
           </span>
         </ActionButton>
