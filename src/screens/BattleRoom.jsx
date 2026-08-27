@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import cardData from '../../data/cards.json'
 import roomData from '../../data/rooms.json'
 import {
@@ -11,7 +11,14 @@ import {
 import MusicToggle from '../audio/MusicToggle'
 import GameCard from '../components/GameCard'
 import { ActionButton, ScreenBackdrop } from '../components/ui'
-import { selectDisplayName, selectLoadout, selectPlayer, selectStats } from '../store/playerSlice'
+import {
+  selectDisplayName,
+  selectLoadout,
+  selectPlayer,
+  selectStats,
+  spendEnergy,
+  startTurn,
+} from '../store/playerSlice'
 
 /**
  * Screen 5 — a battle room.
@@ -27,11 +34,13 @@ import { selectDisplayName, selectLoadout, selectPlayer, selectStats } from '../
  * full height, a fight cannot.
  *
  * Room 1 is scripted and the player moves first, so the hand is live from the
- * moment the room opens. Playing a card discards the whole hand — every card
- * flies to the pile, not just the one played.
+ * moment the room opens. A card costs energy, flies to the pile as it is played,
+ * and the rest stay in hand until the energy runs out. End Turn refills it,
+ * resets block, and deals the same five again — one loadout, no deck, so every
+ * turn opens with the same hand until there are more cards to draw from.
  *
- * Nothing else resolves yet: no energy is spent, no damage dealt, End Turn ends
- * nothing, and once the hand has gone nothing brings it back.
+ * Nothing a card says has happened yet: no damage, no block, and the enemy does
+ * not act.
  *
  * There is no way out. A room is entered, not visited: it ends by being won or
  * lost, so this screen offers no navigation at all.
@@ -62,7 +71,8 @@ const DISCARD_MS = 480
 
 export default function BattleRoom() {
   const { race, gender, class: classId } = useSelector(selectPlayer)
-  const { health, maxHealth } = useSelector(selectStats)
+  const dispatch = useDispatch()
+  const { health, maxHealth, energy, maxEnergy, block } = useSelector(selectStats)
   const loadout = useSelector(selectLoadout)
   const playerName = useSelector(selectDisplayName)
 
@@ -80,24 +90,27 @@ export default function BattleRoom() {
   const [casting, setCasting] = useState(false)
   const castTimer = useRef(null)
 
-  // Playing anything discards the whole hand. `flight` holds each card's trip to
-  // the pile, measured when it starts; `spent` is the hand being gone.
-  const [flight, setFlight] = useState(null)
-  const [spent, setSpent] = useState(false)
-  const discardTimer = useRef(null)
+  // A played card flies to the pile and then leaves the hand. `flights` holds
+  // the trip for each card still travelling, by its place in the hand; `played`
+  // is the ones already gone. Both are per-turn and per-room, and
+  // ARCHITECTURE.md §4 keeps combat state out of the save deliberately, so
+  // neither belongs in the store.
+  const [flights, setFlights] = useState({})
+  const [played, setPlayed] = useState(() => new Set())
   const pileRef = useRef(null)
   const cardRefs = useRef([])
 
-  useEffect(
-    () => () => {
-      clearTimeout(castTimer.current)
-      clearTimeout(discardTimer.current)
-    },
-    [],
-  )
+  useEffect(() => () => clearTimeout(castTimer.current), [])
+
+  // Walking in starts a turn (ARCHITECTURE.md §5). Without it the room opens on
+  // whatever energy the save happened to hold — energy is saved along with the
+  // rest of the player, and a turn's leftovers are not a state to arrive in.
+  useEffect(() => {
+    dispatch(startTurn())
+  }, [dispatch])
 
   /**
-   * Send the hand to the pile.
+   * Send one card to the pile.
    *
    * The trip is measured rather than guessed: each card is asked where it is and
    * the pile where it is, so the cards converge on it wherever the layout has
@@ -111,29 +124,37 @@ export default function BattleRoom() {
    * The target is the middle of the stack itself, not of the pile's box: that
    * box includes the caption beneath, whose centre is lower than the cards'.
    */
-  const discardHand = () => {
+  const discardCard = (i) => {
+    const el = cardRefs.current[i]
     const pile = pileRef.current?.getBoundingClientRect()
-    if (!pile || spent) return
+    if (!el || !pile) return
 
-    const target = { x: pile.left + pile.width / 2, y: pile.top + pile.height / 2 }
-    setFlight(
-      cardRefs.current.map((el) => {
-        if (!el) return { dx: 0, dy: 0 }
-        el.style.setProperty('transform', 'none')
-        const r = el.getBoundingClientRect()
-        el.style.removeProperty('transform')
-        return { dx: target.x - (r.left + r.width / 2), dy: target.y - (r.top + r.height / 2) }
-      }),
-    )
+    el.style.setProperty('transform', 'none')
+    const r = el.getBoundingClientRect()
+    el.style.removeProperty('transform')
 
-    discardTimer.current = setTimeout(() => {
-      setFlight(null)
-      setSpent(true)
+    setFlights((f) => ({
+      ...f,
+      [i]: {
+        dx: pile.left + pile.width / 2 - (r.left + r.width / 2),
+        dy: pile.top + pile.height / 2 - (r.top + r.height / 2),
+      },
+    }))
+
+    setTimeout(() => {
+      setPlayed((p) => new Set(p).add(i))
+      setFlights((f) => {
+        const next = { ...f }
+        delete next[i]
+        return next
+      })
     }, DISCARD_MS)
   }
 
-  const playCard = (card) => {
-    if (spent) return
+  const playCard = (card, i) => {
+    if (played.has(i) || flights[i] || card.cost > energy) return
+
+    dispatch(spendEnergy(card.cost))
 
     // Only a power has a scroll to read, and only where that pose is drawn —
     // the other races have no scroll art yet, so their figure stays as it is.
@@ -143,8 +164,18 @@ export default function BattleRoom() {
       castTimer.current = setTimeout(() => setCasting(false), CAST_MS)
     }
 
-    // Whatever was played, the whole hand goes.
-    discardHand()
+    discardCard(i)
+  }
+
+  /**
+   * End the turn: energy and block back to full, and the same five dealt again.
+   * There is no deck to draw from — the loadout is the hand — so until there
+   * are more cards every turn opens the same way.
+   */
+  const endTurn = () => {
+    dispatch(startTurn())
+    setPlayed(new Set())
+    setFlights({})
   }
 
   return (
@@ -215,11 +246,13 @@ export default function BattleRoom() {
           fit across without shrinking past reading size. Hovering lifts one
           clear of its neighbours — overlapped, they cannot be read otherwise. */}
       <div className="pointer-events-none absolute inset-x-0 -bottom-16 z-10 flex items-end justify-center">
-        {!spent &&
-          hand.map((card, i) => {
-            const fromCentre = i - (hand.length - 1) / 2
-            const trip = flight?.[i]
-            return (
+        {hand.map((card, i) => {
+          if (played.has(i)) return null
+
+          const fromCentre = i - (hand.length - 1) / 2
+          const trip = flights[i]
+          const affordable = card.cost <= energy && !trip
+          return (
             <button
               key={`${card.id}-${i}`}
               // Braces, not an implicit return: React 19 reads a value returned
@@ -228,7 +261,8 @@ export default function BattleRoom() {
                 cardRefs.current[i] = el
               }}
               type="button"
-              onClick={() => playCard(card)}
+              onClick={() => playCard(card, i)}
+              disabled={!affordable}
               aria-label={`Play ${card.name}`}
               style={{
                 '--fan-rotate': `${fromCentre * 4}deg`,
@@ -249,26 +283,41 @@ export default function BattleRoom() {
                 }),
               }}
               className={[
-                'pointer-events-auto w-36 cursor-pointer origin-bottom lg:w-40',
+                'pointer-events-auto w-36 origin-bottom lg:w-40',
                 'transition-transform duration-150 ease-out outline-none',
                 'focus-visible:ring-2 focus-visible:ring-gold-400',
+                // Out of reach this turn: dimmed, and it does not rise to meet
+                // the cursor either, so the hand says what can be played.
+                affordable ? 'cursor-pointer' : 'cursor-not-allowed opacity-45 grayscale',
                 // The fan and the hover both write `transform`, so hovering
                 // replaces the fan rather than stacking on top of it — set as
                 // separate rotate/translate properties they would compose, and
                 // an outer card would rise still tilted.
                 '[transform:rotate(var(--fan-rotate))_translateY(var(--fan-drop))]',
-                'hover:z-30 hover:[transform:translateY(-3.5rem)_scale(1.3)]',
+                affordable ? 'hover:z-30 hover:[transform:translateY(-3.5rem)_scale(1.3)]' : '',
               ].join(' ')}
             >
               <GameCard card={card} playerName={playerName} />
             </button>
-            )
-          })}
+          )
+        })}
+      </div>
+
+      {/* Energy, where the player is already looking when choosing a card. */}
+      <div className="absolute bottom-8 left-8 z-20 text-center lg:bottom-10 lg:left-12">
+        <p className="font-display text-3xl font-bold text-gold-300">
+          {energy}
+          <span className="text-gold-200/40">/{maxEnergy}</span>
+        </p>
+        <p className="font-display text-3xs tracking-[0.18em] text-gold-200/45 uppercase">Energy</p>
+        {block > 0 && (
+          <p className="mt-2 font-body text-2xs text-sky-200/80">{block} block</p>
+        )}
       </div>
 
       {/* ---------------------------------------------------------- controls */}
       <div className="absolute right-6 bottom-6 z-20 flex flex-col items-end gap-3 lg:right-10 lg:bottom-8">
-        <ActionButton primary onClick={() => {}}>
+        <ActionButton primary onClick={endTurn}>
           End Turn
         </ActionButton>
         <DiscardPile stackRef={pileRef} />
