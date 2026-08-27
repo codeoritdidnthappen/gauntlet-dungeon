@@ -1,0 +1,14 @@
+{
+  "image": "collector-idle-spritesheet.png",
+  "frameWidth": 887,
+  "frameHeight": 1774,
+  "frameCount": 8,
+  "columns": 8,
+  "rows": 1,
+  "fps": 4.5,
+  "loop": true,
+  "order": "left-to-right",
+  "motion": "spectral-idle-breathing-and-cage-sway",
+  "feetLocked": true,
+  "facing": "left"
+}
