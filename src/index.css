@@ -90,6 +90,26 @@ body {
   }
 }
 
+/* The hand leaving for the discard pile.
+
+   An animation rather than a transition: the resting transform comes from a
+   utility class and the destination from an inline style, and transitioning
+   between the two proved unreliable — the declaration applied but the value
+   never moved off its start. Keyframes interpolate from a stated `from`, so
+   there is nothing to negotiate.
+
+   The trip is measured per card and handed in as --fly-x / --fly-y. */
+@keyframes discard-flight {
+  from {
+    transform: rotate(var(--fan-rotate)) translateY(var(--fan-drop));
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--fly-x), var(--fly-y)) scale(0.22) rotate(-14deg);
+    opacity: 0.1;
+  }
+}
+
 /* Playing a power: the figure steps forward and swells while the scroll is
    read, holds, then settles back. One animation out and back, so the still
    returns to exactly the idle's size and place and the swap back is unseen.

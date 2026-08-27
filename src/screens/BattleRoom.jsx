@@ -27,9 +27,11 @@ import { selectDisplayName, selectLoadout, selectPlayer, selectStats } from '../
  * full height, a fight cannot.
  *
  * Room 1 is scripted and the player moves first, so the hand is live from the
- * moment the room opens. Nothing resolves yet: the cards are the player's real
- * five and the health is real, but playing a card does nothing, End Turn ends
- * nothing, and the discard stays empty.
+ * moment the room opens. Playing a card discards the whole hand — every card
+ * flies to the pile, not just the one played.
+ *
+ * Nothing else resolves yet: no energy is spent, no damage dealt, End Turn ends
+ * nothing, and once the hand has gone nothing brings it back.
  *
  * There is no way out. A room is entered, not visited: it ends by being won or
  * lost, so this screen offers no navigation at all.
@@ -55,6 +57,9 @@ const CARD_BY_ID = Object.fromEntries(cardData.cards.map((c) => [c.id, c]))
 /** How long the figure stays in the scroll pose. Matches the cast-scroll keyframe. */
 const CAST_MS = 2000
 
+/** How long the hand takes to reach the pile. */
+const DISCARD_MS = 480
+
 export default function BattleRoom() {
   const { race, gender, class: classId } = useSelector(selectPlayer)
   const { health, maxHealth } = useSelector(selectStats)
@@ -75,15 +80,61 @@ export default function BattleRoom() {
   const [casting, setCasting] = useState(false)
   const castTimer = useRef(null)
 
-  useEffect(() => () => clearTimeout(castTimer.current), [])
+  // Playing anything discards the whole hand. `flight` holds each card's trip to
+  // the pile, measured when it starts; `spent` is the hand being gone.
+  const [flight, setFlight] = useState(null)
+  const [spent, setSpent] = useState(false)
+  const discardTimer = useRef(null)
+  const pileRef = useRef(null)
+  const cardRefs = useRef([])
+
+  useEffect(
+    () => () => {
+      clearTimeout(castTimer.current)
+      clearTimeout(discardTimer.current)
+    },
+    [],
+  )
+
+  /**
+   * Send the hand to the pile.
+   *
+   * The trip is measured rather than guessed: each card is asked where it is and
+   * the pile where it is, so the cards converge on it wherever the layout has
+   * put them, at any window size.
+   */
+  const discardHand = () => {
+    const pile = pileRef.current?.getBoundingClientRect()
+    if (!pile || spent) return
+
+    const target = { x: pile.left + pile.width / 2, y: pile.top + pile.height / 2 }
+    setFlight(
+      cardRefs.current.map((el) => {
+        if (!el) return { dx: 0, dy: 0 }
+        const r = el.getBoundingClientRect()
+        return { dx: target.x - (r.left + r.width / 2), dy: target.y - (r.top + r.height / 2) }
+      }),
+    )
+
+    discardTimer.current = setTimeout(() => {
+      setFlight(null)
+      setSpent(true)
+    }, DISCARD_MS)
+  }
 
   const playCard = (card) => {
+    if (spent) return
+
     // Only a power has a scroll to read, and only where that pose is drawn —
     // the other races have no scroll art yet, so their figure stays as it is.
-    if (card.type !== 'power' || !scroll) return
-    clearTimeout(castTimer.current)
-    setCasting(true)
-    castTimer.current = setTimeout(() => setCasting(false), CAST_MS)
+    if (card.type === 'power' && scroll) {
+      clearTimeout(castTimer.current)
+      setCasting(true)
+      castTimer.current = setTimeout(() => setCasting(false), CAST_MS)
+    }
+
+    // Whatever was played, the whole hand goes.
+    discardHand()
   }
 
   return (
@@ -154,11 +205,14 @@ export default function BattleRoom() {
           fit across without shrinking past reading size. Hovering lifts one
           clear of its neighbours — overlapped, they cannot be read otherwise. */}
       <div className="pointer-events-none absolute inset-x-0 -bottom-16 z-10 flex items-end justify-center">
-        {hand.map((card, i) => {
-          const fromCentre = i - (hand.length - 1) / 2
-          return (
+        {!spent &&
+          hand.map((card, i) => {
+            const fromCentre = i - (hand.length - 1) / 2
+            const trip = flight?.[i]
+            return (
             <button
               key={`${card.id}-${i}`}
+              ref={(el) => (cardRefs.current[i] = el)}
               type="button"
               onClick={() => playCard(card)}
               aria-label={`Play ${card.name}`}
@@ -167,6 +221,18 @@ export default function BattleRoom() {
                 '--fan-drop': `${Math.abs(fromCentre) * 12}px`,
                 marginInline: '-0.9rem',
                 zIndex: i,
+                // In flight the keyframe takes over: it states its own start,
+                // so it does not have to out-rank the fan's transform.
+                ...(trip && {
+                  '--fly-x': `${trip.dx}px`,
+                  '--fly-y': `${trip.dy}px`,
+                  animation: `discard-flight ${DISCARD_MS}ms ease-in forwards`,
+                  // The fan scales about the bottom edge; the trip was measured
+                  // centre to centre. Scaling about the centre for the flight
+                  // makes the two agree, or the cards land low of the pile.
+                  transformOrigin: 'center',
+                  pointerEvents: 'none',
+                }),
               }}
               className={[
                 'pointer-events-auto w-36 cursor-pointer origin-bottom lg:w-40',
@@ -182,8 +248,8 @@ export default function BattleRoom() {
             >
               <GameCard card={card} playerName={playerName} />
             </button>
-          )
-        })}
+            )
+          })}
       </div>
 
       {/* ---------------------------------------------------------- controls */}
@@ -191,7 +257,9 @@ export default function BattleRoom() {
         <ActionButton primary onClick={() => {}}>
           End Turn
         </ActionButton>
-        <DiscardPile />
+        <div ref={pileRef}>
+          <DiscardPile />
+        </div>
       </div>
     </main>
   )
