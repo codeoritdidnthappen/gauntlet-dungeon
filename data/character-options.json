@@ -265,6 +265,15 @@
         "filename": "himalayan.png",
         "path": "assets/pets/"
       }
+    },
+    {
+      "id": "tuxedo",
+      "type": "cat",
+      "name": "Tuxedo",
+      "image": {
+        "filename": "black-and-white-cat.png",
+        "path": "assets/pets/"
+      }
     }
   ],
   "limits": {
