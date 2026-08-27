@@ -110,13 +110,14 @@ body {
   }
 }
 
-/* Playing a power: the figure steps forward and swells while the scroll is
-   read, holds, then settles back. One animation out and back, so the still
-   returns to exactly the idle's size and place and the swap back is unseen.
+/* Playing a card: the figure steps forward and swells into the pose the card
+   calls for — a scroll for a power, a sword for an attack — holds, then settles
+   back. One animation out and back, so the still returns to exactly the idle's
+   size and place and the swap back is unseen.
 
    Paired with `origin-bottom`, so the growth goes upward and the feet stay on
    the floor while the translate walks them down. */
-@keyframes cast-scroll {
+@keyframes cast-pose {
   0% {
     transform: translateY(0) scale(1);
   }
