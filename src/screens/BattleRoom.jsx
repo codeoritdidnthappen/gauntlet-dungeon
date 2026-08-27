@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import cardData from '../../data/cards.json'
 import roomData from '../../data/rooms.json'
@@ -52,6 +52,9 @@ const PLAYER_IDLE_SLOWDOWN = 1.09
 
 const CARD_BY_ID = Object.fromEntries(cardData.cards.map((c) => [c.id, c]))
 
+/** How long the figure stays in the scroll pose. Matches the cast-scroll keyframe. */
+const CAST_MS = 2000
+
 export default function BattleRoom() {
   const { race, gender, class: classId } = useSelector(selectPlayer)
   const { health, maxHealth } = useSelector(selectStats)
@@ -65,6 +68,23 @@ export default function BattleRoom() {
   const background = resolveRoomBackground(room)
   const art = resolveCharacterArt({ race, gender, classId, pose: 'ready' })
   const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
+  const scroll = resolveCharacterArt({ race, gender, classId, pose: 'scroll' })
+
+  // Playing a power reads the scroll. Momentary and purely shown, so it is
+  // local: nothing outside this screen has any use for it.
+  const [casting, setCasting] = useState(false)
+  const castTimer = useRef(null)
+
+  useEffect(() => () => clearTimeout(castTimer.current), [])
+
+  const playCard = (card) => {
+    // Only a power has a scroll to read, and only where that pose is drawn —
+    // the other races have no scroll art yet, so their figure stays as it is.
+    if (card.type !== 'power' || !scroll) return
+    clearTimeout(castTimer.current)
+    setCasting(true)
+    castTimer.current = setTimeout(() => setCasting(false), CAST_MS)
+  }
 
   return (
     <main className="relative h-full w-full overflow-hidden bg-soot-950">
@@ -82,7 +102,18 @@ export default function BattleRoom() {
       <div className="relative flex h-full w-full items-stretch gap-6 px-6 pb-48 lg:gap-12 lg:px-16 lg:pb-56">
         {/* ------------------------------------------------------ left: you */}
         <div className="flex min-w-0 flex-1 flex-col items-center justify-end">
-          {sprite ? (
+          {casting ? (
+            <img
+              key={scroll.key}
+              src={scroll.url}
+              alt=""
+              style={{
+                maxHeight: `${scroll.scale * FIGURE_HEIGHT * 100}%`,
+                animation: `cast-scroll ${CAST_MS}ms ease-in-out`,
+              }}
+              className="w-auto origin-bottom object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+            />
+          ) : sprite ? (
             <IdleSprite sprite={sprite} slowdown={PLAYER_IDLE_SLOWDOWN} />
           ) : art ? (
             <img
@@ -126,8 +157,11 @@ export default function BattleRoom() {
         {hand.map((card, i) => {
           const fromCentre = i - (hand.length - 1) / 2
           return (
-            <div
+            <button
               key={`${card.id}-${i}`}
+              type="button"
+              onClick={() => playCard(card)}
+              aria-label={`Play ${card.name}`}
               style={{
                 '--fan-rotate': `${fromCentre * 4}deg`,
                 '--fan-drop': `${Math.abs(fromCentre) * 12}px`,
@@ -135,7 +169,9 @@ export default function BattleRoom() {
                 zIndex: i,
               }}
               className={[
-                'pointer-events-auto w-36 origin-bottom transition-transform duration-150 ease-out lg:w-40',
+                'pointer-events-auto w-36 cursor-pointer origin-bottom lg:w-40',
+                'transition-transform duration-150 ease-out outline-none',
+                'focus-visible:ring-2 focus-visible:ring-gold-400',
                 // The fan and the hover both write `transform`, so hovering
                 // replaces the fan rather than stacking on top of it — set as
                 // separate rotate/translate properties they would compose, and
@@ -145,7 +181,7 @@ export default function BattleRoom() {
               ].join(' ')}
             >
               <GameCard card={card} playerName={playerName} />
-            </div>
+            </button>
           )
         })}
       </div>

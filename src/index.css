@@ -90,6 +90,27 @@ body {
   }
 }
 
+/* Playing a power: the figure steps forward and swells while the scroll is
+   read, holds, then settles back. One animation out and back, so the still
+   returns to exactly the idle's size and place and the swap back is unseen.
+
+   Paired with `origin-bottom`, so the growth goes upward and the feet stay on
+   the floor while the translate walks them down. */
+@keyframes cast-scroll {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    transform: translateY(4%) scale(1.14);
+  }
+  82% {
+    transform: translateY(4%) scale(1.14);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Torchlight flicker — CSS only, per the "minimal animation" decision. */
 @keyframes torch {
   0%,
