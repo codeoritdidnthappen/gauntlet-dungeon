@@ -64,8 +64,9 @@ export const CLASS_ART = urlOf(
 )
 
 /**
- * Pet figures — `assets/pets/{id}.png`, e.g. `assets/pets/golden_retriever.png`.
- * The id matches `pets[].id` in data/character-options.json.
+ * Pet figures — `assets/pets/{filename}`, taken from the pet's `image` field in
+ * character-options.json. Named there rather than derived from the id, so a
+ * breed's art need not be filed under the breed's name.
  */
 export const PET_ART = urlOf(
   import.meta.glob('../../assets/pets/*.png', {
@@ -76,17 +77,23 @@ export const PET_ART = urlOf(
 )
 
 /**
- * Art for a pet breed, or null when none has been drawn yet.
+ * Art for a pet, or null when none has been drawn yet.
+ *
+ * Takes the whole pet from character-options.json rather than its id, and finds
+ * the art by the filename that entry declares. Keying off the id worked only
+ * while every breed happened to be filed under its own name.
  *
  * Scale comes from the pet's TYPE (cats are much smaller than dogs), unless a
  * specific breed has its own entry in ART_SCALE.
  */
-export function resolvePetArt(petId, petType) {
-  if (!petId) return null
-  const key = artKey(petId)
-  if (!PET_ART[key]) return null
-  const scale = ART_SCALE[key] ?? PET_TYPE_SCALE[petType] ?? PET_TYPE_SCALE.dog
-  return { url: PET_ART[key], scale, key }
+export function resolvePetArt(pet) {
+  const filename = pet?.image?.filename
+  if (!filename) return null
+  const key = artKey(filename.replace(/\.png$/, ''))
+  const url = PET_ART[key]
+  if (!url) return null
+  const scale = ART_SCALE[key] ?? PET_TYPE_SCALE[pet.type] ?? PET_TYPE_SCALE.dog
+  return { url, scale, key }
 }
 
 /**

@@ -40,7 +40,7 @@ export default function PetCreation() {
   const { pet, petName } = useSelector(selectPlayer)
 
   const selectedPet = options.pets.find((p) => p.id === pet)
-  const art = resolvePetArt(pet, selectedPet?.type)
+  const art = resolvePetArt(selectedPet)
 
   const typeGroups = useMemo(
     () =>
