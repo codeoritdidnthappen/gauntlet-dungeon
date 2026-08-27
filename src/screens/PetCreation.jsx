@@ -99,7 +99,12 @@ export default function PetCreation() {
               // Pets are wide rather than tall, so cap width too or a
               // landscape image overflows the centre column.
               style={{ maxHeight: `${art.scale * 100}%` }}
-              className="w-auto max-w-full object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]"
+              className={[
+                'w-auto max-w-full object-contain object-bottom drop-shadow-[0_16px_40px_rgba(0,0,0,0.85)]',
+                // A cat is short enough to sit down among the buttons. Lifted
+                // clear of them; a dog is tall enough not to need it.
+                selectedPet?.type === 'cat' ? 'mb-24' : '',
+              ].join(' ')}
             />
           ) : selectedPet ? (
             <MissingArt path={`assets/pets/${pet.replace(/_/g, '-')}.png`} />
