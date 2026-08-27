@@ -110,8 +110,10 @@ body {
   }
 }
 
-/* Playing a card: the figure steps forward and swells into the pose the card
-   calls for. The percentages are of the figure's own box, which is tall and
+/* An exchange: whoever is acting steps forward and swells, and whoever is
+   taking it reels the same way, so the two meet on the floor between them.
+   Named by direction rather than by role — the player always closes rightward
+   and the interviewer leftward, whichever of them is the one attacking. The percentages are of the figure's own box, which is tall and
    narrow — so the horizontal number has to be far larger than the vertical one
    to cover the same distance on screen.
 
@@ -121,7 +123,7 @@ body {
 
    Paired with `origin-bottom`, so the growth goes upward and the feet stay on
    the floor while the translate walks them down. */
-@keyframes cast-pose {
+@keyframes clash-right {
   0% {
     transform: translate(0, 0) scale(1);
   }
@@ -136,10 +138,8 @@ body {
   }
 }
 
-/* Taking the blow: the interviewer reels toward the player as the player comes
-   at them, so the two meet in the middle of the floor. Mirrors cast-pose on the
-   horizontal and runs to the same clock, so they move as one exchange. */
-@keyframes enemy-hit {
+/* The interviewer's half of the same exchange. */
+@keyframes clash-left {
   0% {
     transform: translate(0, 0) scale(1);
   }
