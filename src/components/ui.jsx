@@ -73,7 +73,13 @@ export function ButtonRow({ items, value, onChange }) {
   )
 }
 
-export function ActionButton({ children, onClick, primary = false, disabled = false }) {
+export function ActionButton({
+  children,
+  onClick,
+  primary = false,
+  disabled = false,
+  className = '',
+}) {
   return (
     <button
       type="button"
@@ -88,6 +94,7 @@ export function ActionButton({ children, onClick, primary = false, disabled = fa
           : primary
             ? 'cursor-pointer border-gold-500/70 bg-soot-900/85 text-gold-300 hover:border-gold-400 hover:text-gold-200'
             : 'cursor-pointer border-gold-500/30 bg-soot-950/70 text-gold-300/70 hover:border-gold-500/60 hover:text-gold-200',
+        className,
       ].join(' ')}
     >
       {children}

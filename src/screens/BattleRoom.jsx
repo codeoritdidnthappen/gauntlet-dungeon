@@ -543,7 +543,18 @@ export default function BattleRoom() {
 
       {/* ---------------------------------------------------------- controls */}
       <div className="absolute right-6 bottom-6 z-20 flex flex-col items-end gap-3 lg:right-10 lg:bottom-8">
-        <ActionButton primary onClick={endTurn} disabled={Boolean(enemyTurn) || Boolean(over)}>
+        {/* Out of energy and the turn still open: nothing in hand can be played,
+            so the only move left is the one that pulses. */}
+        <ActionButton
+          primary
+          onClick={endTurn}
+          disabled={Boolean(enemyTurn) || Boolean(over)}
+          className={
+            energy === 0 && !enemyTurn && !over
+              ? '[animation:end-turn-ready_1.6s_ease-in-out_infinite]'
+              : ''
+          }
+        >
           End Turn
         </ActionButton>
         <DiscardPile stackRef={pileRef} />
