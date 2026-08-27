@@ -31,6 +31,17 @@ const ROOM_NUMBER = 1
 /** Share of the stage height a figure may fill. Creation screens use all of it. */
 const FIGURE_HEIGHT = 0.58
 
+/**
+ * How much longer the player's idle takes than the sheet's own rate.
+ *
+ * The two sides must never breathe in step — matching loops read as one
+ * animation driving both figures. That is a relationship between the sides
+ * rather than a property of any one sheet, so it lives here: one number, all
+ * six player sheets, and it survives the sheets being regenerated. 1.09 is 9%
+ * slower.
+ */
+const PLAYER_IDLE_SLOWDOWN = 1.09
+
 export default function BattleRoom() {
   const { race, gender, class: classId } = useSelector(selectPlayer)
 
@@ -56,7 +67,7 @@ export default function BattleRoom() {
         {/* ------------------------------------------------------ left: you */}
         <div className="flex min-w-0 flex-1 items-end justify-center">
           {sprite ? (
-            <IdleSprite sprite={sprite} />
+            <IdleSprite sprite={sprite} slowdown={PLAYER_IDLE_SLOWDOWN} />
           ) : art ? (
             <img
               key={art.key}
@@ -95,10 +106,12 @@ export default function BattleRoom() {
  * The sheet is one row of frames, so playback is a background-position sweep in
  * `steps()` — no JS runs per frame, and the browser composites it. Frame size,
  * count and rate all come from the sheet's own metadata, so a sheet cut
- * differently plays correctly without a code change.
+ * differently plays correctly without a code change. `slowdown` stretches that
+ * rate for a figure that should not run at it.
  */
-function IdleSprite({ sprite }) {
+function IdleSprite({ sprite, slowdown = 1 }) {
   const { frameWidth, frameHeight, frameCount, fps } = sprite.meta
+  const seconds = (frameCount / fps) * slowdown
 
   return (
     <div
@@ -113,7 +126,7 @@ function IdleSprite({ sprite }) {
         // Full height and natural width makes the sheet exactly frameCount
         // windows wide, so translating it by its own width steps one frame at a
         // time. max-w-none keeps the browser from shrinking it to fit.
-        style={{ animation: `sprite-frames ${frameCount / fps}s steps(${frameCount}) infinite` }}
+        style={{ animation: `sprite-frames ${seconds}s steps(${frameCount}) infinite` }}
         className="h-full w-auto max-w-none"
       />
     </div>
