@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { HOME_BACKGROUND } from '../config/assets'
-import { loadSave } from '../save/storage'
+import { clearSave, loadSave } from '../save/storage'
 import { screenToContinue } from '../save/persistence'
 import MusicToggle from '../audio/MusicToggle'
 import { goTo } from '../store/uiSlice'
@@ -22,6 +22,12 @@ export default function HomeScreen() {
   const [save, setSave] = useState(null)
 
   const newGame = () => {
+    // Destroy the old game outright rather than leaving the autosave to
+    // overwrite it. Only one game is stored at a time, and the write is
+    // debounced — reload inside that window and the old game comes back.
+    clearSave()
+    setStatus('none')
+    setSave(null)
     dispatch(resetPlayer())
     dispatch(goTo('creation'))
   }
