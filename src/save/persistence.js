@@ -7,14 +7,17 @@ import { loadSave, writeSave } from './storage'
  * written to localStorage as they change, and read back before the first render
  * so the player lands where they left off rather than at the welcome screen.
  *
- * Where they land depends on whether the run is underway:
+ * Where a reload lands depends only on the mode:
  *
- *   - **not started** — back on the screen they were on. Creation, pet and
- *     loadout are all still theirs to change.
- *   - **started** — the map, at the point they had reached. Never back into a
- *     room: ARCHITECTURE.md §4 has the save point as the map precisely so combat
- *     state never has to be serialised, and a resumed run never restores
+ *   - **creation** — the welcome screen. The half-built character is kept, and
+ *     Continue goes back to the screen it was left on.
+ *   - **battle** — the map, at the point reached. Never back into a room:
+ *     ARCHITECTURE.md §4 has the save point as the map precisely so combat state
+ *     never has to be serialised, and a resumed run never restores
  *     mid-encounter.
+ *
+ * A reload is not a way to carry on where you stood. It puts the player at the
+ * top of whichever half of the game they are in.
  */
 
 /** Screens a reload may land on. `room` is deliberately absent. */
@@ -42,20 +45,15 @@ export function screenToContinue(save) {
 }
 
 /**
- * Where a reload lands.
+ * Where a reload lands: the map mid-run, the welcome screen otherwise.
  *
- * The same as Continue, except that a run already underway comes back to the
- * welcome screen rather than straight onto the map. Reloading is not resuming:
- * it puts the player in front of the choice — carry on, or start again — which
- * is the only place that choice is offered.
- *
- * Creation is left alone. Refreshing halfway through building a character
- * should not throw the character away, which is the whole point of restoring
- * that screen.
+ * Deliberately not the screen they were on. Nothing is lost by it — the
+ * character is still saved, and Continue picks it back up where it was left —
+ * but a reload lands somewhere predictable rather than wherever the player
+ * happened to be standing.
  */
 export function screenToRestore(save) {
-  if (save?.character?.mode === 'battle') return 'home'
-  return screenToContinue(save)
+  return save?.character?.mode === 'battle' ? 'map' : 'home'
 }
 
 /**
