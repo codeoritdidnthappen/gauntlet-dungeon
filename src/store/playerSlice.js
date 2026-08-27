@@ -130,6 +130,15 @@ const playerSlice = createSlice({
       s.block = s.startingBlock
     },
 
+    /**
+     * Pay for a card. Clamped at zero rather than trusted: the screen already
+     * refuses what cannot be afforded, and this is the place that must not be
+     * wrong if it ever stops.
+     */
+    spendEnergy: (s, { payload }) => {
+      s.energy = Math.max(0, s.energy - payload)
+    },
+
     addCard: (s, { payload }) => {
       s.loadout.push(payload)
     },
@@ -179,6 +188,7 @@ export const {
   setPet,
   setPetName,
   startTurn,
+  spendEnergy,
   addCard,
   removeCard,
   clearLoadout,
