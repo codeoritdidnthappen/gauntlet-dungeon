@@ -300,8 +300,9 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 - Loadout may only be edited **outside a room**, from the map button (D15).
 - `mode` separates "still deciding" from "underway". In `creation`, character,
   pet and loadout are all still theirs to change and a reload returns them to the
-  screen they were on. In `battle`, a reload returns them to the map
-  (ARCHITECTURE.md §4 — a resumed run never restores mid-encounter).
+  screen they were on. In `battle`, a reload returns them to the **welcome
+  screen**, where Continue carries on from the map (ARCHITECTURE.md §4 — a
+  resumed run never restores mid-encounter).
 - **`mode` is set, never inferred.** The Begin the Gauntlet button flips it, and
   that click is the whole rule — it is not worked out from whether a room has
   been entered, or from which screen is showing. One place decides, so there is

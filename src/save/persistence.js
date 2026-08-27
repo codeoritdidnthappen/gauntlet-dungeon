@@ -29,15 +29,33 @@ export function snapshotOf(state) {
 }
 
 /**
- * The screen a save should resume on.
+ * Where the Continue button lands: the map once the run is underway, otherwise
+ * wherever they left off.
  *
  * Falls back to the welcome screen for anything unrecognised, so a save written
  * by a future version cannot drop the player onto a screen this one lacks.
  */
-export function screenToRestore(save) {
+export function screenToContinue(save) {
   if (!save) return 'home'
   if (save.character?.mode === 'battle') return 'map'
   return RESUMABLE.has(save.screen) ? save.screen : 'home'
+}
+
+/**
+ * Where a reload lands.
+ *
+ * The same as Continue, except that a run already underway comes back to the
+ * welcome screen rather than straight onto the map. Reloading is not resuming:
+ * it puts the player in front of the choice — carry on, or start again — which
+ * is the only place that choice is offered.
+ *
+ * Creation is left alone. Refreshing halfway through building a character
+ * should not throw the character away, which is the whole point of restoring
+ * that screen.
+ */
+export function screenToRestore(save) {
+  if (save?.character?.mode === 'battle') return 'home'
+  return screenToContinue(save)
 }
 
 /**
