@@ -96,7 +96,55 @@ export default function BattleRoom() {
         </div>
       </div>
 
+      <DiscardPile className="absolute right-6 bottom-6 z-10 lg:right-10 lg:bottom-8" />
     </main>
+  )
+}
+
+/**
+ * Where played cards land at the end of a turn.
+ *
+ * Drawn rather than illustrated: three card backs in the same shape and frame as
+ * the cards themselves — 5:7, the same rounding and border — so the pile reads
+ * as those cards face down without needing art of its own. Swap in an image
+ * later by replacing the stack, not the placement.
+ *
+ * Empty for now, and drawn all the same, so the player learns where the pile is
+ * before anything is in it.
+ */
+function DiscardPile({ className = '' }) {
+  // Back to front. Each card below the top sits further out of square, so their
+  // edges show along two sides and the pile reads as more than one card.
+  const stack = [
+    { rotate: -9, x: -9, y: 5, opacity: 0.55 },
+    { rotate: 5, x: 6, y: -3, opacity: 0.8 },
+    { rotate: 0, x: 0, y: 0, opacity: 1 },
+  ]
+
+  return (
+    <div className={`${className} w-24 lg:w-28`} title="Discard">
+      <div className="relative aspect-[5/7] w-full">
+        {stack.map(({ rotate, x, y, opacity }, i) => (
+          <div
+            key={i}
+            aria-hidden="true"
+            style={{ transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`, opacity }}
+            className={[
+              'absolute inset-0 rounded-xl border-[3px] border-gold-500/45',
+              'bg-soot-900 shadow-[0_8px_24px_rgba(0,0,0,0.7)]',
+            ].join(' ')}
+          >
+            {/* A plain gold frame for the back, so a face-down card is
+                obviously not a face-up one. */}
+            <div className="absolute inset-[10%] rounded-md border border-gold-500/35" />
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-1.5 text-center font-display text-3xs tracking-[0.18em] text-gold-200/40 uppercase">
+        Discard
+      </p>
+    </div>
   )
 }
 
