@@ -426,7 +426,7 @@ Room {
   id:         uuid          // v4, like cards (§2) — what the map references
   number:     int           // display and ordering only, never a lookup key
   name:       string
-  enemies:    string[]      // who stands across the table — see below
+  enemies:    { art, name, maxHealth }[]   // who stands across the table — see below
   background: { filename, path }   // assets/backgrounds/
 }
 ```
@@ -438,10 +438,14 @@ Room {
 - `background.filename` resolves against `assets/backgrounds/` through the same
   lookup as card and pet art. A room whose file is missing renders on the flat
   backdrop rather than failing.
-- `enemies` is **provisional**. Its entries are art keys under `assets/enemies/`,
-  not enemy ids, because `data/enemies.json` is still unpopulated — there is no
-  enemy entity to point at yet. An entry with no art draws an empty slot. It
-  becomes a list of enemy ids once there are enemies to name.
+- `enemies` is **provisional**. Each entry names its own art under
+  `assets/enemies/` and carries its own `maxHealth`, because `data/enemies.json`
+  is still unpopulated — there is no enemy entity to point at yet. An entry whose
+  art is missing draws an empty slot. It becomes a list of enemy ids once there
+  are enemies to name, and `maxHealth` moves onto them.
+- Those `maxHealth` values are **placeholders**. §7 has enemy health as
+  deliberately unchosen, and nothing here has been balanced against a player
+  turn.
 - Rooms do not persist state. Enemy health is discarded at room end and enemies
   never return (D5); only the player carries forward (D4).
 - The run's rooms are an ordered list. The map's first node is labelled START and
