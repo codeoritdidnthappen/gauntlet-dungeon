@@ -55,9 +55,7 @@ import {
  * End Turn hands over: the interviewer shows the card it is playing low in the
  * middle of the room, above the hand, sends it to the same pile, and swings — the two figures
  * closing on each other exactly as they do when the player attacks, with the
- * art swapped for who is swinging.
- *
- * Nothing a card says has happened yet: no damage and no block, either way.
+ * art swapped for who is swinging, and the player raising a guard against it.
  *
  * There is no way out. A room is entered, not visited: it ends by being won or
  * lost, so this screen offers no navigation at all.
@@ -131,8 +129,9 @@ export default function BattleRoom() {
   const background = resolveRoomBackground(room)
   const art = resolveCharacterArt({ race, gender, classId, pose: 'ready' })
   const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
-  // The pose a card puts the figure in. Only the human fighter has these drawn,
-  // so every other race keeps its idle.
+  // The poses a fight puts the figure in: two a card calls for, and one for
+  // being attacked. Every fighter has a defend drawn; sword and scroll are the
+  // human's alone so far, and a figure without one keeps its idle.
   //
   // Insisting on class art is the point: asked for a pose it does not have,
   // resolveCharacterArt falls back to the plain creation-screen portrait, which
@@ -144,7 +143,7 @@ export default function BattleRoom() {
     return found?.isClassArt ? found : null
   }
   const poses = { power: poseArt('scroll'), attack: poseArt('sword') }
-  const takingHit = poseArt('hit')
+  const defending = poseArt('defend')
 
 
   // The pose currently being held, or null. Momentary and purely shown, so it is
@@ -166,7 +165,7 @@ export default function BattleRoom() {
   // Whichever side is acting, both close on each other. Only the art differs by
   // who is swinging, so a missing pose costs the picture, not the movement.
   const enemyStriking = enemyTurn?.phase === 'strike'
-  const playerPose = enemyStriking ? takingHit : cast
+  const playerPose = enemyStriking ? defending : cast
   const playerMoving = enemyStriking || Boolean(cast)
 
   // A played card flies to the pile and then leaves the hand. `flights` holds
