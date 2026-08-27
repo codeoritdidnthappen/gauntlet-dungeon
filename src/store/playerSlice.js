@@ -66,11 +66,17 @@ const initialState = {
   cleared: [],
 
   /**
-   * Whether the player has walked into a room yet. Creation is editable right
-   * up until they do; after that the run is underway and a refresh returns them
-   * to the map rather than to the screen they were on.
+   * Which half of the game the player is in.
+   *
+   *   creation — building a character. Name, race, class, pet and loadout are
+   *              all still theirs to change, and a reload returns them to the
+   *              screen they were on.
+   *   battle   — the gauntlet is underway. A reload returns them to the map.
+   *
+   * Set by the button that starts the run, not inferred from where the player
+   * happens to be. One click flips it, and that click is the whole rule.
    */
-  runStarted: false,
+  mode: 'creation',
 }
 
 const playerSlice = createSlice({
@@ -136,12 +142,12 @@ const playerSlice = createSlice({
       s.loadout = []
     },
     /**
-     * The player has entered a room. From here the run is underway: creation is
-     * behind them, and a reload puts them back on the map (ARCHITECTURE.md §4 —
-     * a resumed run never restores mid-encounter).
+     * Begin the Gauntlet. Creation is behind them from here, and a reload puts
+     * them back on the map (ARCHITECTURE.md §4 — a resumed run never restores
+     * mid-encounter).
      */
-    beginRun: (s) => {
-      s.runStarted = true
+    beginGauntlet: (s) => {
+      s.mode = 'battle'
     },
 
     /**
@@ -177,7 +183,7 @@ export const {
   removeCard,
   clearLoadout,
   resetLoadout,
-  beginRun,
+  beginGauntlet,
   clearRoom,
   hydratePlayer,
   resetPlayer,
@@ -191,7 +197,7 @@ export const selectPlayer = (state) => state.player
 export const selectClassId = (state) => state.player.class
 export const selectLoadout = (state) => state.player.loadout
 export const selectCleared = (state) => state.player.cleared
-export const selectRunStarted = (state) => state.player.runStarted
+export const selectMode = (state) => state.player.mode
 
 /**
  * How far along the route the player is — the index of the room they may enter

@@ -256,7 +256,7 @@ PlayerCharacter extends Combatant {
   startingBlock: int        // what block resets to each turn; 0, or 1 for Fighter
 
   // run progression
-  runStarted: bool          // true once a room has been entered; see below
+  mode:       `creation` | `battle`   // which half of the game; see below
   cleared:    { nodeIndex }[]   // rooms beaten, in order — map display only (D5)
   revivesRemaining: int     // starts at 3 (D13)
   inventory:  CardId[]      // owned, max 20 (D15) — all side:"player"
@@ -298,11 +298,14 @@ the planned 1:1 role→class expansion is additive rather than a refactor (D10).
 - `revivesRemaining` starts at 3; at 0 the next death ends the run and discards
   all of the above (D13).
 - Loadout may only be edited **outside a room**, from the map button (D15).
-- `runStarted` flips the first time the player walks into a room and never flips
-  back within a run. It is what separates "still deciding" from "underway":
-  before it, character, pet and loadout are all still theirs to change and a
-  reload returns them to the screen they were on; after it, a reload returns them
-  to the map (ARCHITECTURE.md §4 — a resumed run never restores mid-encounter).
+- `mode` separates "still deciding" from "underway". In `creation`, character,
+  pet and loadout are all still theirs to change and a reload returns them to the
+  screen they were on. In `battle`, a reload returns them to the map
+  (ARCHITECTURE.md §4 — a resumed run never restores mid-encounter).
+- **`mode` is set, never inferred.** The Begin the Gauntlet button flips it, and
+  that click is the whole rule — it is not worked out from whether a room has
+  been entered, or from which screen is showing. One place decides, so there is
+  one place to look when it is wrong.
 - `cleared` is how far along the route the run has got. The route is a single
   line (D3), so the room the player may enter next is simply `cleared.length` —
   and when that equals the number of rooms, the run is over and no room is

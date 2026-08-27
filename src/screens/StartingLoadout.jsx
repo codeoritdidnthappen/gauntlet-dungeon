@@ -7,7 +7,12 @@ import MusicToggle from '../audio/MusicToggle'
 import GameCard from '../components/GameCard'
 import { ActionButton, Panel, ScreenBackdrop } from '../components/ui'
 import { goTo } from '../store/uiSlice'
-import { selectClassId, selectDisplayName, selectLoadout } from '../store/playerSlice'
+import {
+  beginGauntlet,
+  selectClassId,
+  selectDisplayName,
+  selectLoadout,
+} from '../store/playerSlice'
 
 /**
  * Screen 4 — Starting loadout.
@@ -98,7 +103,13 @@ export default function StartingLoadout() {
       {/* --------------------------------------------------------- actions */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-3 bg-gradient-to-t from-soot-950 to-transparent p-5 lg:p-8">
         <ActionButton onClick={() => dispatch(goTo('pet'))}>Back</ActionButton>
-        <ActionButton primary onClick={() => dispatch(goTo('map'))}>
+        <ActionButton
+          primary
+          onClick={() => {
+            dispatch(beginGauntlet())
+            dispatch(goTo('map'))
+          }}
+        >
           <span className="flex items-center gap-2.5">
             {/* The castle is painted rather than drawn: the svg supplies only
                 its shape, as a mask, and the colour comes from here so it can
