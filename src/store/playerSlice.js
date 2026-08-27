@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import cardData from '../../data/cards.json'
 import options from '../../data/character-options.json'
+import { resolveAttack } from '../battle/damage'
 
 /**
  * The player character — built across Screens 2, 3 and 4 and carried for the
@@ -139,6 +140,28 @@ const playerSlice = createSlice({
       s.energy = Math.max(0, s.energy - payload)
     },
 
+    /**
+     * Take a hit. Block absorbs first and is spent doing it, health takes what
+     * is left, and neither goes below zero. The rule itself lives in
+     * src/battle/damage.js because the interviewers are hit by the same one and
+     * their health is not kept here.
+     *
+     * @param payload the card being played at this player.
+     */
+    takeDamage: (s, { payload }) => {
+      const after = resolveAttack({ card: payload, block: s.block, health: s.health })
+      s.block = after.block
+      s.health = after.health
+    },
+
+    /**
+     * Put up guard. Adds to whatever is already there rather than replacing it,
+     * so two defends in a turn stack — startTurn is what clears it.
+     */
+    gainBlock: (s, { payload }) => {
+      s.block += payload
+    },
+
     addCard: (s, { payload }) => {
       s.loadout.push(payload)
     },
@@ -189,6 +212,8 @@ export const {
   setPetName,
   startTurn,
   spendEnergy,
+  takeDamage,
+  gainBlock,
   addCard,
   removeCard,
   clearLoadout,

@@ -13,20 +13,23 @@ import {
 import MusicToggle from '../audio/MusicToggle'
 import GameCard from '../components/GameCard'
 import { ActionButton, ScreenBackdrop } from '../components/ui'
+import { resolveAttack } from '../battle/damage'
 import {
+  gainBlock,
   selectDisplayName,
   selectLoadout,
   selectPlayer,
   selectStats,
   spendEnergy,
   startTurn,
+  takeDamage,
 } from '../store/playerSlice'
 
 /**
  * Screen 5 — a battle room.
  *
- * Staging only. Combat is not implemented: the room names who faces the player
- * and this draws them, falling back to an empty slot where the art is missing.
+ * The room names who faces the player and this draws them, falling back to an
+ * empty slot where the art is missing.
  *
  * The layout is built for a turn-based fight rather than a portrait screen. The
  * two sides face each other across the floor — player left, interviewers right —
@@ -44,6 +47,11 @@ import {
  * resets block, and deals the same five again — one loadout, no deck, so every
  * turn opens with the same hand until there are more cards to draw from.
  *
+ * Blows land for real: a card's damage is measured against the target's guard,
+ * what the guard cannot cover comes off health, and both sides take it the same
+ * way (src/battle/damage.js). Nothing is awarded for winning yet — the map does
+ * not advance — so a settled fight just stops.
+ *
  * End Turn hands over: the interviewer shows the card it is playing low in the
  * middle of the room, above the hand, sends it to the same pile, and swings — the two figures
  * closing on each other exactly as they do when the player attacks, with the
@@ -55,6 +63,9 @@ import {
  * lost, so this screen offers no navigation at all.
  */
 const ROOM_NUMBER = 1
+
+/** Which interviewer an attack goes at. Rooms hold one, so there is no choice. */
+const TARGET = 0
 
 /** Share of the stage height a figure may fill. Creation screens use all of it. */
 const FIGURE_HEIGHT = 0.58
@@ -99,6 +110,24 @@ export default function BattleRoom() {
   const hand = useMemo(() => loadout.map((id) => CARD_BY_ID[id]).filter(Boolean), [loadout])
 
   const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
+
+  /**
+   * The interviewers' health and guard.
+   *
+   * Local, unlike the player's: ARCHITECTURE.md §4 saves at the map and never
+   * mid-fight, so nothing about a half-finished room may reach the store. They
+   * come in at full health with no guard up.
+   */
+  const [foes, setFoes] = useState(() =>
+    room.enemies.map((e) => ({ health: e.maxHealth, block: 0 })),
+  )
+  /**
+   * Whether the fight is decided, and for whom. Nothing is awarded for it yet —
+   * beating a room does not advance the map — but a settled fight stops taking
+   * turns rather than carrying on past zero.
+   */
+  const over = health <= 0 ? 'defeat' : foes.every((f) => f.health <= 0) ? 'victory' : null
+
   const background = resolveRoomBackground(room)
   const art = resolveCharacterArt({ race, gender, classId, pose: 'ready' })
   const sprite = resolveIdleSprite({ race, gender, classId, pose: 'ready' })
@@ -208,10 +237,38 @@ export default function BattleRoom() {
     }, DISCARD_MS)
   }
 
+  /**
+   * What a card does when it is played.
+   *
+   * Attacks go at the first interviewer — rooms hold one for now, and picking a
+   * target is a screen of its own once they hold more. Defends put guard up.
+   *
+   * Only the numbers on the card are read. Every rider in the card text —
+   * Wallop's block, Riposte's second hit, the powers — is still unbuilt, so
+   * those cards land their base damage and nothing else.
+   */
+  const resolvePlayerCard = (card) => {
+    if (card.type === 'defend' && card.block) {
+      dispatch(gainBlock(card.block))
+      return
+    }
+
+    if (card.type === 'attack') {
+      setFoes((current) =>
+        current.map((foe, i) => {
+          if (i !== TARGET) return foe
+          const after = resolveAttack({ card, block: foe.block, health: foe.health })
+          return { block: after.block, health: after.health }
+        }),
+      )
+    }
+  }
+
   const playCard = (card, i) => {
-    if (played.has(i) || flights[i] || card.cost > energy) return
+    if (over || played.has(i) || flights[i] || card.cost > energy) return
 
     dispatch(spendEnergy(card.cost))
+    resolvePlayerCard(card)
 
     const pose = poses[card.type]
     if (pose) {
@@ -246,7 +303,7 @@ export default function BattleRoom() {
    * only after that does the player's next turn begin.
    */
   const endTurn = () => {
-    if (enemyTurn) return
+    if (over || enemyTurn) return
 
     const card = INTRO_ATTACKS[Math.floor(Math.random() * INTRO_ATTACKS.length)]
     setEnemyTurn({ card, phase: 'reveal' })
@@ -255,6 +312,8 @@ export default function BattleRoom() {
       setTimeout(() => {
         setEnemyTurn({ card, phase: 'strike' })
         flyEnemyCard()
+        // The blow lands with the animation that shows it landing.
+        dispatch(takeDamage(card))
       }, REVEAL_MS),
 
       setTimeout(() => {
@@ -368,7 +427,7 @@ export default function BattleRoom() {
                 ) : (
                   <FigureSlot label={enemy.name} />
                 )}
-                <HealthBar current={enemy.maxHealth} max={enemy.maxHealth} />
+                <HealthBar current={foes[i].health} max={enemy.maxHealth} />
               </div>
             )
           })}
@@ -477,9 +536,15 @@ export default function BattleRoom() {
         )}
       </div>
 
+      {over && (
+        <p className="-translate-x-1/2 pointer-events-none absolute bottom-64 left-1/2 z-30 font-display text-2xl text-gold-200 tracking-[0.2em] uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+          {over === 'victory' ? 'Interview passed' : 'Interview over'}
+        </p>
+      )}
+
       {/* ---------------------------------------------------------- controls */}
       <div className="absolute right-6 bottom-6 z-20 flex flex-col items-end gap-3 lg:right-10 lg:bottom-8">
-        <ActionButton primary onClick={endTurn} disabled={Boolean(enemyTurn)}>
+        <ActionButton primary onClick={endTurn} disabled={Boolean(enemyTurn) || Boolean(over)}>
           End Turn
         </ActionButton>
         <DiscardPile stackRef={pileRef} />
