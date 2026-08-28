@@ -71,7 +71,9 @@ export default function GameCard({ card, playerName }) {
       </div>
 
       {/* -------------------------------------------------------------- text */}
-      <div className="flex min-h-0 flex-1 flex-col">
+      {/* overflow-hidden so a wordy card clips inside its own box rather than
+          painting over the type footer below it. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <p className="font-body text-3xs leading-snug text-gold-200/75">{fill(card.text, playerName)}</p>
         <p className="mt-1 font-body text-3xs leading-snug text-gold-200/35 italic">
           “{fill(card.subtext, playerName)}”
