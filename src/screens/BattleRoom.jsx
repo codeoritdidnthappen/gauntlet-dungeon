@@ -44,7 +44,7 @@ import {
  *
  * Room 1 is scripted and the player moves first, so the hand is live from the
  * moment the room opens. A card costs energy, puts the figure in the pose it
- * calls for — sword for an attack, scroll for a power — and flies to the pile as
+ * calls for — sword for an attack, scroll for a power, guard for a defend — and flies to the pile as
  * it is played. An attack also throws the interviewer into its hit pose, reeling
  * the other way on the same clock, so the two read as one exchange. The rest stay in hand until the energy runs out, and then follow
  * it, since nothing left is playable. End Turn refills it,
@@ -187,8 +187,11 @@ export default function BattleRoom() {
     const found = resolveCharacterArt({ race, gender, classId, pose })
     return found?.isClassArt ? found : null
   }
-  const poses = { power: poseArt('scroll'), attack: poseArt('sword') }
+  // Keyed by card type, so playing a card finds its pose by name. Defend uses
+  // the same art the figure raises when it is attacked — it is the same act,
+  // whether the guard goes up in answer to a blow or ahead of one.
   const defending = poseArt('defend')
+  const poses = { power: poseArt('scroll'), attack: poseArt('sword'), defend: defending }
 
 
   // The pose currently being held, or null. Momentary and purely shown, so it is
