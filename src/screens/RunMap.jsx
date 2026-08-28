@@ -22,11 +22,14 @@ import { selectNextRoomIndex } from '../store/playerSlice'
  * nodes[i + 1]. That first circle is home, and it is marked as where the player
  * currently is: lit, and not something to click.
  *
+ * A room's mark is drawn bare until the room is beaten, and ringed once it is,
+ * so how far the run has got can be read straight off the route.
+ *
  * Only the next room can be entered (D3) — the one after the last the player
  * beat. It is drawn larger than the rest and pulses, so where to go next is
  * obvious without reading anything, and that treatment moves along the route as
- * rooms are beaten. Rooms already beaten keep their mark; rooms beyond the next
- * are dim, because they have not been reached.
+ * rooms are beaten. Rooms already beaten keep their mark, ringed; rooms beyond
+ * the next are blank, because they have not been reached.
  */
 
 /** How much larger the next room is drawn than the rest. */
@@ -83,13 +86,21 @@ export default function RunMap() {
           const node = nodes[i + 1]
           if (!node) return null
 
-          const icon = resolveRoomIcon(room.icon)
-          // Rooms past the second have no enemies written yet. The route still
-          // shows them — it is the shape of the run — but a room with nobody in
-          // it cannot be walked into: it would read as won the moment it opened.
+          const isCleared = i < nextRoomIndex
+          // Beaten rooms wear the ring; the one in front of the player is the
+          // bare mark.
+          const icon = resolveRoomIcon(room.icon, { beaten: isCleared })
+          // Rooms past the second have no enemies written yet, and a room with
+          // nobody in it cannot be walked into — it would read as won the moment
+          // it opened.
           const built = Boolean(room.enemies?.length)
           const isNext = i === nextRoomIndex && built
-          const isCleared = i < nextRoomIndex
+
+          // Anything the player cannot reach yet is left blank. The route is
+          // still drawn on the parchment, so the shape of the run is never in
+          // doubt; what is in doubt is what waits at each stop, and a mark shown
+          // early would answer that before the player has earned the answer.
+          if (!isCleared && !isNext) return null
           const position = {
             left: `${node.xNormalized * 100}%`,
             top: `${node.yNormalized * 100}%`,
@@ -122,12 +133,9 @@ export default function RunMap() {
               aria-hidden="true"
               title={room.name}
               style={position}
-              className={[
-                '-translate-x-1/2 -translate-y-1/2 absolute rounded-full',
-                isCleared ? '' : 'border border-dashed border-soot-900/50',
-              ].join(' ')}
+              className="-translate-x-1/2 -translate-y-1/2 absolute rounded-full"
             >
-              {icon && <RoomIcon src={icon} name={room.name} dimmed={!isCleared} />}
+              {icon && <RoomIcon src={icon} name={room.name} />}
             </div>
           )
         })}
@@ -142,16 +150,11 @@ export default function RunMap() {
  * the marker box is the circle's full diameter.
  *
  * Styling is left to the icon. They carry their own colour and shadow, and the
- * two in use already differ, so imposing one here would fight whichever came
+ * ones in use already differ, so imposing one here would fight whichever came
  * second.
  */
-function RoomIcon({ src, name, dimmed = false }) {
+function RoomIcon({ src, name }) {
   return (
-    <img
-      src={src}
-      alt=""
-      title={name}
-      className={['h-full w-full object-contain p-[9%]', dimmed ? 'opacity-40' : ''].join(' ')}
-    />
+    <img src={src} alt="" title={name} className="h-full w-full object-contain p-[9%]" />
   )
 }
