@@ -35,7 +35,18 @@
     {
       "id": "358d24e3-9c8c-4fcd-818d-70a64851ae87",
       "number": 2,
-      "name": "Room 2"
+      "name": "Room 2",
+      "enemies": [
+        {
+          "art": "spider-spitter",
+          "name": "Spider Spitter",
+          "maxHealth": 30
+        }
+      ],
+      "background": {
+        "filename": "atrium-background.png",
+        "path": "assets/backgrounds/"
+      }
     },
     {
       "id": "18a0d9ae-1f52-401f-9ac7-8965b7cee15a",
