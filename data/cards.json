@@ -382,7 +382,7 @@
       "oncePerRoom": false,
       "cooldown": 1,
       "image": {
-        "filename": "both_ends.png",
+        "filename": "slice.png",
         "path": "assets/cards/"
       }
     },
@@ -567,7 +567,7 @@
       "oncePerRoom": true,
       "cooldown": 0,
       "image": {
-        "filename": "app_store_review.png",
+        "filename": "feed.png",
         "path": "assets/cards/"
       }
     },
@@ -661,7 +661,7 @@
       "oncePerRoom": false,
       "cooldown": 1,
       "image": {
-        "filename": "root_cause.png",
+        "filename": "bite.png",
         "path": "assets/cards/"
       }
     },
