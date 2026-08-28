@@ -1,23 +1,34 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { selectMusicEnabled, toggleMusic } from '../store/uiSlice'
+import { requestMusic, selectMusicPlaying, setMusicEnabled } from '../store/uiSlice'
 import { HAS_MUSIC } from './track'
 
 /**
  * Music on/off. Renders nothing when there is no track to play.
  * Positioned by the screen that uses it.
+ *
+ * It draws itself from whether music is actually sounding, not from whether it
+ * has been asked for. Browsers refuse audio until the page has been interacted
+ * with, so a run can want music and have none — and a speaker drawn on while
+ * the room is silent sends the player to press it, which under a plain toggle
+ * would ask for the silence they already have.
+ *
+ * So the press says what it looks like it says: silent means start, sounding
+ * means stop. Starting counts as a fresh ask even when music was already
+ * wanted, so the press is always another go rather than a no-op — and the click
+ * is itself the interaction the browser was holding out for.
  */
 export default function MusicToggle({ className = '' }) {
-  const enabled = useSelector(selectMusicEnabled)
+  const playing = useSelector(selectMusicPlaying)
   const dispatch = useDispatch()
   if (!HAS_MUSIC) return null
 
   return (
     <button
       type="button"
-      onClick={() => dispatch(toggleMusic())}
-      aria-pressed={enabled}
-      aria-label={enabled ? 'Turn music off' : 'Turn music on'}
-      title={enabled ? 'Music on' : 'Music off'}
+      onClick={() => dispatch(playing ? setMusicEnabled(false) : requestMusic())}
+      aria-pressed={playing}
+      aria-label={playing ? 'Turn music off' : 'Turn music on'}
+      title={playing ? 'Music on' : 'Music off'}
       className={[
         'group inline-flex cursor-pointer items-center justify-center',
         'border border-gold-500/35 bg-soot-950/60 p-2.5 text-gold-300/70 backdrop-blur-sm',
@@ -27,7 +38,7 @@ export default function MusicToggle({ className = '' }) {
         className,
       ].join(' ')}
     >
-      {enabled ? <SpeakerOn /> : <SpeakerOff />}
+      {playing ? <SpeakerOn /> : <SpeakerOff />}
     </button>
   )
 }
