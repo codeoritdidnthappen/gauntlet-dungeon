@@ -12,10 +12,14 @@ import {
 } from '../config/assets'
 import MusicToggle from '../audio/MusicToggle'
 import GameCard from '../components/GameCard'
-import { ActionButton, ScreenBackdrop } from '../components/ui'
+import { ActionButton, Panel, ScreenBackdrop } from '../components/ui'
 import { resolveAttack } from '../battle/damage'
+import { goTo } from '../store/uiSlice'
 import {
+  addCard,
+  clearRoom,
   gainBlock,
+  heal,
   selectDisplayName,
   selectLoadout,
   selectPlayer,
@@ -49,18 +53,49 @@ import {
  *
  * Blows land for real: a card's damage is measured against the target's guard,
  * what the guard cannot cover comes off health, and both sides take it the same
- * way (src/battle/damage.js). Nothing is awarded for winning yet — the map does
- * not advance — so a settled fight just stops.
+ * way (src/battle/damage.js). A beaten interviewer drops where it stood and the
+ * room pauses on the body, then offers what D4 gives after every room: food and
+ * potions, or one of three cards. Taking either clears the room and returns to
+ * the map. Losing just stops.
  *
  * End Turn hands over: the interviewer shows the card it is playing low in the
  * middle of the room, above the hand, sends it to the same pile, and swings — the two figures
  * closing on each other exactly as they do when the player attacks, with the
  * art swapped for who is swinging, and the player raising a guard against it.
  *
- * There is no way out. A room is entered, not visited: it ends by being won or
- * lost, so this screen offers no navigation at all.
+ * There is no way out on the player's own terms. A room is entered, not visited:
+ * it offers no Back, and the only door is the reward panel that opens once the
+ * room is won.
  */
 const ROOM_NUMBER = 1
+
+/** How long the room is left to sink in before the reward is offered. */
+const VICTORY_PAUSE_MS = 2000
+
+/** Share of full health that food and potions give back (D4). */
+const HEAL_SHARE = 0.3
+
+/** How many cards the reward offers to choose between (D15). */
+const OFFER_COUNT = 3
+
+/**
+ * The cards a room can offer.
+ *
+ * Basics are excluded: they are what every run is granted at the start, so
+ * winning a fight and being handed another Strike is not a reward. Class cards
+ * enter a loadout only this way (SCHEMA.md §17), and a class is offered its own
+ * plus the neutrals.
+ */
+const REWARD_POOL = cardData.cards.filter((c) => c.rarity !== 'basic')
+
+const offerCards = (classId) => {
+  const pool = REWARD_POOL.filter((c) => c.class === 'neutral' || c.class === classId)
+  const picked = []
+  while (picked.length < OFFER_COUNT && pool.length) {
+    picked.push(...pool.splice(Math.floor(Math.random() * pool.length), 1))
+  }
+  return picked
+}
 
 /** No corpse takes a turn or a hit: play goes to the first one still standing. */
 const firstStanding = (foes) => foes.findIndex((f) => f.health > 0)
@@ -108,6 +143,16 @@ export default function BattleRoom() {
   const hand = useMemo(() => loadout.map((id) => CARD_BY_ID[id]).filter(Boolean), [loadout])
 
   const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
+
+  /**
+   * The reward step, or null while the fight is still on.
+   *
+   * `offer` once the room is won and the corpse has been left to sink in, then
+   * `cards` if the player asks to see what is going. D4 puts this after every
+   * room — there are no rest nodes, this is the rest.
+   */
+  const [reward, setReward] = useState(null)
+  const [offers, setOffers] = useState([])
 
   /**
    * The interviewers' health and guard.
@@ -262,6 +307,37 @@ export default function BattleRoom() {
         })
       })
     }
+  }
+
+  /**
+   * Won: hold on the body a moment before offering anything.
+   *
+   * It waits on `struck` as well as the win, so the count starts when the
+   * corpse is actually on the floor rather than while the killing blow is still
+   * swinging — otherwise the panel opens over the animation that earned it.
+   */
+  useEffect(() => {
+    if (over !== 'victory' || struck || reward) return
+    const timer = setTimeout(() => setReward('offer'), VICTORY_PAUSE_MS)
+    return () => clearTimeout(timer)
+  }, [over, struck, reward])
+
+  const healAmount = Math.round(maxHealth * HEAL_SHARE)
+
+  /** Taking either reward ends the room: it is beaten, and the map moves on. */
+  const leaveRoom = () => {
+    dispatch(clearRoom({ nodeIndex: roomData.rooms.indexOf(room) }))
+    dispatch(goTo('map'))
+  }
+
+  const takeHeal = () => {
+    dispatch(heal(healAmount))
+    leaveRoom()
+  }
+
+  const takeCard = (id) => {
+    dispatch(addCard(id))
+    leaveRoom()
   }
 
   const playCard = (card, i) => {
@@ -553,10 +629,54 @@ export default function BattleRoom() {
         )}
       </div>
 
-      {over && (
+      {over && !reward && (
         <p className="-translate-x-1/2 pointer-events-none absolute bottom-64 left-1/2 z-30 font-display text-2xl text-gold-200 tracking-[0.2em] uppercase drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
           {over === 'victory' ? 'Interview passed' : 'Interview over'}
         </p>
+      )}
+
+      {/* ----------------------------------------------------------- reward */}
+      {reward && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-soot-950/60 p-6 backdrop-blur-[2px]">
+          {reward === 'offer' ? (
+            <Panel title="Takeaways" className="w-full max-w-md">
+              <div className="flex flex-col gap-2">
+                <RewardRow
+                  label="Food and potions"
+                  detail={`Recover ${healAmount} health`}
+                  onClick={takeHeal}
+                />
+                <RewardRow
+                  label="A new card"
+                  detail={`Pick 1 of ${OFFER_COUNT} for your loadout`}
+                  onClick={() => {
+                    setOffers(offerCards(classId))
+                    setReward('cards')
+                  }}
+                />
+              </div>
+            </Panel>
+          ) : (
+            <Panel title="Pick one">
+              <div className="flex items-end justify-center gap-4">
+                {offers.map((card) => (
+                  <button
+                    key={card.id}
+                    type="button"
+                    onClick={() => takeCard(card.id)}
+                    className={[
+                      'w-44 cursor-pointer rounded-sm outline-none lg:w-48',
+                      'transition-transform duration-150 ease-out hover:-translate-y-3 hover:scale-105',
+                      'focus-visible:ring-2 focus-visible:ring-gold-400',
+                    ].join(' ')}
+                  >
+                    <GameCard card={card} playerName={playerName} />
+                  </button>
+                ))}
+              </div>
+            </Panel>
+          )}
+        </div>
       )}
 
       {/* ---------------------------------------------------------- controls */}
@@ -625,6 +745,33 @@ function DiscardPile({ className = '', stackRef = null }) {
         Discard
       </p>
     </div>
+  )
+}
+
+/**
+ * One thing a room is offering, as a full-width row.
+ *
+ * Deliberately plain next to the cards it sits above: the choice here is
+ * between two kinds of reward, and dressing the rows up would make the panel
+ * compete with the cards on the next step.
+ */
+function RewardRow({ label, detail, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        'group w-full cursor-pointer rounded-sm border border-gold-500/25 bg-soot-900/70 px-4 py-3 text-left',
+        'transition-colors duration-150 outline-none',
+        'hover:border-gold-400 hover:bg-soot-800/70',
+        'focus-visible:ring-2 focus-visible:ring-gold-400',
+      ].join(' ')}
+    >
+      <span className="block font-display text-xs font-bold uppercase tracking-[0.18em] text-gold-300 group-hover:text-gold-200">
+        {label}
+      </span>
+      <span className="mt-1 block font-body text-2xs text-gold-200/60">{detail}</span>
+    </button>
   )
 }
 

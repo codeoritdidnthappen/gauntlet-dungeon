@@ -162,6 +162,15 @@ const playerSlice = createSlice({
       s.block += payload
     },
 
+    /**
+     * Food and potions between rooms (D4). Health carries across the whole run
+     * with no reset, so this is the only way any of it comes back — and it
+     * stops at full, since nothing lifts a class above its own maximum.
+     */
+    heal: (s, { payload }) => {
+      s.health = Math.min(s.maxHealth, s.health + payload)
+    },
+
     addCard: (s, { payload }) => {
       s.loadout.push(payload)
     },
@@ -214,6 +223,7 @@ export const {
   spendEnergy,
   takeDamage,
   gainBlock,
+  heal,
   addCard,
   removeCard,
   clearLoadout,
