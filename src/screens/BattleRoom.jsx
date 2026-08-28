@@ -285,17 +285,18 @@ export default function BattleRoom() {
    * What a card does when it is played.
    *
    * Attacks go at the first interviewer — rooms hold one for now, and picking a
-   * target is a screen of its own once they hold more. Defends put guard up.
+   * target is a screen of its own once they hold more. Anything carrying a
+   * block value puts guard up, whether or not that is all it does.
    *
    * Only the numbers on the card are read. Every rider in the card text —
    * Wallop's block, Riposte's second hit, the powers — is still unbuilt, so
    * those cards land their base damage and nothing else.
    */
   const resolvePlayerCard = (card) => {
-    if (card.type === 'defend' && card.block) {
-      dispatch(gainBlock(card.block))
-      return
-    }
+    // Guard comes from whatever carries a block value, not from the card's
+    // label. Both Ends is typed `attack` and grants 6 Block as well as dealing
+    // 7 — reading the type instead of the number silently dropped that half.
+    if (card.block) dispatch(gainBlock(card.block))
 
     if (card.type === 'attack') {
       setFoes((current) => {
