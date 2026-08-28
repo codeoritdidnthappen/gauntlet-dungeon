@@ -84,7 +84,11 @@ export default function RunMap() {
           if (!node) return null
 
           const icon = resolveRoomIcon(room.icon)
-          const isNext = i === nextRoomIndex
+          // Rooms past the second have no enemies written yet. The route still
+          // shows them — it is the shape of the run — but a room with nobody in
+          // it cannot be walked into: it would read as won the moment it opened.
+          const built = Boolean(room.enemies?.length)
+          const isNext = i === nextRoomIndex && built
           const isCleared = i < nextRoomIndex
           const position = {
             left: `${node.xNormalized * 100}%`,

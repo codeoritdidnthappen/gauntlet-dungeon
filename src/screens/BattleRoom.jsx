@@ -18,6 +18,7 @@ import { goTo } from '../store/uiSlice'
 import {
   addCard,
   clearRoom,
+  selectNextRoomIndex,
   gainBlock,
   heal,
   selectDisplayName,
@@ -67,7 +68,15 @@ import {
  * it offers no Back, and the only door is the reward panel that opens once the
  * room is won.
  */
-const ROOM_NUMBER = 1
+/**
+ * Who opens the room.
+ *
+ * Rolled once on walking in and then fixed, so the order holds for the whole
+ * fight: a round is every character taking one turn, and with the order settled
+ * the two sides simply alternate. Losing the roll costs one blow before the
+ * first card is played, which is a real price without being a spiral.
+ */
+const rollInitiative = () => (Math.random() < 0.5 ? 'player' : 'enemies')
 
 /** How long the room is left to sink in before the reward is offered. */
 const VICTORY_PAUSE_MS = 2000
@@ -142,7 +151,16 @@ export default function BattleRoom() {
   /** The five carried in, in the order they were dealt. */
   const hand = useMemo(() => loadout.map((id) => CARD_BY_ID[id]).filter(Boolean), [loadout])
 
-  const room = roomData.rooms.find((r) => r.number === ROOM_NUMBER)
+  // The room the run is up to, read once and held.
+  //
+  // Taking a reward clears this room, which moves the run's index on — and this
+  // screen must not re-point at the next room while it is still standing in
+  // this one, with this room's enemies on the floor.
+  const [roomIndex] = useState(useSelector(selectNextRoomIndex))
+  const room = roomData.rooms[roomIndex]
+
+  /** Whose turn opens the room. Decided on arrival, then it just alternates. */
+  const [opener] = useState(rollInitiative)
 
   /**
    * The reward step, or null while the fight is still on.
@@ -238,9 +256,26 @@ export default function BattleRoom() {
   // Walking in starts a turn (ARCHITECTURE.md §5). Without it the room opens on
   // whatever energy the save happened to hold — energy is saved along with the
   // rest of the player, and a turn's leftovers are not a state to arrive in.
+  //
+  // Then, if the interviewers won the roll, they open the room: the same turn
+  // they take at the end of every round, just taken before the player's first
+  // rather than after it. From there the two sides alternate on their own.
+  //
+  // The opening move clears up after itself rather than being guarded against
+  // running twice. StrictMode mounts, unmounts and remounts in development, so
+  // a ref that let it run only once left the first run's timers cleared by the
+  // unmount and no second run to replace them — the interviewer froze mid-turn,
+  // holding its card forever. Restarting cleanly is what an effect is for.
   useEffect(() => {
     dispatch(startTurn())
-  }, [dispatch])
+    if (opener !== 'enemies') return undefined
+
+    takeEnemyTurn()
+    return () => enemyTimers.current.forEach(clearTimeout)
+    // takeEnemyTurn is stable for the life of the room: it closes over state
+    // this only ever reads at mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, opener])
 
   /**
    * Send one card to the pile.
@@ -330,7 +365,7 @@ export default function BattleRoom() {
 
   /** Taking either reward ends the room: it is beaten, and the map moves on. */
   const leaveRoom = () => {
-    dispatch(clearRoom({ nodeIndex: roomData.rooms.indexOf(room) }))
+    dispatch(clearRoom({ nodeIndex: roomIndex }))
     dispatch(goTo('map'))
   }
 
@@ -384,9 +419,18 @@ export default function BattleRoom() {
    */
   const endTurn = () => {
     if (over || enemyTurn) return
+    takeEnemyTurn()
+  }
 
-    // Whoever is still standing takes the turn; `over` has already ruled out
-    // the case where nobody is.
+  /**
+   * The interviewers' turn.
+   *
+   * Reached two ways — the player ending theirs, or the interviewers having won
+   * the roll to open the room — and it is the same turn either way.
+   */
+  const takeEnemyTurn = () => {
+    // Whoever is still standing takes the turn. A room always opens with one,
+    // and `over` stops the button once none are left.
     const actor = room.enemies[firstStanding(foes)]
     const card = INTRO_ATTACKS[Math.floor(Math.random() * INTRO_ATTACKS.length)]
     setEnemyTurn({ card, actor, phase: 'reveal' })
