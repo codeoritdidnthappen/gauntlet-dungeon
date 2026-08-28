@@ -46,6 +46,10 @@
       "background": {
         "filename": "conference-room-background.png",
         "path": "assets/backgrounds/"
+      },
+      "icon": {
+        "filename": "spider.svg",
+        "path": "assets/maps/"
       }
     },
     {

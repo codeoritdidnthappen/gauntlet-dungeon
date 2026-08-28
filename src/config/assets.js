@@ -284,10 +284,28 @@ const MAP_ICONS = Object.fromEntries(
   ).map(([path, url]) => [artKey(path.split('/').pop()), url]),
 )
 
-/** A room's map icon, or null where it has none or the file is missing. */
-export function resolveRoomIcon(icon) {
+/**
+ * A room's map icon, in the state that room is in.
+ *
+ * Two files per room: the plain mark, and a `-complete` variant that draws a
+ * ring around it. A room wears the ring only once it has been beaten, so the
+ * route reads at a glance as a line of marks with the finished ones circled.
+ *
+ * Falls back to the plain mark when no `-complete` has been drawn, so a room
+ * with only the one file still shows something rather than nothing.
+ *
+ * @returns {string | null} null where the room has no icon, or the file named
+ * in data is missing.
+ */
+export function resolveRoomIcon(icon, { beaten = false } = {}) {
   const filename = icon?.filename
   if (!filename) return null
+
+  if (beaten) {
+    const done = MAP_ICONS[artKey(filename.replace(/\.svg$/, '-complete.svg'))]
+    if (done) return done
+  }
+
   return MAP_ICONS[artKey(filename)] ?? null
 }
 
